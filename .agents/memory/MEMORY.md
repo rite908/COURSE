@@ -1,3 +1,4 @@
 - [Tailwind v4 + Next.js 16 setup](tailwind-v4-nextjs16.md) — @theme syntax, no tailwind.config.ts, @tailwindcss/postcss required
 - [Framer Motion SSR fix](framer-motion-ssr.md) — use `initial={mounted ? {...} : false}` to avoid invisible content on SSR
 - [Light Cyber Theme](light-cyber-theme.md) — white/F5F8FF bg, #2563EB blue accent, NOT dark; all pages must use this
+- [Tailwind responsive classes unreliable for layout](tailwind-responsive-layout.md) — sm:/lg: prefixes fail silently on layout-critical props; use JS viewport state + inline styles instead

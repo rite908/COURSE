@@ -11,24 +11,14 @@ import {
   useSpring,
 } from "framer-motion";
 import {
-  ArrowRight,
-  BookOpen,
-  Layers,
-  HelpCircle,
-  Target,
-  User,
-  FlaskConical,
-  Briefcase,
-  TrendingUp,
-  Award,
-  Shield,
-  Compass,
-  ChevronDown,
+  ArrowRight, BookOpen, Layers, HelpCircle, Target,
+  User, FlaskConical, Briefcase, TrendingUp, Award,
+  Shield, Compass, ChevronDown,
 } from "lucide-react";
 import HeroScene from "@/components/HeroScene";
 import { getCurrentUser } from "@/lib/storage";
 
-/* ── Inline brand SVGs (lucide-react doesn't ship these) ── */
+/* ── Brand SVGs ── */
 const YoutubeIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
     <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.4 3.5 12 3.5 12 3.5s-7.4 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c2 .6 9.4.6 9.4.6s7.4 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z" />
@@ -47,27 +37,33 @@ const GithubIcon = () => (
   </svg>
 );
 
-/* ── Static data ── */
+/* ── Data ── */
 const STATS = [
-  { icon: <BookOpen size={20} />,   value: "5+",   label: "Chapters",  color: "#2563EB", bg: "#EEF3FF" },
-  { icon: <Layers size={20} />,     value: "30+",  label: "Topics",    color: "#7C3AED", bg: "#F3EEFF" },
-  { icon: <HelpCircle size={20} />, value: "450+", label: "MCQs",      color: "#0EA5E9", bg: "#F0F9FF" },
-  { icon: <Target size={20} />,     value: "100%", label: "Practical", color: "#059669", bg: "#ECFDF5" },
+  { icon: <BookOpen size={22} />,   value: "5+",   label: "Chapters",  color: "#2563EB", bg: "#EEF3FF" },
+  { icon: <Layers size={22} />,     value: "30+",  label: "Topics",    color: "#7C3AED", bg: "#F3EEFF" },
+  { icon: <HelpCircle size={22} />, value: "450+", label: "MCQs",      color: "#0EA5E9", bg: "#F0F9FF" },
+  { icon: <Target size={22} />,     value: "100%", label: "Practical", color: "#059669", bg: "#ECFDF5" },
 ];
 
 const WHY_CARDS = [
-  { icon: <User size={20} />,        color: "#2563EB", bg: "#EEF3FF", title: "Beginner Friendly",  desc: "Start from zero. No prior knowledge required."          },
-  { icon: <FlaskConical size={20} />,color: "#7C3AED", bg: "#F3EEFF", title: "Practical Learning", desc: "Real world labs, tools and projects."                    },
-  { icon: <Briefcase size={20} />,   color: "#0EA5E9", bg: "#F0F9FF", title: "Industry Relevant",  desc: "Skills in demand across the cybersecurity industry."    },
-  { icon: <TrendingUp size={20} />,  color: "#059669", bg: "#ECFDF5", title: "Progress Tracking",  desc: "Track your progress and measure your mastery."          },
-  { icon: <Award size={20} />,       color: "#D97706", bg: "#FFFBEB", title: "Certificate",        desc: "Earn a certificate and showcase your skills."           },
+  { icon: <User size={20} />,        color: "#2563EB", bg: "#EEF3FF", title: "Beginner Friendly",  desc: "Start from zero. No prior knowledge required."       },
+  { icon: <FlaskConical size={20} />,color: "#7C3AED", bg: "#F3EEFF", title: "Practical Learning", desc: "Real world labs, tools and projects."                 },
+  { icon: <Briefcase size={20} />,   color: "#0EA5E9", bg: "#F0F9FF", title: "Industry Relevant",  desc: "Skills in demand across the cybersecurity industry."  },
+  { icon: <TrendingUp size={20} />,  color: "#059669", bg: "#ECFDF5", title: "Progress Tracking",  desc: "Track your progress and measure your mastery."        },
+  { icon: <Award size={20} />,       color: "#D97706", bg: "#FFFBEB", title: "Certificate",        desc: "Earn a certificate and showcase your skills."         },
 ];
 
 const SOCIAL_LINKS = [
-  { label: "YouTube",   href: "https://twh-osint.vercel.app/twh", icon: <YoutubeIcon />  },
-  { label: "Instagram", href: "https://twh-osint.vercel.app/twh", icon: <InstagramIcon />},
-  { label: "GitHub",    href: "https://twh-osint.vercel.app/twh", icon: <GithubIcon />   },
+  { label: "YouTube",   href: "https://twh-osint.vercel.app/twh", icon: <YoutubeIcon />   },
+  { label: "Instagram", href: "https://twh-osint.vercel.app/twh", icon: <InstagramIcon /> },
+  { label: "GitHub",    href: "https://twh-osint.vercel.app/twh", icon: <GithubIcon />    },
 ];
+
+/* ── Shared layout constants ── */
+const CONTENT_MAX   = 1280;   // max content width (matches navbar)
+const CONTENT_PAD   = 40;     // horizontal padding inside content wrapper
+const BREAK_MD      = 768;    // tablet breakpoint
+const BREAK_LG      = 1024;   // desktop breakpoint
 
 /* ══════════════════════════════════════════════════════════
    Page
@@ -76,11 +72,23 @@ export default function LandingPage() {
   const router  = useRouter();
   const [user,    setUser]    = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [vw,      setVw]      = useState(1280); // viewport width for inline responsive
+
+  /* Viewport tracker — drives all responsive inline styles */
+  useEffect(() => {
+    const update = () => setVw(window.innerWidth);
+    update();
+    window.addEventListener("resize", update, { passive: true });
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const isMd = vw >= BREAK_MD;
+  const isLg = vw >= BREAK_LG;
 
   /* Parallax */
   const { scrollY } = useScroll();
-  const leftY  = useTransform(scrollY, [0, 400], [0, 30]);
-  const rightY = useTransform(scrollY, [0, 400], [0, -20]);
+  const leftY  = useTransform(scrollY, [0, 400], [0, 28]);
+  const rightY = useTransform(scrollY, [0, 400], [0, -18]);
 
   /* Magnetic CTA */
   const btnRef  = useRef<HTMLButtonElement>(null);
@@ -100,70 +108,78 @@ export default function LandingPage() {
   useEffect(() => { setUser(getCurrentUser()); setMounted(true); }, []);
   const goStart = () => router.push(user ? "/chapters" : "/login");
 
-  /* Stagger helpers */
+  /* Fade-up animation helper */
   const fadeUp = (delay = 0) => ({
     initial: mounted ? { opacity: 0, y: 24 } : false,
     animate: { opacity: 1, y: 0 },
-    transition: { delay, duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay, duration: 0.55, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] },
   });
 
-  return (
-    <main
-      className="min-h-screen overflow-x-hidden"
-      style={{ background: "#F8FAFF" }}
-    >
+  /* ── Shared container style (matches navbar alignment) ── */
+  const container: React.CSSProperties = {
+    maxWidth: CONTENT_MAX,
+    margin:   "0 auto",
+    padding:  `0 ${CONTENT_PAD}px`,
+    width:    "100%",
+    boxSizing: "border-box",
+  };
 
-      {/* ════════════════════════════════════════════════
-          HERO — full-viewport, two-column
-      ════════════════════════════════════════════════ */}
+  return (
+    <main style={{ background: "#F8FAFF", minHeight: "100vh", overflowX: "hidden" }}>
+
+      {/* ═══════════════════════════════════════════════════
+          HERO
+      ═══════════════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden"
         style={{
-          background: "linear-gradient(150deg, #FFFFFF 0%, #F5F8FF 55%, #EEF2FF 100%)",
-          paddingTop: "calc(72px + 48px)",
-          paddingBottom: 48,
+          position:       "relative",
+          overflow:       "hidden",
+          background:     "linear-gradient(150deg, #FFFFFF 0%, #F5F8FF 55%, #EEF2FF 100%)",
+          paddingTop:     `calc(72px + ${isLg ? 56 : 40}px)`,
+          paddingBottom:  isLg ? 56 : 40,
         }}
       >
-        {/* Dot grid */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(148,163,254,0.25) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-        {/* Ambient glows */}
-        <div className="absolute pointer-events-none" style={{ left: "-10%", top: "10%", width: 700, height: 700, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.07) 0%, transparent 65%)" }} />
-        <div className="absolute pointer-events-none" style={{ right: "-8%",  top: "-5%", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 65%)" }} />
+        {/* Dot grid bg */}
+        <div style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          backgroundImage: "radial-gradient(circle, rgba(148,163,254,0.25) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }} />
+        {/* Blue glow */}
+        <div style={{ position:"absolute", left:"-8%", top:"10%", width:700, height:700, borderRadius:"50%", background:"radial-gradient(circle, rgba(37,99,235,0.07) 0%, transparent 65%)", pointerEvents:"none" }} />
+        {/* Purple glow */}
+        <div style={{ position:"absolute", right:"-6%", top:"-5%", width:600, height:600, borderRadius:"50%", background:"radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 65%)", pointerEvents:"none" }} />
 
-        {/* ── Inner wrapper — constrained width, no overflow ── */}
-        <div className="relative z-10" style={{ maxWidth: 1280, margin: "0 auto", padding: "0 40px" }}>
+        {/* Content wrapper */}
+        <div style={{ ...container, position: "relative", zIndex: 10 }}>
 
-          {/* Two-column grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-6 items-center">
+          {/* Two-column hero — flex row on desktop, col on mobile */}
+          <div style={{
+            display:        "flex",
+            flexDirection:  isLg ? "row" : "column",
+            alignItems:     isLg ? "center" : "stretch",
+            gap:            isLg ? 32 : 40,
+          }}>
 
-            {/* ── LEFT: text ── */}
-            <motion.div style={{ y: leftY }} className="flex flex-col">
-
+            {/* ── LEFT: text (takes 48% on desktop) ── */}
+            <motion.div
+              style={{ y: leftY, flex: isLg ? "0 0 48%" : "unset", display: "flex", flexDirection: "column" }}
+            >
               {/* Badge */}
-              <motion.div {...fadeUp(0)} className="inline-flex items-center gap-2 self-start mb-6">
-                <div
-                  className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full"
-                  style={{
-                    background: "rgba(255,255,255,0.92)",
-                    border: "1px solid rgba(37,99,235,0.20)",
-                    boxShadow: "0 2px 12px rgba(37,99,235,0.08)",
-                  }}
-                >
-                  <span
-                    className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: "#2563EB" }}
-                  >
-                    <Shield size={10} className="text-white" />
+              <motion.div {...fadeUp(0)} style={{ display: "inline-flex", alignItems: "center", gap: 8, alignSelf: "flex-start", marginBottom: 24 }}>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "6px 16px 6px 10px", borderRadius: 999,
+                  background: "rgba(255,255,255,0.92)",
+                  border: "1px solid rgba(37,99,235,0.20)",
+                  boxShadow: "0 2px 12px rgba(37,99,235,0.08)",
+                }}>
+                  <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#2563EB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Shield size={10} color="white" />
                   </span>
-                  <span className="text-[12.5px] font-semibold text-gray-600 tracking-wide">
+                  <span style={{ fontSize: "12.5px", fontWeight: 600, color: "#4B5563", letterSpacing: "0.02em" }}>
                     India's Premier Ethical Hacking{" "}
-                    <span className="text-blue-600 font-bold">Academy</span>
+                    <span style={{ color: "#2563EB", fontWeight: 700 }}>Academy</span>
                   </span>
                 </div>
               </motion.div>
@@ -171,13 +187,19 @@ export default function LandingPage() {
               {/* Headline */}
               <motion.h1
                 {...fadeUp(0.08)}
-                className="font-black leading-[1.06] tracking-tight mb-6"
-                style={{ fontSize: "clamp(2.6rem, 4.5vw, 4.2rem)", letterSpacing: "-0.03em" }}
+                style={{
+                  fontWeight: 900,
+                  lineHeight: 1.05,
+                  letterSpacing: "-0.03em",
+                  fontSize: isLg ? "clamp(2.8rem, 3.8vw, 4.2rem)" : isLg ? "2.6rem" : "2.2rem",
+                  marginBottom: 20,
+                }}
               >
-                <span className="text-gray-900 block font-display">Master Computers.</span>
+                <span className="font-display" style={{ color: "#111827", display: "block" }}>Master Computers.</span>
                 <span
-                  className="block font-display"
+                  className="font-display"
                   style={{
+                    display: "block",
                     background: "linear-gradient(130deg, #2563EB 0%, #7C3AED 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
@@ -191,15 +213,14 @@ export default function LandingPage() {
               {/* Subtitle */}
               <motion.p
                 {...fadeUp(0.18)}
-                className="text-gray-500 leading-relaxed mb-8 max-w-[420px]"
-                style={{ fontSize: "1.05rem" }}
+                style={{ color: "#6B7280", lineHeight: 1.7, marginBottom: 32, maxWidth: 420, fontSize: "1.05rem" }}
               >
                 From zero to ethical hacking hero.{" "}
                 A complete roadmap for future cybersecurity experts.
               </motion.p>
 
-              {/* CTA row */}
-              <motion.div {...fadeUp(0.28)} className="flex flex-wrap items-center gap-3 mb-8">
+              {/* CTA buttons */}
+              <motion.div {...fadeUp(0.28)} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12, marginBottom: 28 }}>
                 {/* Primary */}
                 <motion.button
                   ref={btnRef}
@@ -208,25 +229,27 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={goStart}
-                  className="relative inline-flex items-center gap-3 px-7 py-[14px] rounded-2xl text-[15px] font-bold text-white overflow-hidden shrink-0"
                   style={{
-                    x: springX,
-                    y: springY,
+                    x: springX, y: springY,
+                    position: "relative",
+                    display: "inline-flex", alignItems: "center", gap: 12,
+                    padding: "14px 28px",
+                    borderRadius: 16,
+                    fontSize: "15px", fontWeight: 700, color: "white",
+                    border: "none", cursor: "pointer", flexShrink: 0,
                     background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
                     boxShadow: "0 8px 28px rgba(37,99,235,0.38), 0 2px 8px rgba(0,0,0,0.06)",
+                    overflow: "hidden",
                   }}
                 >
-                  {/* Shimmer sweep */}
                   <motion.span
-                    className="absolute inset-0"
-                    style={{ background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)" }}
+                    style={{ position: "absolute", inset: 0, background: "linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)" }}
                     animate={{ x: ["-120%", "220%"] }}
                     transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.8 }}
                   />
-                  <span className="relative z-10">{user ? "Continue Learning" : "Start Your Journey"}</span>
+                  <span style={{ position: "relative", zIndex: 1 }}>{user ? "Continue Learning" : "Start Your Journey"}</span>
                   <motion.span
-                    className="relative z-10 w-7 h-7 rounded-full flex items-center justify-center"
-                    style={{ background: "rgba(255,255,255,0.25)" }}
+                    style={{ position: "relative", zIndex: 1, width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
                     animate={{ x: [0, 4, 0] }}
                     transition={{ duration: 1.6, repeat: Infinity }}
                   >
@@ -238,87 +261,91 @@ export default function LandingPage() {
                 <Link href="/chapters">
                   <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className="inline-flex items-center gap-2 px-7 py-[14px] rounded-2xl text-[15px] font-semibold text-gray-700 bg-white border border-gray-200 shrink-0 cursor-pointer"
-                    style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      padding: "14px 28px", borderRadius: 16,
+                      fontSize: "15px", fontWeight: 600, color: "#374151",
+                      background: "white", border: "1px solid #E5E7EB",
+                      boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+                      cursor: "pointer", flexShrink: 0,
+                    }}
                   >
-                    <Compass size={16} className="text-blue-600" />
+                    <Compass size={16} color="#2563EB" />
                     Explore Chapters
                   </motion.div>
                 </Link>
               </motion.div>
 
               {/* Social proof */}
-              <motion.div
-                {...fadeUp(0.40)}
-                className="flex items-center gap-3"
-              >
-                <div className="flex -space-x-2">
+              <motion.div {...fadeUp(0.40)} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ display: "flex", marginRight: 0 }}>
                   {(["#2563EB","#7C3AED","#0EA5E9","#059669"] as string[]).map((c, i) => (
-                    <div
-                      key={i}
-                      className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-white text-[10px] font-bold"
-                      style={{ background: c }}
-                    >
+                    <div key={i} style={{
+                      width: 28, height: 28, borderRadius: "50%",
+                      border: "2px solid white", marginLeft: i > 0 ? -8 : 0,
+                      background: c, display: "flex", alignItems: "center",
+                      justifyContent: "center", color: "white", fontSize: "10px", fontWeight: 700,
+                    }}>
                       {["A","S","R","K"][i]}
                     </div>
                   ))}
                 </div>
-                <span className="text-[12.5px] text-gray-400 font-medium">
-                  <span className="text-gray-700 font-bold">500+</span> students already enrolled
+                <span style={{ fontSize: "12.5px", color: "#9CA3AF", fontWeight: 500 }}>
+                  <span style={{ color: "#374151", fontWeight: 700 }}>500+</span> students already enrolled
                 </span>
               </motion.div>
             </motion.div>
 
-            {/* ── RIGHT: hero scene ── */}
+            {/* ── RIGHT: globe (takes remaining 52% on desktop) ── */}
             <motion.div
-              style={{ y: rightY }}
-              className="relative w-full flex items-center justify-center"
+              style={{
+                y: rightY,
+                flex:    isLg ? "1 1 52%" : "unset",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
             >
-              {/*
-                Constrained box — the HeroScene uses absolute-positioned
-                children so we need an explicit height + overflow:hidden.
-              */}
-              <div
-                className="relative w-full"
-                style={{
-                  height: "clamp(340px, 46vw, 520px)",
-                  maxWidth: 520,
-                  margin: "0 auto",
-                  overflow: "visible",
-                }}
-              >
+              <div style={{
+                position: "relative",
+                width:    "100%",
+                maxWidth: isLg ? "none" : 500,
+                margin:   isLg ? "0" : "0 auto",
+                height:   isLg ? "clamp(360px, 44vw, 520px)" : "340px",
+              }}>
                 <HeroScene />
               </div>
             </motion.div>
           </div>
 
           {/* Scroll cue */}
-          <motion.div
-            initial={mounted ? { opacity: 0 } : false}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-            className="hidden sm:flex flex-col items-center gap-1 mt-8 self-center"
-          >
-            <span className="text-[10.5px] font-semibold text-gray-400 uppercase tracking-widest">Scroll</span>
+          {isMd && (
             <motion.div
-              animate={{ y: [0, 5, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              initial={mounted ? { opacity: 0 } : false}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, marginTop: 28 }}
             >
-              <ChevronDown size={16} className="text-gray-400" />
+              <span style={{ fontSize: "10.5px", fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.12em" }}>Scroll</span>
+              <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}>
+                <ChevronDown size={16} color="#9CA3AF" />
+              </motion.div>
             </motion.div>
-          </motion.div>
+          )}
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           STATS STRIP
-      ════════════════════════════════════════════════ */}
-      <div
-        className="w-full"
-        style={{ background: "linear-gradient(180deg, #EEF2FF 0%, #FFFFFF 100%)" }}
-      >
-        <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-10">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+      ═══════════════════════════════════════════════════ */}
+      <div style={{ background: "linear-gradient(180deg, #EEF2FF 0%, #FFFFFF 100%)", padding: "40px 0" }}>
+        <div style={container}>
+          {/* 4-col on desktop, 2-col on mobile */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMd ? "repeat(4, 1fr)" : "repeat(2, 1fr)",
+            gap: 16,
+          }}>
             {STATS.map((s, i) => (
               <motion.div
                 key={s.label}
@@ -326,23 +353,39 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07, duration: 0.45 }}
                 whileHover={{ y: -4 }}
-                className="relative flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left gap-3 sm:gap-4 px-4 py-5 rounded-2xl bg-white border border-gray-100 overflow-hidden"
-                style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.05)" }}
+                style={{
+                  position:   "relative",
+                  display:    "flex",
+                  flexDirection: isMd ? "row" : "column",
+                  alignItems: isMd ? "center" : "center",
+                  textAlign:  isMd ? "left" : "center",
+                  gap:        isMd ? 16 : 10,
+                  padding:    isMd ? "20px 24px" : "20px 16px",
+                  borderRadius: 20,
+                  background: "white",
+                  border:     "1px solid #F1F5F9",
+                  boxShadow:  "0 2px 16px rgba(0,0,0,0.05)",
+                  overflow:   "hidden",
+                  cursor:     "default",
+                }}
               >
-                {/* Top accent line */}
-                <span
-                  className="absolute top-0 left-0 right-0 h-[3px]"
-                  style={{ background: `linear-gradient(90deg, ${s.color}, transparent)` }}
-                />
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: s.bg, color: s.color }}
-                >
+                {/* Accent top bar */}
+                <span style={{
+                  position:   "absolute", top: 0, left: 0, right: 0, height: 3,
+                  background: `linear-gradient(90deg, ${s.color}, transparent)`,
+                }} />
+                {/* Icon */}
+                <div style={{
+                  width: 48, height: 48, borderRadius: 14,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: s.bg, color: s.color, flexShrink: 0,
+                }}>
                   {s.icon}
                 </div>
+                {/* Text */}
                 <div>
-                  <div className="font-black text-[1.4rem] text-gray-900 leading-none">{s.value}</div>
-                  <div className="text-[10px] text-gray-400 font-semibold mt-1 uppercase tracking-wider">{s.label}</div>
+                  <div style={{ fontWeight: 900, fontSize: "1.6rem", color: "#111827", lineHeight: 1 }}>{s.value}</div>
+                  <div style={{ fontSize: "11px", color: "#9CA3AF", fontWeight: 700, marginTop: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>{s.label}</div>
                 </div>
               </motion.div>
             ))}
@@ -350,51 +393,52 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           WHY TWH ACADEMY
-      ════════════════════════════════════════════════ */}
-      <section
-        id="features"
-        className="w-full bg-white"
-        style={{ padding: "72px 0" }}
-      >
-        <div style={{ maxWidth: 1152, margin: "0 auto", padding: "0 24px" }}>
+      ═══════════════════════════════════════════════════ */}
+      <section id="features" style={{ background: "white", padding: "72px 0" }}>
+        <div style={container}>
 
-          {/* Section header */}
+          {/* Header */}
           <motion.div
             initial={mounted ? { opacity: 0, y: 20 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            style={{ textAlign: "center", marginBottom: 48 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 mb-5">
-              <Shield size={12} className="text-blue-500" />
-              <span className="text-[11.5px] font-bold text-blue-600 uppercase tracking-wider">Why TWH Academy</span>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "6px 16px", borderRadius: 999,
+              background: "#EFF6FF", border: "1px solid #DBEAFE",
+              marginBottom: 20,
+            }}>
+              <Shield size={12} color="#3B82F6" />
+              <span style={{ fontSize: "11.5px", fontWeight: 700, color: "#2563EB", textTransform: "uppercase", letterSpacing: "0.08em" }}>Why TWH Academy</span>
             </div>
-            <h2
-              className="font-black text-gray-900 mb-4"
-              style={{ fontSize: "clamp(1.55rem, 3vw, 2.1rem)", letterSpacing: "-0.025em" }}
-            >
+            <h2 style={{
+              fontWeight: 900, color: "#111827",
+              fontSize: isLg ? "2.1rem" : isMd ? "1.8rem" : "1.55rem",
+              letterSpacing: "-0.025em", marginBottom: 16,
+            }}>
               Everything you need to become a{" "}
               <span style={{
                 background: "linear-gradient(130deg,#2563EB,#7C3AED)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
               }}>
                 Cybersecurity Expert
               </span>
             </h2>
-            <p className="text-gray-400 text-[15px] max-w-lg mx-auto leading-relaxed">
+            <p style={{ color: "#9CA3AF", fontSize: "15px", maxWidth: 520, margin: "0 auto", lineHeight: 1.7 }}>
               Structured curriculum, hands-on labs, and a community built for the next generation of ethical hackers.
             </p>
           </motion.div>
 
-          {/*
-            5 cards — 1 col mobile · 2 col tablet · 3 col desktop.
-            Last two cards on the 2-col row are centred with col-start trick.
-          */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          {/* Cards grid: 1-col mobile · 2-col tablet · 3-col desktop */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isLg ? "repeat(3, 1fr)" : isMd ? "repeat(2, 1fr)" : "1fr",
+            gap: 20,
+          }}>
             {WHY_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
@@ -402,25 +446,36 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08, duration: 0.45 }}
                 whileHover={{ y: -6 }}
-                /* On lg screens the 5th card sits alone → center it */
-                className={`relative flex flex-col gap-4 bg-white rounded-2xl p-6 border border-gray-100 overflow-hidden transition-all${
-                  i === 4 ? " lg:col-start-2" : ""
-                }`}
-                style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.05)" }}
+                style={{
+                  position:     "relative",
+                  display:      "flex",
+                  flexDirection:"column",
+                  gap:          16,
+                  background:   "white",
+                  borderRadius: 20,
+                  padding:      24,
+                  border:       "1px solid #F1F5F9",
+                  boxShadow:    "0 2px 16px rgba(0,0,0,0.05)",
+                  overflow:     "hidden",
+                  cursor:       "default",
+                  /* Center the 5th card on desktop 3-col grid */
+                  ...(isLg && i === 4 ? { gridColumnStart: 2 } : {}),
+                }}
               >
-                <span
-                  className="absolute top-0 left-0 right-0 h-[3px]"
-                  style={{ background: `linear-gradient(90deg, ${card.color}, transparent)` }}
-                />
-                <div
-                  className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
-                  style={{ background: card.bg, color: card.color }}
-                >
+                <span style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: 3,
+                  background: `linear-gradient(90deg, ${card.color}, transparent)`,
+                }} />
+                <div style={{
+                  width: 44, height: 44, borderRadius: 14,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: card.bg, color: card.color, flexShrink: 0,
+                }}>
                   {card.icon}
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-[14px] mb-1.5">{card.title}</h3>
-                  <p className="text-gray-400 text-[13px] leading-relaxed">{card.desc}</p>
+                  <h3 style={{ fontWeight: 700, color: "#111827", fontSize: "14px", marginBottom: 6 }}>{card.title}</h3>
+                  <p style={{ color: "#9CA3AF", fontSize: "13px", lineHeight: 1.65 }}>{card.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -428,50 +483,49 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           CTA BANNER
-      ════════════════════════════════════════════════ */}
-      <section
-        className="w-full"
-        style={{ background: "#F4F8FF", padding: "72px 0" }}
-      >
-        <div style={{ maxWidth: 672, margin: "0 auto", padding: "0 24px" }}>
+      ═══════════════════════════════════════════════════ */}
+      <section style={{ background: "#F4F8FF", padding: "72px 0" }}>
+        <div style={{ ...container, maxWidth: 700 }}>
           <motion.div
             initial={mounted ? { opacity: 0, y: 24 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="relative rounded-3xl p-10 sm:p-16 text-center overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%)",
-              boxShadow: "0 24px 64px rgba(37,99,235,0.30)",
+              position:     "relative",
+              borderRadius: 28,
+              padding:      isLg ? "64px 80px" : isMd ? "48px 56px" : "40px 32px",
+              textAlign:    "center",
+              overflow:     "hidden",
+              background:   "linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%)",
+              boxShadow:    "0 24px 64px rgba(37,99,235,0.30)",
             }}
           >
-            {/* Decorative circles */}
-            <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/5 pointer-events-none" />
-            <div className="absolute -bottom-12 -left-12 w-44 h-44 rounded-full bg-white/5 pointer-events-none" />
-
-            <div className="relative z-10">
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6"
-                style={{ background: "rgba(255,255,255,0.15)" }}
-              >
-                <Shield size={24} className="text-white" />
+            <div style={{ position:"absolute", top:"-60px", right:"-60px", width:200, height:200, borderRadius:"50%", background:"rgba(255,255,255,0.05)", pointerEvents:"none" }} />
+            <div style={{ position:"absolute", bottom:"-48px", left:"-48px", width:160, height:160, borderRadius:"50%", background:"rgba(255,255,255,0.05)", pointerEvents:"none" }} />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ width:56, height:56, borderRadius:16, background:"rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 24px" }}>
+                <Shield size={24} color="white" />
               </div>
-              <h2
-                className="font-black text-white mb-3"
-                style={{ fontSize: "clamp(1.7rem, 3vw, 2.2rem)", letterSpacing: "-0.025em" }}
-              >
+              <h2 style={{ fontWeight:900, color:"white", fontSize: isLg ? "2.2rem" : "1.75rem", letterSpacing:"-0.025em", marginBottom:12 }}>
                 Ready to become a<br />White Hat Hacker?
               </h2>
-              <p className="text-blue-200 mb-8 text-base leading-relaxed">
+              <p style={{ color:"#BFDBFE", marginBottom:32, fontSize:"16px", lineHeight:1.65 }}>
                 Join the academy. Start free. Master everything.
               </p>
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={goStart}
-                className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-white text-blue-600 font-bold text-[15px]"
-                style={{ boxShadow: "0 8px 28px rgba(0,0,0,0.18)" }}
+                style={{
+                  display:"inline-flex", alignItems:"center", gap:12,
+                  padding:"14px 40px", borderRadius:16,
+                  background:"white", color:"#2563EB",
+                  fontWeight:700, fontSize:"15px",
+                  border:"none", cursor:"pointer",
+                  boxShadow:"0 8px 28px rgba(0,0,0,0.18)",
+                }}
               >
                 {user ? "Go to Chapters" : "Start Learning — It's Free"}
                 <ArrowRight size={16} />
@@ -481,54 +535,52 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════
           FOOTER
-      ════════════════════════════════════════════════ */}
-      <footer className="w-full bg-white border-t border-gray-100">
-        <div style={{ maxWidth: 1152, margin: "0 auto", padding: "32px 24px" }}>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
-
+      ═══════════════════════════════════════════════════ */}
+      <footer style={{ background:"white", borderTop:"1px solid #F1F5F9" }}>
+        <div style={{ ...container, padding: "32px 40px" }}>
+          <div style={{
+            display: "flex",
+            flexDirection: isMd ? "row" : "column",
+            alignItems: isMd ? "center" : "center",
+            justifyContent: "space-between",
+            gap: 20,
+            textAlign: isMd ? "left" : "center",
+          }}>
             {/* Brand */}
-            <div className="flex items-center gap-3 shrink-0">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #2563EB, #7C3AED)" }}
-              >
-                <Shield size={15} className="text-white" />
+            <div style={{ display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
+              <div style={{ width:36, height:36, borderRadius:12, background:"linear-gradient(135deg,#2563EB,#7C3AED)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <Shield size={15} color="white" />
               </div>
               <div>
-                <div className="font-bold text-sm text-gray-900 leading-tight">TWH Academy</div>
-                <div className="text-[10px] text-gray-400 leading-tight">Ethical Hacking Academy</div>
+                <div style={{ fontWeight:700, fontSize:"14px", color:"#111827", lineHeight:1.3 }}>TWH Academy</div>
+                <div style={{ fontSize:"10px", color:"#9CA3AF", lineHeight:1.3 }}>Ethical Hacking Academy</div>
               </div>
             </div>
 
             {/* Credit */}
-            <p className="text-gray-400 text-sm text-center order-last sm:order-none">
+            <p style={{ color:"#9CA3AF", fontSize:"14px", order: isMd ? 0 : 1 }}>
               Built with ❤️ by{" "}
-              <span className="text-blue-600 font-semibold">Afsar Ali</span>{" "}
+              <span style={{ color:"#2563EB", fontWeight:600 }}>Afsar Ali</span>{" "}
               — Technical White Hat
             </p>
 
             {/* Links + social */}
-            <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-end shrink-0">
-              <div className="flex items-center gap-2">
+            <div style={{ display:"flex", alignItems:"center", gap:16, flexWrap:"wrap", justifyContent: isMd ? "flex-end" : "center", flexShrink:0 }}>
+              <div style={{ display:"flex", gap:8 }}>
                 {SOCIAL_LINKS.map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={s.label}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                  >
-                    {s.icon}
-                  </a>
+                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}
+                    style={{ width:32, height:32, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", color:"#9CA3AF", textDecoration:"none", background:"transparent", border:"none" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color="#2563EB"; (e.currentTarget as HTMLElement).style.background="#EFF6FF"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color="#9CA3AF"; (e.currentTarget as HTMLElement).style.background="transparent"; }}
+                  >{s.icon}</a>
                 ))}
               </div>
-              <div className="flex items-center gap-4 text-sm text-gray-400">
-                <Link href="/privacy" className="hover:text-gray-600 transition-colors">Privacy</Link>
-                <Link href="/terms"   className="hover:text-gray-600 transition-colors">Terms</Link>
-                <Link href="/contact" className="hover:text-gray-600 transition-colors">Contact</Link>
+              <div style={{ display:"flex", gap:20, fontSize:"14px", color:"#9CA3AF" }}>
+                <Link href="/privacy" style={{ color:"#9CA3AF", textDecoration:"none" }}>Privacy</Link>
+                <Link href="/terms"   style={{ color:"#9CA3AF", textDecoration:"none" }}>Terms</Link>
+                <Link href="/contact" style={{ color:"#9CA3AF", textDecoration:"none" }}>Contact</Link>
               </div>
             </div>
           </div>
