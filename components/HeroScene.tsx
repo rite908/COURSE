@@ -18,7 +18,7 @@ const GLASS = {
 
 export default function HeroScene() {
   return (
-    <div className="relative w-full h-full px-3 sm:px-6 lg:pr-8" style={{ minHeight: 380 }}>
+    <div className="relative w-full h-full px-3 sm:px-6 lg:pr-8 max-w-[520px] mx-auto lg:max-w-none" style={{ minHeight: 380 }}>
 
       {/* ════ GLOBE (CSS + SVG) ════ */}
       <div
@@ -35,9 +35,8 @@ export default function HeroScene() {
         }} />
 
         {/* Main sphere */}
-        <div style={{
+        <div className="w-[72%] max-w-[300px] lg:max-w-none" style={{
           position: "relative",
-          width: "72%",
           aspectRatio: "1",
           borderRadius: "50%",
           background: "radial-gradient(circle at 37% 33%, #9DD3FF 0%, #4A9EFF 16%, #2563EB 40%, #3730A3 66%, #5B21B6 88%)",

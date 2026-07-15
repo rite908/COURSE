@@ -344,8 +344,8 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          {/* 5 cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* 5 cards — flex-wrap so the trailing row centers instead of hugging the left edge */}
+          <div className="flex flex-wrap justify-center gap-5">
             {WHY_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
@@ -353,7 +353,8 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08, duration: 0.45 }}
                 whileHover={{ y: -8, boxShadow: `0 20px 48px ${card.color}1A` }}
-                className="flex flex-col gap-4 bg-white rounded-2xl p-6 border border-gray-100 transition-all cursor-default"
+                className="flex flex-col gap-4 bg-white rounded-2xl p-6 border border-gray-100 transition-all cursor-default
+                  w-full sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]"
                 style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.05)" }}
               >
                 <div
@@ -381,7 +382,7 @@ export default function LandingPage() {
             initial={mounted ? { opacity: 0, y: 24 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="relative rounded-3xl p-14 text-center overflow-hidden"
+            className="relative rounded-3xl p-8 sm:p-14 text-center overflow-hidden"
             style={{
               background: "linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%)",
               boxShadow: "0 28px 72px rgba(37,99,235,0.32)",
