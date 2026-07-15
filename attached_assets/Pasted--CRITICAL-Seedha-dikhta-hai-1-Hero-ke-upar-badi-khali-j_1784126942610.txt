@@ -1,0 +1,59 @@
+🔴 CRITICAL — Seedha dikhta hai
+1. Hero ke upar badi khali jagah Left side ka badge/title ~160px neeche se start hota hai navbar ke baad. Globe upar se start ho jaata hai but text column kaafi neeche. Dono ka vertical alignment match nahi karta — left side "sinking" lagti hai.
+
+2. Hero section ke neeche dead space "500+ students enrolled" ke baad aur next section se pehle ~150px khali area hai. minHeight: 100vh set hai but content sirf 70% viewport fill karta hai — baaki sab white blank.
+
+3. Globe right edge se cut ho raha hai Right side ka sphere/globe viewport ke bilkul kinare tak jaata hai — koi breathing room nahi. "IP SCANNING" card bhi thoda crop ho raha hai right side se.
+
+4. Math.random() animation mein bug HeroScene.tsx mein packets bar chart ke animate prop mein Math.random() use kiya hai:
+
+animate={{ height: [h*3.2, (h+Math.random()*2)*3.2, h*3.2] }}
+
+Yeh SSR hydration mismatch deta hai — server aur client pe different values aate hain → React warning + flickering.
+
+🟠 MAJOR — Layout aur UX
+5. Stats section scroll ke neeche chhupta hai "5+ Chapters, 30+ Topics, 450+ MCQs" wala section poora below-the-fold hai. Zyaadatar users scroll hi nahi karte — yeh key info miss ho jaati hai.
+
+6. whileInView + mounted ka bug Stats cards aur WHY cards mein yeh pattern hai:
+
+initial={mounted ? { opacity: 0, y: 14 } : false}
+whileInView={{ opacity: 1, y: 0 }}
+
+Jab mounted true hota hai aur elements already viewport mein hain, whileInView trigger nahi hota → cards invisible reh jaate hain.
+
+7. "Explore Chapters" button ka icon weak hai Gray circle-dot icon (⊙) kuch communicate nahi karta. Button ka look primary button ke comparison mein kaafi bland hai.
+
+8. WHY section — 5 columns bahut narrow hain lg:grid-cols-5 pe har card sirf ~220px wide hota hai 1280px screen pe. Cards cramped lagti hain.
+
+9. Mobile pe floating cards overlap ho sakti hain HeroScene ke floating cards (top: "8%", right: "6%" etc.) globe ke upar fixed position mein hain. Mobile pe yeh cards globe ke text ke upar aa jaati hain ya off-screen ho jaati hain.
+
+10. No scroll indicator Hero section ke neeche koi "scroll down" arrow/hint nahi hai. Users ko pata hi nahi chalta ki aur content bhi hai neeche.
+
+🟡 MODERATE — Content aur Design
+11. "Certificate" card mein typo
+
+"Earn certificate and showcase your skills."
+
+Hona chahiye: "Earn a certificate..."
+
+12. Footer links dead hain
+
+Privacy → href="#" (kuch nahi)
+Terms → href="#" (kuch nahi)
+Contact → href="#contact" (apne aap pe scroll karta hai — footer mein hi id="contact" hai)
+13. "Choose Profile" confusing UX Navbar mein "Choose Profile" likha hai — naye user ko samajh nahi aata. Standard "Login" ya "Sign In" hona chahiye.
+
+14. Login sirf 3 hard-coded names storage.ts mein type UserName = "TWH" | "Prince" | "Ashish" — naya user account nahi bana sakta. Yeh production ke liye issue hai.
+
+15. Orbitron font waste ho raha hai globals.css mein Orbitron cyberpunk font load kiya hai, but hero headline mein use hi nahi hua. "Master Computers. Hack The World." pe Orbitron bahut powerful lagta — abhi sirf Inter use ho raha hai.
+
+16. No social media links Footer mein YouTube, Instagram, GitHub kuch nahi hai TWH Academy ke liye.
+
+🔵 MINOR — Technical
+17. Missing OG image metadata mein og:image nahi hai — WhatsApp/Twitter pe share karne pe blank preview aata hai.
+
+18. No favicon Browser tab pe koi icon nahi.
+
+19. prefers-reduced-motion support nahi Jo users motion-sensitive hain (accessibility setting), unke liye bhi sab animations chal rahi hain.
+
+20. Google Fonts — 3 fonts load ho rahe hain Orbitron + Inter + JetBrains Mono teenon load hote hain page load pe. Orbitron sirf ek jagah use hota hai (chapter reader) — lazy load hona chahiye.

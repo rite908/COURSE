@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import MotionProvider from "@/components/MotionProvider";
 
 export const metadata: Metadata = {
   title: "TWH Academy — Technical White Hat",
@@ -11,6 +12,11 @@ export const metadata: Metadata = {
     title: "TWH Academy",
     description: "Learn Computers From Zero To Ethical Hacking Like Never Before.",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TWH Academy",
+    description: "Learn Computers From Zero To Ethical Hacking Like Never Before.",
   },
 };
 
@@ -26,8 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-white text-gray-900 antialiased min-h-screen">
-        <Navbar />
-        {children}
+        <MotionProvider>
+          <Navbar />
+          {children}
+        </MotionProvider>
       </body>
     </html>
   );

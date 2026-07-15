@@ -77,6 +77,8 @@ The app is configured for Replit's proxied preview via `allowedDevOrigins: ["*"]
 └── NEXT-AI-HANDOFF.md          # Original design brief / style guide
 ```
 
+Additional static pages: `app/privacy/page.tsx`, `app/terms/page.tsx` (footer links). `app/icon.svg` is the favicon, `app/opengraph-image.tsx` generates the OG/social preview image dynamically via `next/og`.
+
 ---
 
 ## Features — Current Status
@@ -133,6 +135,17 @@ The app is configured for Replit's proxied preview via `allowedDevOrigins: ["*"]
 - Browser console shows WebSocket connection errors in dev mode — cosmetic only
 - Replit's proxy layer blocks the HMR websocket; does NOT affect app functionality
 - Safe to ignore
+
+### Duplicate JSX `style` props are a silent bug
+- Two `style={{...}}` props on the same JSX element don't error at runtime — only the second is applied and the first (e.g. Framer Motion's spring `x`/`y`) is silently dropped
+- `tsc --noEmit` does catch it (`TS17001`) — run it after touching motion components with magnetic/spring effects
+
+### Reduced motion
+- `app/layout.tsx` wraps children in `<MotionConfig reducedMotion="user">` (see `components/MotionProvider.tsx`) so Framer Motion animations respect the OS-level "reduce motion" setting automatically
+- `globals.css` also has a `prefers-reduced-motion` media query for plain CSS `@keyframes` animations (BinaryRain-style canvas effects aren't covered — they're drawn in JS, not CSS/Framer Motion)
+
+### Social links are placeholders
+- Footer social icons (YouTube/Instagram/GitHub) currently all point to `twh-osint.vercel.app/twh` as a placeholder — swap in Afsar's real handles when known
 
 ---
 

@@ -2,6 +2,10 @@
 
 import { motion } from "framer-motion";
 
+/* Deterministic bar heights for the "Packets" mini chart — fixed values only,
+   never Math.random(), so server-rendered and client-hydrated markup match exactly. */
+const PACKET_BARS = [3, 5, 4, 7, 6, 8, 5, 9, 7, 8];
+
 /* ── Floating glass cards ── */
 const GLASS = {
   background: "rgba(255,255,255,0.94)",
@@ -14,7 +18,7 @@ const GLASS = {
 
 export default function HeroScene() {
   return (
-    <div className="relative w-full h-full" style={{ minHeight: 380 }}>
+    <div className="relative w-full h-full px-3 sm:px-6 lg:pr-8" style={{ minHeight: 380 }}>
 
       {/* ════ GLOBE (CSS + SVG) ════ */}
       <div
@@ -24,7 +28,7 @@ export default function HeroScene() {
         {/* Outer ambient haze */}
         <div style={{
           position: "absolute",
-          width: "110%", height: "110%",
+          width: "100%", height: "100%",
           borderRadius: "50%",
           background: "radial-gradient(circle, rgba(37,99,235,0.22) 0%, rgba(99,102,241,0.12) 45%, transparent 70%)",
           filter: "blur(36px)",
@@ -33,7 +37,7 @@ export default function HeroScene() {
         {/* Main sphere */}
         <div style={{
           position: "relative",
-          width: "80%",
+          width: "72%",
           aspectRatio: "1",
           borderRadius: "50%",
           background: "radial-gradient(circle at 37% 33%, #9DD3FF 0%, #4A9EFF 16%, #2563EB 40%, #3730A3 66%, #5B21B6 88%)",
@@ -215,12 +219,14 @@ export default function HeroScene() {
       </div>
 
       {/* ════ FLOATING GLASS CARDS ════ */}
+      {/* Hidden on small screens to avoid overlapping the globe/figure — shown from sm breakpoint up */}
+
       {/* Card 1 — IP pill, top-left */}
       <motion.div
         animate={{ y: [0, -6, 0] }}
         transition={{ y: { duration: 3.6, repeat: Infinity, ease: "easeInOut" } }}
-        className="absolute pointer-events-none"
-        style={{ top: "14%", left: "5%", zIndex: 20 }}
+        className="hidden sm:block absolute pointer-events-none"
+        style={{ top: "10%", left: "2%", zIndex: 20 }}
       >
         <div style={GLASS}>
           <div className="flex items-center gap-2 px-3 py-2">
@@ -235,8 +241,8 @@ export default function HeroScene() {
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ y: { duration: 4.0, repeat: Infinity, ease: "easeInOut", delay: 0.5 } }}
-        className="absolute pointer-events-none"
-        style={{ top: "8%", right: "6%", zIndex: 20 }}
+        className="hidden sm:block absolute pointer-events-none"
+        style={{ top: "6%", right: "2%", zIndex: 20 }}
       >
         <div style={GLASS}>
           <div className="px-4 py-3 space-y-1 min-w-[130px]">
@@ -254,8 +260,8 @@ export default function HeroScene() {
       <motion.div
         animate={{ y: [0, -7, 0] }}
         transition={{ y: { duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 } }}
-        className="absolute pointer-events-none"
-        style={{ top: "50%", right: "4%", zIndex: 20, transform: "translateY(-50%)" }}
+        className="hidden sm:block absolute pointer-events-none"
+        style={{ top: "50%", right: "0%", zIndex: 20, transform: "translateY(-50%)" }}
       >
         <div style={GLASS}>
           <div className="px-4 py-3 min-w-[118px]">
@@ -265,7 +271,7 @@ export default function HeroScene() {
               <span className="text-[10px] text-green-500 font-bold mb-0.5">+12.5%</span>
             </div>
             <div className="flex items-end gap-[2px]">
-              {[3,5,4,7,6,8,5,9,7,8].map((h,i) => (
+              {PACKET_BARS.map((h,i) => (
                 <div key={i} className="w-2 rounded-sm" style={{ height: h*3.2, background: `rgba(37,99,235,${0.32+h*0.07})` }} />
               ))}
             </div>

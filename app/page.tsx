@@ -7,7 +7,19 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring } from "fram
 import {
   ArrowRight, BookOpen, Layers, HelpCircle, Target,
   User, FlaskConical, Briefcase, TrendingUp, Award, Shield,
+  Compass, ChevronDown,
 } from "lucide-react";
+
+/* Brand icons aren't in this lucide-react version — small inline SVGs instead. */
+const YoutubeIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.4 3.5 12 3.5 12 3.5s-7.4 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c2 .6 9.4.6 9.4.6s7.4 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
+);
+const InstagramIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>
+);
+const GithubIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11 11 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.7 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+);
 import HeroScene from "@/components/HeroScene";
 import { getCurrentUser } from "@/lib/storage";
 
@@ -20,12 +32,19 @@ const STATS = [
   { icon: <Target    size={22} />, value: "100%", label: "Practical", color: "#059669", bg: "#ECFDF5" },
 ];
 
+// TODO: swap these for TWH Academy's real handles once confirmed by the owner.
+const SOCIAL_LINKS = [
+  { label: "YouTube",  href: "https://twh-osint.vercel.app/twh", icon: <YoutubeIcon /> },
+  { label: "Instagram", href: "https://twh-osint.vercel.app/twh", icon: <InstagramIcon /> },
+  { label: "GitHub",   href: "https://twh-osint.vercel.app/twh", icon: <GithubIcon /> },
+];
+
 const WHY_CARDS = [
   { icon: <User size={22} />,        color: "#2563EB", bg: "#EEF3FF", title: "Beginner Friendly",   desc: "Start from zero. No prior knowledge required."            },
   { icon: <FlaskConical size={22} />,color: "#7C3AED", bg: "#F3EEFF", title: "Practical Learning",  desc: "Real world labs, tools and projects."                     },
   { icon: <Briefcase size={22} />,   color: "#0EA5E9", bg: "#F0F9FF", title: "Industry Relevant",   desc: "Skills that are in demand in cybersecurity industry."     },
   { icon: <TrendingUp size={22} />,  color: "#059669", bg: "#ECFDF5", title: "Progress Tracking",   desc: "Track your progress and measure your mastery."            },
-  { icon: <Award size={22} />,       color: "#D97706", bg: "#FFFBEB", title: "Certificate",         desc: "Earn certificate and showcase your skills."              },
+  { icon: <Award size={22} />,       color: "#D97706", bg: "#FFFBEB", title: "Certificate",         desc: "Earn a certificate and showcase your skills."             },
 ];
 
 
@@ -64,11 +83,11 @@ export default function LandingPage() {
           HERO
       ════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden flex flex-col justify-center"
+        className="relative overflow-hidden flex flex-col justify-center min-h-[640px] lg:min-h-[92vh]"
         style={{
           background: "linear-gradient(145deg, #FFFFFF 0%, #F5F8FF 50%, #EEF2FF 100%)",
-          minHeight: "100vh",
           paddingTop: 72,
+          paddingBottom: 32,
         }}
       >
         {/* Dot grid */}
@@ -94,7 +113,7 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full flex flex-col">
 
           {/* ── Two-column split ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center pt-10 pb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-start pt-10 pb-6">
 
             {/* LEFT ── Text */}
             <motion.div
@@ -132,9 +151,9 @@ export default function LandingPage() {
                 className="font-black leading-[1.05] tracking-tight mb-8"
                 style={{ fontSize: "clamp(2.4rem, 4.2vw, 4rem)", letterSpacing: "-0.03em" }}
               >
-                <span className="text-gray-900 block">Master Computers.</span>
+                <span className="text-gray-900 block font-display">Master Computers.</span>
                 <span
-                  className="block"
+                  className="block font-display"
                   style={{
                     background: "linear-gradient(130deg, #2563EB 0%, #7C3AED 100%)",
                     WebkitBackgroundClip: "text",
@@ -168,7 +187,6 @@ export default function LandingPage() {
                 {/* Primary */}
                 <motion.button
                   ref={btnRef}
-                  style={{ x: springX, y: springY }}
                   onMouseMove={handleMagnet}
                   onMouseLeave={handleMagnetLeave}
                   whileHover={{ scale: 1.04 }}
@@ -177,6 +195,8 @@ export default function LandingPage() {
                   className="relative flex items-center gap-3 px-8 py-4 rounded-2xl
                     text-[15px] font-bold text-white overflow-hidden shrink-0"
                   style={{
+                    x: springX,
+                    y: springY,
                     background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
                     boxShadow: "0 8px 30px rgba(37,99,235,0.40), 0 2px 8px rgba(0,0,0,0.06)",
                   }}
@@ -203,12 +223,10 @@ export default function LandingPage() {
                   <motion.div
                     whileHover={{ scale: 1.02, borderColor: "rgba(37,99,235,0.30)" }}
                     className="flex items-center gap-3 px-8 py-4 rounded-2xl text-[15px] font-semibold
-                      text-gray-600 bg-white border border-gray-200 transition-all cursor-pointer shrink-0"
+                      text-gray-700 bg-white border border-gray-200 transition-all cursor-pointer shrink-0"
                     style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
                   >
-                    <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-gray-300" />
-                    </div>
+                    <Compass size={18} className="text-blue-600" />
                     Explore Chapters
                   </motion.div>
                 </Link>
@@ -244,6 +262,18 @@ export default function LandingPage() {
             </motion.div>
           </div>
 
+          {/* Scroll cue */}
+          <motion.div
+            initial={mounted ? { opacity: 0 } : false}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="hidden sm:flex flex-col items-center gap-1 mt-6 mb-2 self-center"
+          >
+            <span className="text-[10.5px] font-semibold text-gray-400 uppercase tracking-widest">Scroll</span>
+            <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}>
+              <ChevronDown size={16} className="text-gray-400" />
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -258,9 +288,10 @@ export default function LandingPage() {
           {STATS.map((s, i) => (
             <motion.div
               key={s.label}
-              initial={mounted ? { opacity: 0, y: 14 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + i * 0.07 }}
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.07, duration: 0.4 }}
               whileHover={{ y: -5, boxShadow: `0 12px 32px ${s.color}18` }}
               className="flex items-center gap-4 px-5 py-5 rounded-2xl bg-white border border-gray-100 transition-all cursor-default"
               style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.05)" }}
@@ -288,7 +319,7 @@ export default function LandingPage() {
 
           {/* Section header */}
           <motion.div
-            initial={mounted ? { opacity: 0, y: 20 } : false}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55 }}
@@ -316,11 +347,11 @@ export default function LandingPage() {
           </motion.div>
 
           {/* 5 cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {WHY_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
-                initial={mounted ? { opacity: 0, y: 24 } : false}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.45 }}
@@ -350,7 +381,7 @@ export default function LandingPage() {
       <section className="py-20 px-6" style={{ background: "#F4F8FF" }}>
         <div className="max-w-2xl mx-auto">
           <motion.div
-            initial={mounted ? { opacity: 0, y: 24 } : false}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.55 }}
@@ -390,8 +421,8 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════
           FOOTER
       ════════════════════════════════════════ */}
-      <footer className="border-t border-gray-100 py-8 px-6 bg-white" id="contact">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-gray-100 py-8 px-6 bg-white">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -404,14 +435,32 @@ export default function LandingPage() {
               <div className="text-[10px] text-gray-400 mt-0.5 leading-none">Ethical Hacking Academy</div>
             </div>
           </div>
-          <p className="text-gray-400 text-sm text-center">
+
+          <p className="text-gray-400 text-sm text-center order-3 sm:order-none w-full sm:w-auto">
             Built with ❤️ by{" "}
             <span className="text-blue-600 font-semibold">Afsar Ali</span> — Technical White Hat
           </p>
-          <div className="flex items-center gap-5 text-sm text-gray-400">
-            <Link href="#" className="hover:text-gray-600 transition-colors">Privacy</Link>
-            <Link href="#" className="hover:text-gray-600 transition-colors">Terms</Link>
-            <Link href="#contact" className="hover:text-gray-600 transition-colors">Contact</Link>
+
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-3">
+              {SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+            <div className="flex items-center gap-5 text-sm text-gray-400">
+              <Link href="/privacy" className="hover:text-gray-600 transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-gray-600 transition-colors">Terms</Link>
+              <Link href="/contact" className="hover:text-gray-600 transition-colors">Contact</Link>
+            </div>
           </div>
         </div>
       </footer>

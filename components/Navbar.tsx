@@ -130,7 +130,7 @@ export default function Navbar() {
                 style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}
               >
                 <User size={14} />
-                Choose Profile
+                Login
               </motion.div>
             </Link>
           )}
@@ -193,7 +193,7 @@ export default function Navbar() {
                 ) : (
                   <Link href="/login" onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-blue-600">
-                    <User size={14} /> Choose Profile
+                    <User size={14} /> Login
                   </Link>
                 )}
               </div>
