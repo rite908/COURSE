@@ -14,7 +14,7 @@ const GLASS = {
 
 export default function HeroScene() {
   return (
-    <div className="relative w-full h-full" style={{ minHeight: 520 }}>
+    <div className="relative w-full h-full" style={{ minHeight: 380 }}>
 
       {/* ════ GLOBE (CSS + SVG) ════ */}
       <div

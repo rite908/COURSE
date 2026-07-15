@@ -63,7 +63,7 @@ export default function LandingPage() {
           HERO
       ════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden flex flex-col"
+        className="relative overflow-hidden flex flex-col justify-center"
         style={{
           background: "linear-gradient(145deg, #FFFFFF 0%, #F5F8FF 50%, #EEF2FF 100%)",
           minHeight: "100vh",
@@ -90,10 +90,10 @@ export default function LandingPage() {
           background: "radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 65%)",
         }} />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full flex-1 flex flex-col">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full flex flex-col">
 
           {/* ── Two-column split ── */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center py-10 lg:py-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center pt-10 pb-6">
 
             {/* LEFT ── Text */}
             <motion.div
@@ -105,7 +105,7 @@ export default function LandingPage() {
                 initial={mounted ? { opacity: 0, y: -12 } : false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45 }}
-                className="inline-flex items-center gap-2 self-start mb-6"
+                className="inline-flex items-center gap-2 self-start mb-8"
                 style={{
                   background: "rgba(255,255,255,0.90)",
                   border: "1px solid rgba(37,99,235,0.20)",
@@ -128,7 +128,7 @@ export default function LandingPage() {
                 initial={mounted ? { opacity: 0, y: 32 } : false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-                className="font-black leading-[1.05] tracking-tight mb-6"
+                className="font-black leading-[1.05] tracking-tight mb-8"
                 style={{ fontSize: "clamp(2.4rem, 4.2vw, 4rem)", letterSpacing: "-0.03em" }}
               >
                 <span className="text-gray-900 block">Master Computers.</span>
@@ -150,7 +150,7 @@ export default function LandingPage() {
                 initial={mounted ? { opacity: 0, y: 18 } : false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.20, duration: 0.50 }}
-                className="text-gray-500 leading-relaxed mb-10 max-w-md"
+                className="text-gray-500 leading-relaxed mb-12 max-w-md"
                 style={{ fontSize: "1.05rem" }}
               >
                 From zero to ethical hacking hero.{" "}
@@ -236,7 +236,7 @@ export default function LandingPage() {
 
             {/* RIGHT ── Globe */}
             <motion.div
-              style={{ y: heroRightY, height: "clamp(480px, 58vh, 640px)" }}
+              style={{ y: heroRightY, height: "clamp(380px, 50vh, 560px)" }}
               className="relative w-full flex items-center justify-center"
             >
               <HeroScene />
@@ -245,10 +245,10 @@ export default function LandingPage() {
 
           {/* ── Stats row ── */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={mounted ? { opacity: 0, y: 24 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45, duration: 0.55 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 pb-14"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 pb-8"
           >
             {STATS.map((s, i) => (
               <motion.div
