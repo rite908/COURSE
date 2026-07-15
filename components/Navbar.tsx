@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, User, Sun, Moon, LogOut } from "lucide-react";
 import { getCurrentUser, clearCurrentUser, type UserName } from "@/lib/storage";
+import { useTheme } from "@/lib/theme";
 
 const NAV_LINKS = [
   { href: "/",         label: "Home"     },
@@ -16,39 +17,33 @@ const NAV_LINKS = [
   { href: "/contact",  label: "Contact"  },
 ];
 
-const BREAK_LG = 1024; // desktop breakpoint
+const BREAK_LG = 1024;
 
 export default function Navbar() {
   const [user,     setUser]     = useState<UserName | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dark,     setDark]     = useState(false);
   const [mounted,  setMounted]  = useState(false);
-  const [vw,       setVw]       = useState(1280); // viewport width
+  const [vw,       setVw]       = useState(1280);
 
+  const { isDark, toggle: toggleTheme } = useTheme();
   const router   = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     setUser(getCurrentUser());
     setMounted(true);
-
-    // Viewport tracker — drives desktop vs mobile layout
     const updateVw = () => setVw(window.innerWidth);
     updateVw();
     window.addEventListener("resize", updateVw, { passive: true });
-
-    // Scroll tracker — drives navbar shadow/border
     const onScroll = () => setScrolled(window.scrollY > 16);
     window.addEventListener("scroll", onScroll, { passive: true });
-
     return () => {
       window.removeEventListener("resize", updateVw);
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   const isDesktop = vw >= BREAK_LG;
@@ -62,37 +57,36 @@ export default function Navbar() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href) && href !== "/";
 
+  /* Theme-aware colours */
+  const navBg   = isDark ? "rgba(6,9,18,0.97)"    : "rgba(255,255,255,0.97)";
+  const border  = isDark ? "rgba(30,36,51,0.90)"   : scrolled ? "rgba(226,232,240,0.85)" : "rgba(226,232,240,0.50)";
+  const shadow  = scrolled
+    ? isDark ? "0 2px 28px rgba(0,0,0,0.45)" : "0 2px 28px rgba(0,0,0,0.08)"
+    : isDark ? "0 1px 0 rgba(30,36,51,0.60)" : "0 1px 0 rgba(226,232,240,0.60)";
+  const textPrimary   = isDark ? "#F1F5F9" : "#111827";
+  const textSecondary = isDark ? "#94A3B8" : "#6B7280";
+  const cardBg        = isDark ? "#0D1117"  : "#FFFFFF";
+  const cardBorder    = isDark ? "#1E2433"  : "#E5E7EB";
+  const hoverBg       = isDark ? "#1A2030"  : "#F9FAFB";
+
   return (
     <motion.nav
       initial={mounted ? { y: -76, opacity: 0 } : false}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
       style={{
-        position:          "fixed",
-        top: 0, left: 0, right: 0,
-        zIndex:            50,
-        background:        "rgba(255,255,255,0.97)",
-        backdropFilter:    "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        borderBottom:      scrolled
-          ? "1px solid rgba(226,232,240,0.85)"
-          : "1px solid rgba(226,232,240,0.50)",
-        boxShadow:         scrolled
-          ? "0 2px 28px rgba(0,0,0,0.08)"
-          : "0 1px 0 rgba(226,232,240,0.60)",
-        transition:        "border-color 0.3s, box-shadow 0.3s",
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
+        background: navBg,
+        backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
+        borderBottom: `1px solid ${border}`,
+        boxShadow: shadow,
+        transition: "border-color 0.3s, box-shadow 0.3s, background 0.25s",
       }}
     >
-      {/* ── Main bar ── */}
       <div style={{
-        maxWidth:      1280,
-        margin:        "0 auto",
-        padding:       "0 40px",
-        height:        72,
-        display:       "flex",
-        alignItems:    "center",
-        justifyContent:"space-between",
-        boxSizing:     "border-box",
+        maxWidth: 1280, margin: "0 auto", padding: "0 40px",
+        height: 72, display: "flex", alignItems: "center",
+        justifyContent: "space-between", boxSizing: "border-box",
       }}>
 
         {/* Logo */}
@@ -111,47 +105,33 @@ export default function Navbar() {
             </svg>
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: "15px", color: "#111827", lineHeight: 1.3 }}>TWH Academy</div>
-            <div style={{ fontSize: "10px", color: "#9CA3AF", lineHeight: 1.3 }}>Ethical Hacking Academy</div>
+            <div style={{ fontWeight: 700, fontSize: "15px", color: textPrimary, lineHeight: 1.3 }}>TWH Academy</div>
+            <div style={{ fontSize: "10px", color: textSecondary, lineHeight: 1.3 }}>Ethical Hacking Academy</div>
           </div>
         </Link>
 
-        {/* Desktop center nav */}
+        {/* Desktop nav links */}
         {isDesktop && (
           <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             {NAV_LINKS.map((link) => {
               const active = isActive(link.href);
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
+                <Link key={link.href} href={link.href}
                   style={{
-                    position:   "relative",
-                    padding:    "8px 0",
-                    fontSize:   "14px",
-                    fontWeight: active ? 600 : 500,
-                    color:      active ? "#2563EB" : "#6B7280",
-                    textDecoration: "none",
-                    transition: "color 0.2s",
-                    whiteSpace: "nowrap",
+                    position: "relative", padding: "8px 0",
+                    fontSize: "14px", fontWeight: active ? 600 : 500,
+                    color: active ? "#2563EB" : textSecondary,
+                    textDecoration: "none", transition: "color 0.2s", whiteSpace: "nowrap",
                   }}
-                  onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.color = "#111827"; }}
-                  onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.color = "#6B7280"; }}
+                  onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.color = textPrimary; }}
+                  onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.color = textSecondary; }}
                 >
                   {link.label}
                   {active && (
-                    <motion.div
-                      layoutId="nav-indicator"
-                      style={{
-                        position:     "absolute",
-                        bottom:       4,
-                        left:         "20%",
-                        right:        "20%",
-                        height:       2,
-                        borderRadius: 999,
-                        background:   "#2563EB",
-                      }}
-                    />
+                    <motion.div layoutId="nav-indicator" style={{
+                      position: "absolute", bottom: 4, left: "20%", right: "20%",
+                      height: 2, borderRadius: 999, background: "#2563EB",
+                    }} />
                   )}
                 </Link>
               );
@@ -161,91 +141,79 @@ export default function Navbar() {
 
         {/* Desktop right actions */}
         {isDesktop && (
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
             {user ? (
               <>
                 <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 8,
-                      padding: "9px 18px", borderRadius: 12,
-                      border: "1px solid #E5E7EB",
-                      fontSize: "13.5px", fontWeight: 600, color: "#374151",
-                      background: "white", cursor: "pointer",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <User size={14} color="#6B7280" />
-                    {user}
+                  <motion.div whileHover={{ scale: 1.02 }} style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    padding: "9px 18px", borderRadius: 12,
+                    border: `1px solid ${cardBorder}`, fontSize: "13.5px",
+                    fontWeight: 600, color: textPrimary, background: cardBg,
+                    cursor: "pointer", whiteSpace: "nowrap",
+                  }}>
+                    <User size={14} color={textSecondary} />{user}
                   </motion.div>
                 </Link>
-                <button
-                  onClick={handleLogout}
-                  style={{
-                    padding: "9px", borderRadius: 12, border: "none",
-                    background: "transparent", cursor: "pointer",
-                    color: "#9CA3AF", display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#F9FAFB"; (e.currentTarget as HTMLElement).style.color = "#374151"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "#9CA3AF"; }}
-                >
-                  <LogOut size={15} />
-                </button>
+                <button onClick={handleLogout} style={{
+                  padding: 9, borderRadius: 12, border: "none",
+                  background: "transparent", cursor: "pointer",
+                  color: textSecondary, display: "flex", alignItems: "center",
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = hoverBg; (e.currentTarget as HTMLElement).style.color = textPrimary; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = textSecondary; }}
+                ><LogOut size={15} /></button>
               </>
             ) : (
               <Link href="/login" style={{ textDecoration: "none" }}>
-                <motion.div
-                  whileHover={{ scale: 1.02, boxShadow: "0 4px 16px rgba(37,99,235,0.18)" }}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 8,
-                    padding: "9px 18px", borderRadius: 12,
-                    border: "1px solid #E5E7EB",
-                    fontSize: "13.5px", fontWeight: 600, color: "#374151",
-                    background: "white", cursor: "pointer",
-                    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <User size={14} color="#6B7280" />
-                  Login
+                <motion.div whileHover={{ scale: 1.02 }} style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "9px 18px", borderRadius: 12,
+                  border: `1px solid ${cardBorder}`, fontSize: "13.5px",
+                  fontWeight: 600, color: textPrimary, background: cardBg,
+                  cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                  whiteSpace: "nowrap",
+                }}>
+                  <User size={14} color={textSecondary} />Login
                 </motion.div>
               </Link>
             )}
 
-            {/* Theme toggle */}
+            {/* Dark / Light toggle */}
             <button
-              onClick={() => setDark(!dark)}
-              aria-label="Toggle theme"
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
               style={{
-                padding: "9px", borderRadius: 12, border: "none",
-                background: "transparent", cursor: "pointer",
-                color: "#9CA3AF", display: "flex", alignItems: "center", justifyContent: "center",
+                padding: 9, borderRadius: 12, border: "none",
+                background: isDark ? "rgba(37,99,235,0.15)" : "transparent",
+                cursor: "pointer", color: isDark ? "#60A5FA" : "#9CA3AF",
+                display: "flex", alignItems: "center", transition: "all 0.2s",
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#F9FAFB"; (e.currentTarget as HTMLElement).style.color = "#374151"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "#9CA3AF"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = hoverBg; (e.currentTarget as HTMLElement).style.color = textPrimary; }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.background = isDark ? "rgba(37,99,235,0.15)" : "transparent";
+                (e.currentTarget as HTMLElement).style.color = isDark ? "#60A5FA" : "#9CA3AF";
+              }}
             >
-              {dark ? <Moon size={15} /> : <Sun size={15} />}
+              {isDark ? <Sun size={16} /> : <Moon size={15} />}
             </button>
           </div>
         )}
 
-        {/* Mobile hamburger — only shown below desktop breakpoint */}
+        {/* Mobile hamburger */}
         {!isDesktop && (
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            style={{
-              padding: "9px", borderRadius: 12, border: "none",
-              background: "transparent", cursor: "pointer",
-              color: "#6B7280", display: "flex", alignItems: "center", justifyContent: "center",
-            }}
-          >
+          <button onClick={() => setMenuOpen(!menuOpen)} style={{
+            padding: 9, borderRadius: 12, border: "none",
+            background: "transparent", cursor: "pointer",
+            color: textSecondary, display: "flex", alignItems: "center",
+          }}>
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         )}
       </div>
 
-      {/* ── Mobile dropdown ── */}
+      {/* Mobile dropdown */}
       <AnimatePresence>
         {!isDesktop && menuOpen && (
           <motion.div
@@ -253,56 +221,50 @@ export default function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             style={{
-              overflow: "hidden",
-              borderTop: "1px solid #F1F5F9",
-              background: "rgba(255,255,255,0.98)",
-              backdropFilter: "blur(20px)",
+              overflow: "hidden", borderTop: `1px solid ${border}`,
+              background: navBg, backdropFilter: "blur(20px)",
             }}
           >
             <div style={{ padding: "12px 24px 20px" }}>
-              {/* Nav links */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
                 {NAV_LINKS.map((link) => {
                   const active = isActive(link.href);
                   return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMenuOpen(false)}
+                    <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
                       style={{
                         display: "flex", alignItems: "center",
                         padding: "11px 16px", borderRadius: 12,
                         fontSize: "14px", fontWeight: active ? 600 : 500,
-                        color:      active ? "#2563EB" : "#4B5563",
-                        background: active ? "#EFF6FF" : "transparent",
+                        color: active ? "#2563EB" : textSecondary,
+                        background: active ? (isDark ? "rgba(37,99,235,0.15)" : "#EFF6FF") : "transparent",
                         textDecoration: "none",
-                      }}
-                    >
-                      {link.label}
-                    </Link>
+                      }}>{link.label}</Link>
                   );
                 })}
               </div>
-
-              {/* Divider + auth */}
-              <div style={{ borderTop: "1px solid #F1F5F9", paddingTop: 12 }}>
+              <div style={{ borderTop: `1px solid ${border}`, paddingTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
                 {user ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <>
                     <Link href="/dashboard" onClick={() => setMenuOpen(false)}
-                      style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 16px", fontSize: "14px", fontWeight: 600, color: "#374151", textDecoration: "none" }}>
-                      <User size={14} color="#6B7280" /> {user}
+                      style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 16px", fontSize: "14px", fontWeight: 600, color: textPrimary, textDecoration: "none" }}>
+                      <User size={14} color={textSecondary} /> {user}
                     </Link>
                     <button onClick={handleLogout}
-                      style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 16px", fontSize: "14px", color: "#9CA3AF", background: "none", border: "none", cursor: "pointer", borderRadius: 12, width: "100%", textAlign: "left" }}>
+                      style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 16px", fontSize: "14px", color: textSecondary, background: "none", border: "none", cursor: "pointer", borderRadius: 12, width: "100%", textAlign: "left" }}>
                       <LogOut size={13} /> Logout
                     </button>
-                  </div>
+                  </>
                 ) : (
                   <Link href="/login" onClick={() => setMenuOpen(false)}
                     style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 16px", fontSize: "14px", fontWeight: 600, color: "#2563EB", textDecoration: "none" }}>
                     <User size={14} /> Login
                   </Link>
                 )}
+                <button onClick={toggleTheme}
+                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 16px", fontSize: "14px", color: textSecondary, background: "none", border: "none", cursor: "pointer", borderRadius: 12, width: "100%", textAlign: "left" }}>
+                  {isDark ? <Sun size={14} /> : <Moon size={14} />}
+                  {isDark ? "Light Mode" : "Dark Mode"}
+                </button>
               </div>
             </div>
           </motion.div>
