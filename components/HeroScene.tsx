@@ -1,348 +1,336 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import GlobeCanvas from "./GlobeCanvas";
 
-const FLOAT_CARDS = [
+/* ── Floating cards data ── */
+const CARDS = [
   {
-    id: "ip1",
-    style: { top: "14%",  left: "8%" },
-    delay: 0,
+    id: "ip-pill",
+    top: "16%", left: "2%",
+    delay: 0.3,
     content: (
-      <div className="flex items-center gap-1.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-        <span className="font-mono text-xs font-bold text-gray-800">192.168.1.1</span>
-        <span className="text-[10px] text-gray-400 ml-0.5">▸</span>
+      <div className="flex items-center gap-2 px-3 py-1.5">
+        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
+        <span className="font-mono text-xs font-bold text-gray-800 tracking-wide">192.168.1.1</span>
+        <span className="text-[10px] text-gray-500 ml-0.5">▶</span>
       </div>
     ),
   },
   {
-    id: "ip2",
-    style: { top: "10%",  right: "2%" },
-    delay: 0.4,
+    id: "ip-scan",
+    top: "8%", right: "2%",
+    delay: 0.6,
     content: (
-      <div className="space-y-0.5">
-        <div className="text-[9px] font-bold text-blue-600 tracking-widest uppercase">IP Scanning</div>
-        <div className="font-mono text-xs font-bold text-gray-800">192.168.1.1</div>
+      <div className="px-3 py-2.5 space-y-0.5 min-w-[120px]">
+        <div className="text-[9px] font-black text-blue-600 tracking-widest uppercase">IP Scanning</div>
+        <div className="font-mono text-[11px] font-bold text-gray-800">192.168.1.1</div>
         <div className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-          <span className="text-[9px] text-gray-400 uppercase tracking-wide">Status: Active</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" />
+          <span className="text-[9px] text-gray-500 uppercase tracking-wide font-semibold">Status: Active</span>
         </div>
       </div>
     ),
   },
   {
     id: "packets",
-    style: { top: "52%",  right: "-2%" },
-    delay: 0.8,
+    top: "48%", right: "-2%",
+    delay: 1.0,
     content: (
-      <div>
-        <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Packets</div>
-        <div className="flex items-end gap-1">
-          <span className="text-xl font-black text-gray-800">724K</span>
+      <div className="px-3 py-2.5 min-w-[110px]">
+        <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Packets</div>
+        <div className="flex items-end gap-1.5 mb-1.5">
+          <span className="text-xl font-black text-gray-800 leading-none">724K</span>
           <span className="text-[10px] text-green-500 font-bold mb-0.5">+12.5%</span>
         </div>
-        <div className="flex gap-px mt-1">
+        <div className="flex items-end gap-px">
           {[3,5,4,7,6,8,5,9,7,8].map((h,i) => (
-            <div key={i} className="w-1.5 rounded-sm bg-blue-400"
-              style={{ height: h * 3, opacity: 0.5 + h * 0.05 }} />
+            <div key={i} className="w-1.5 rounded-sm" style={{ height: h*3, background: `rgba(37,99,235,${0.35+h*0.07})` }} />
           ))}
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: "mcqs",
-    style: { bottom: "32%", left: "4%" },
-    delay: 1.2,
-    content: (
-      <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center">
-          <span className="text-sm">🎯</span>
-        </div>
-        <div>
-          <div className="font-black text-sm text-gray-900">450+</div>
-          <div className="text-[9px] text-gray-400 uppercase tracking-wide">MCQs</div>
         </div>
       </div>
     ),
   },
 ];
 
+const GLASS = {
+  background: "rgba(255,255,255,0.90)",
+  backdropFilter: "blur(18px)",
+  WebkitBackdropFilter: "blur(18px)",
+  border: "1px solid rgba(255,255,255,0.96)",
+  boxShadow: "0 4px 24px rgba(37,99,235,0.12), 0 1px 4px rgba(0,0,0,0.04)",
+};
+
 export default function HeroScene() {
   const [mounted, setMounted] = useState(false);
-  const mouseRef = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   return (
-    <div className="relative w-full h-full min-h-[520px]" style={{ perspective: "1000px" }}>
+    <div className="relative w-full" style={{ height: "100%", minHeight: 540 }}>
 
-      {/* ── CSS glowing sphere (strong visual base) ── */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {/* Outer purple halo */}
-        <div className="absolute rounded-full"
-          style={{
-            width: "92%", height: "92%",
-            background: "radial-gradient(circle, rgba(124,58,237,0.20) 0%, rgba(67,97,238,0.12) 40%, transparent 70%)",
-            filter: "blur(48px)",
-          }} />
-        {/* Core blue sphere fill */}
-        <div className="absolute rounded-full overflow-hidden"
-          style={{
-            width: "70%", height: "70%",
-            background: "radial-gradient(circle at 38% 35%, rgba(186,230,253,0.55) 0%, rgba(96,165,250,0.45) 25%, rgba(67,97,238,0.40) 55%, rgba(124,58,237,0.30) 80%, rgba(109,40,217,0.15) 100%)",
-            boxShadow: "0 0 60px 20px rgba(67,97,238,0.20), 0 0 120px 40px rgba(124,58,237,0.12)",
-          }} />
-        {/* Edge rim glow */}
-        <div className="absolute rounded-full"
-          style={{
-            width: "70%", height: "70%",
-            background: "radial-gradient(circle at 70% 70%, rgba(167,139,250,0.25) 0%, transparent 55%)",
-          }} />
-        {/* Inner specular */}
-        <div className="absolute rounded-full"
-          style={{
-            width: "30%", height: "30%",
-            marginLeft: "-20%", marginTop: "-20%",
-            background: "radial-gradient(circle, rgba(219,234,254,0.45) 0%, transparent 70%)",
-            filter: "blur(8px)",
-          }} />
-      </div>
+      {/* ════ BIG BLUE GLOBE (CSS + SVG) ════ */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
 
-      {/* ── Orbital rings ── */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {/* Far outer ambient purple/blue haze */}
+        <div style={{
+          position: "absolute",
+          width: "105%", height: "105%",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(37,99,235,0.18) 0%, rgba(99,102,241,0.10) 45%, transparent 70%)",
+          filter: "blur(32px)",
+        }} />
+
+        {/* Main sphere */}
+        <div style={{
+          position: "relative",
+          width: "74%",
+          aspectRatio: "1",
+          borderRadius: "50%",
+          background: "radial-gradient(circle at 38% 34%, #90CAFF 0%, #4A9EFF 18%, #2563EB 42%, #3730A3 68%, #6D28D9 90%)",
+          boxShadow: "0 0 70px 20px rgba(37,99,235,0.45), 0 0 140px 50px rgba(99,102,241,0.25), 0 0 200px 80px rgba(37,99,235,0.12)",
+        }}>
+          {/* Grid overlay (SVG stripes) */}
+          <svg
+            viewBox="0 0 400 400"
+            className="absolute inset-0 w-full h-full"
+            style={{ borderRadius: "50%", opacity: 0.55 }}
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <clipPath id="sphereClip">
+                <circle cx="200" cy="200" r="200" />
+              </clipPath>
+            </defs>
+            <g clipPath="url(#sphereClip)">
+              {/* Latitude lines */}
+              {[40,80,120,160,200,240,280,320,360].map(y => (
+                <line key={`h${y}`} x1="0" y1={y} x2="400" y2={y} stroke="rgba(180,220,255,0.4)" strokeWidth="0.8" />
+              ))}
+              {/* Longitude lines */}
+              {[40,80,120,160,200,240,280,320,360].map(x => (
+                <line key={`v${x}`} x1={x} y1="0" x2={x} y2="400" stroke="rgba(180,220,255,0.4)" strokeWidth="0.8" />
+              ))}
+              {/* Diagonal lines for depth */}
+              {[-300,-240,-180,-120,-60,0,60,120,180,240,300].map(o => (
+                <line key={`d${o}`} x1={o} y1="0" x2={o+400} y2="400" stroke="rgba(180,220,255,0.18)" strokeWidth="0.5" />
+              ))}
+              {/* Dot pattern */}
+              {Array.from({length:18},(_,li)=>Array.from({length:18},(_,lj)=>{
+                const x = 22+lj*22, y = 22+li*22;
+                const dx = x-200, dy = y-200;
+                if(dx*dx+dy*dy > 190*190) return null;
+                const d = 1 - Math.sqrt(dx*dx+dy*dy)/200;
+                return <circle key={`d${li}-${lj}`} cx={x} cy={y} r={1.2+d*1.0} fill={`rgba(210,235,255,${0.3+d*0.55})`} />;
+              }))}
+            </g>
+          </svg>
+
+          {/* Specular highlight */}
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: "50%",
+            background: "radial-gradient(circle at 34% 30%, rgba(220,242,255,0.30) 0%, transparent 50%)",
+          }} />
+
+          {/* Rim glow */}
+          <div style={{
+            position: "absolute",
+            inset: "-3px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle at center, transparent 68%, rgba(147,197,253,0.40) 83%, rgba(147,197,253,0.55) 92%, transparent 100%)",
+          }} />
+
+          {/* Animated arc lines overlay */}
+          <svg
+            viewBox="0 0 400 400"
+            className="absolute inset-0 w-full h-full"
+            style={{ borderRadius: "50%", overflow: "hidden" }}
+          >
+            <defs>
+              <clipPath id="sc2"><circle cx="200" cy="200" r="200" /></clipPath>
+              <filter id="arcGlow">
+                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+            <g clipPath="url(#sc2)" filter="url(#arcGlow)">
+              <motion.path
+                d="M 60 280 Q 160 60 320 180"
+                fill="none" stroke="rgba(96,165,250,0.9)" strokeWidth="1.5"
+                strokeDasharray="300"
+                animate={{ strokeDashoffset: [300, -300] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "linear" }}
+              />
+              <motion.path
+                d="M 40 150 Q 200 20 360 200"
+                fill="none" stroke="rgba(192,132,252,0.85)" strokeWidth="1.4"
+                strokeDasharray="380"
+                animate={{ strokeDashoffset: [380, -380] }}
+                transition={{ duration: 4.2, repeat: Infinity, ease: "linear", delay: 1 }}
+              />
+              <motion.path
+                d="M 100 340 Q 250 100 380 280"
+                fill="none" stroke="rgba(96,165,250,0.8)" strokeWidth="1.3"
+                strokeDasharray="320"
+                animate={{ strokeDashoffset: [-320, 320] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "linear", delay: 2 }}
+              />
+              <motion.path
+                d="M 30 200 Q 160 350 340 120"
+                fill="none" stroke="rgba(167,139,250,0.75)" strokeWidth="1.2"
+                strokeDasharray="360"
+                animate={{ strokeDashoffset: [360, -360] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "linear", delay: 0.5 }}
+              />
+            </g>
+          </svg>
+        </div>
+
+        {/* Orbital rings */}
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-          className="absolute rounded-full border"
+          transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
           style={{
-            width: "90%", height: "35%",
-            borderColor: "rgba(147,197,253,0.18)",
-            boxShadow: "0 0 12px rgba(147,197,253,0.08)",
+            position: "absolute",
+            width: "95%", height: "30%",
+            borderRadius: "50%",
+            border: "1px solid rgba(147,210,255,0.30)",
+            boxShadow: "0 0 8px rgba(147,197,253,0.10)",
           }}
         />
         <motion.div
           animate={{ rotate: -360 }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute rounded-full border"
+          transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
           style={{
-            width: "78%", height: "28%",
-            borderColor: "rgba(196,181,253,0.14)",
+            position: "absolute",
+            width: "83%", height: "25%",
+            borderRadius: "50%",
+            border: "1px solid rgba(192,132,252,0.22)",
+            transform: "rotateX(70deg)",
+          }}
+        />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
+          style={{
+            position: "absolute",
+            width: "102%", height: "102%",
+            borderRadius: "50%",
+            border: "1px solid rgba(96,165,250,0.08)",
           }}
         />
       </div>
 
-      {/* ── Globe canvas (network lines overlay) ── */}
-      <motion.div
-        initial={mounted ? { opacity: 0, scale: 0.85 } : false}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
-        className="absolute inset-0"
+      {/* ════ HOODED FIGURE ════ */}
+      <div
+        className="absolute bottom-0 left-1/2 pointer-events-none"
+        style={{ width: "42%", maxWidth: 250, transform: "translateX(-50%)", zIndex: 10 }}
       >
-        <GlobeCanvas />
-      </motion.div>
-
-      {/* ── Hooded figure ── */}
-      <motion.div
-        initial={mounted ? { opacity: 0, y: 30 } : false}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.4 }}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none"
-        style={{ width: "42%", maxWidth: 240, zIndex: 10 }}
-      >
-        {/* Ground glow ring */}
-        <div
-          className="absolute bottom-0 left-1/2 -translate-x-1/2"
+        {/* Ground glow */}
+        <div style={{
+          position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
+          width: "200%", height: 32,
+          background: "radial-gradient(ellipse, rgba(37,99,235,0.50) 0%, transparent 70%)",
+          filter: "blur(6px)",
+        }} />
+        {/* Scan rings */}
+        <motion.div
+          animate={{ scaleX: [1,1.18,1], opacity: [0.50,0.14,0.50] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            width: "180%",
-            height: 40,
-            background: "radial-gradient(ellipse, rgba(67,97,238,0.35) 0%, transparent 70%)",
-            filter: "blur(8px)",
-            zIndex: 1,
+            position:"absolute", bottom:-4, left:"50%", transform:"translateX(-50%)",
+            width:"165%", height:24, borderRadius:"50%",
+            border:"1px solid rgba(96,165,250,0.8)", zIndex:1
           }}
         />
-        {/* Scanning rings */}
         <motion.div
-          animate={{ scaleX: [1, 1.15, 1], opacity: [0.4, 0.15, 0.4] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full border border-blue-400"
-          style={{ width: "160%", height: 28, zIndex: 1 }}
-        />
-        <motion.div
-          animate={{ scaleX: [1, 1.25, 1], opacity: [0.25, 0.08, 0.25] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full border border-violet-400"
-          style={{ width: "195%", height: 36, zIndex: 1 }}
+          animate={{ scaleX:[1,1.28,1], opacity:[0.28,0.05,0.28] }}
+          transition={{ duration:2.4, repeat:Infinity, ease:"easeInOut", delay:0.6 }}
+          style={{
+            position:"absolute", bottom:-4, left:"50%", transform:"translateX(-50%)",
+            width:"200%", height:32, borderRadius:"50%",
+            border:"1px solid rgba(139,92,246,0.6)", zIndex:1
+          }}
         />
 
-        <svg
-          viewBox="0 0 200 260"
-          fill="none"
-          className="w-full"
-          style={{ zIndex: 2, position: "relative" }}
-        >
+        <svg viewBox="0 0 200 265" fill="none" style={{ width:"100%", zIndex:2, position:"relative" }}>
           <defs>
-            <radialGradient id="figureGlow" cx="50%" cy="30%" r="60%">
-              <stop offset="0%"   stopColor="#1E3A5F" />
-              <stop offset="100%" stopColor="#0A0F1E" />
+            <radialGradient id="b2" cx="50%" cy="28%" r="60%">
+              <stop offset="0%" stopColor="#1A2E4A"/>
+              <stop offset="100%" stopColor="#070C18"/>
             </radialGradient>
-            <radialGradient id="shieldGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%"   stopColor="#93C5FD" stopOpacity="0.8"/>
+            <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#93C5FD" stopOpacity="0.95"/>
               <stop offset="100%" stopColor="#3B82F6" stopOpacity="0"/>
             </radialGradient>
-            <filter id="figShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#2563EB" floodOpacity="0.25"/>
-            </filter>
-            <filter id="shieldFilter">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-            </filter>
+            <filter id="gf2"><feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+            <filter id="bf2"><feDropShadow dx="0" dy="4" stdDeviation="10" floodColor="#1D4ED8" floodOpacity="0.32"/></filter>
           </defs>
-
-          {/* ── Body ── */}
-          {/* Shoulders */}
-          <path
-            d="M 45 85 C 38 90 30 100 28 118 C 26 135 30 148 34 162 C 38 178 40 200 42 228 C 43 240 44 252 45 260 L 155 260 C 156 252 157 240 158 228 C 160 200 162 178 166 162 C 170 148 174 135 172 118 C 170 100 162 90 155 85 Z"
-            fill="url(#figureGlow)"
-            filter="url(#figShadow)"
-          />
-          {/* Hood back */}
-          <path
-            d="M 53 88 C 53 88 48 60 52 38 C 56 16 72 4 100 3 C 128 4 144 16 148 38 C 152 60 147 88 147 88 Z"
-            fill="#0E1B2E"
-            filter="url(#figShadow)"
-          />
-          {/* Hood visible top (slightly lighter) */}
-          <ellipse cx="100" cy="44" rx="46" ry="42" fill="#111E30" />
-          {/* Back of head hint */}
-          <ellipse cx="100" cy="54" rx="28" ry="26" fill="#0D1829" />
-          {/* Hood shadow fold */}
-          <path
-            d="M 55 86 Q 78 98 100 98 Q 122 98 145 86"
-            stroke="#1A2D45" strokeWidth="3" strokeLinecap="round"
-            fill="none" opacity="0.6"
-          />
-
-          {/* ── TWH Shield on back ── */}
-          {/* Glow behind shield */}
-          <ellipse cx="100" cy="162" rx="22" ry="22" fill="url(#shieldGlow)" />
-          {/* Shield outline */}
-          <path
-            d="M 100 144 L 82 152 L 82 168 Q 82 182 100 190 Q 118 182 118 168 L 118 152 Z"
-            fill="none"
-            stroke="#60A5FA"
-            strokeWidth="1.8"
-            opacity="0.9"
-            filter="url(#shieldFilter)"
-          />
-          {/* Inner shield accent */}
-          <path
-            d="M 100 148 L 86 154 L 86 168 Q 86 178 100 184 Q 114 178 114 168 L 114 154 Z"
-            fill="rgba(37,99,235,0.12)"
-          />
-          {/* Checkmark */}
-          <path
-            d="M 91 165 L 97 172 L 109 158"
-            stroke="#93C5FD"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-          {/* TWH text */}
-          <text
-            x="100" y="178"
-            textAnchor="middle"
-            fill="#60A5FA"
-            fontSize="8"
-            fontFamily="monospace"
-            fontWeight="bold"
-            opacity="0.7"
-          >
-            TWH
-          </text>
-
-          {/* ── Subtle highlight on shoulders ── */}
-          <path
-            d="M 45 88 C 55 82 72 78 100 78 C 128 78 145 82 155 88"
-            stroke="rgba(99,179,237,0.15)" strokeWidth="2" strokeLinecap="round" fill="none"
-          />
+          <path d="M44 88C36 94 27 106 25 126C23 144 28 158 32 174C36 192 38 212 40 235C41 248 42 256 43 265L157 265C158 256 159 248 160 235C162 212 164 192 168 174C172 158 177 144 175 126C173 106 164 94 156 88Z" fill="url(#b2)" filter="url(#bf2)"/>
+          <path d="M52 90C52 90 46 62 50 38C54 15 70 3 100 2C130 3 146 15 150 38C154 62 148 90 148 90Z" fill="#0A1220" filter="url(#bf2)"/>
+          <ellipse cx="100" cy="46" rx="46" ry="44" fill="#111C2E"/>
+          <ellipse cx="100" cy="57" rx="28" ry="27" fill="#0D1725"/>
+          <path d="M54 88Q77 101 100 101Q123 101 146 88" stroke="#1E3A5F" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.7"/>
+          <path d="M44 90C56 83 74 79 100 79C126 79 144 83 156 90" stroke="rgba(100,160,240,0.14)" strokeWidth="2" strokeLinecap="round" fill="none"/>
+          {/* Shield glow */}
+          <ellipse cx="100" cy="163" rx="24" ry="24" fill="url(#sg2)" opacity="0.65"/>
+          <path d="M100 143L80 152L80 169Q80 184 100 192Q120 184 120 169L120 152Z" fill="none" stroke="#60A5FA" strokeWidth="2" filter="url(#gf2)" opacity="0.95"/>
+          <path d="M100 148L85 155L85 169Q85 180 100 186Q115 180 115 169L115 155Z" fill="rgba(37,99,235,0.15)"/>
+          <path d="M92 162L98 169L110 155" stroke="#BAE6FD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" filter="url(#gf2)"/>
+          <text x="100" y="173" textAnchor="middle" fill="#93C5FD" fontSize="11" fontFamily="monospace" fontWeight="bold" filter="url(#gf2)" opacity="0.95">TWH</text>
         </svg>
-      </motion.div>
+      </div>
 
-      {/* ── City skyline ── */}
-      <motion.div
-        initial={mounted ? { opacity: 0 } : false}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.5, delay: 0.8 }}
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
-        style={{ zIndex: 5 }}
-      >
-        <svg viewBox="0 0 800 100" preserveAspectRatio="xMidYMax slice" className="w-full">
+      {/* ════ CITY SKYLINE ════ */}
+      <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ zIndex: 5 }}>
+        <svg viewBox="0 0 900 90" preserveAspectRatio="xMidYMax slice" style={{ display:"block", width:"100%" }}>
           <defs>
-            <linearGradient id="skylineGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#C7D9F5" stopOpacity="0.25"/>
+            <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#B8CCE8" stopOpacity="0.35"/>
               <stop offset="100%" stopColor="#A5B4FC" stopOpacity="0.12"/>
             </linearGradient>
           </defs>
-          {/* City buildings silhouette */}
-          <path
-            d="M0,100 L0,80 L20,80 L20,70 L30,70 L30,60 L40,60 L40,68 L55,68 L55,52 L60,52 L60,48 L65,48 L65,52 L70,52 L70,70 L80,70 L80,58 L88,58 L88,45 L93,45 L93,58 L100,58 L100,72 L115,72 L115,62 L120,62 L120,50 L128,50 L128,62 L135,62 L135,74 L145,74 L145,55 L155,55 L155,45 L162,45 L162,38 L170,38 L170,45 L178,45 L178,55 L185,55 L185,72 L195,72 L195,60 L205,60 L205,68 L215,68 L215,55 L225,55 L225,48 L230,40 L235,48 L235,55 L245,55 L245,70 L260,70 L260,62 L270,62 L270,52 L278,52 L278,42 L285,42 L285,52 L295,52 L295,65 L310,65 L310,55 L320,55 L320,45 L328,45 L328,55 L340,55 L340,68 L355,68 L355,58 L365,58 L365,50 L372,50 L372,58 L382,58 L382,70 L395,70 L395,60 L405,60 L405,48 L415,48 L415,40 L422,32 L429,40 L429,48 L438,48 L438,60 L450,60 L450,72 L460,72 L460,62 L470,62 L470,52 L478,52 L478,62 L490,62 L490,74 L500,74 L500,62 L510,62 L510,55 L518,55 L518,48 L525,42 L532,48 L532,55 L540,55 L540,65 L555,65 L555,72 L570,72 L570,62 L580,62 L580,52 L588,52 L588,62 L600,62 L600,75 L615,75 L615,65 L625,65 L625,58 L632,58 L632,50 L638,44 L644,50 L644,58 L652,58 L652,68 L665,68 L665,58 L675,58 L675,50 L682,50 L682,58 L695,58 L695,70 L710,70 L710,60 L720,60 L720,72 L730,72 L730,82 L745,82 L745,75 L755,75 L755,65 L762,65 L762,75 L775,75 L775,82 L790,82 L790,80 L800,80 L800,100 Z"
-            fill="url(#skylineGrad)"
-          />
+          <path d="M0,90 L0,72 L18,72 L18,62 L28,62 L28,52 L38,52 L38,60 L52,60 L52,44 L57,44 L57,40 L63,40 L63,44 L68,44 L68,62 L78,62 L78,50 L86,50 L86,38 L92,38 L92,50 L100,50 L100,65 L114,65 L114,55 L120,55 L120,44 L128,44 L128,55 L135,55 L135,67 L144,67 L144,48 L154,48 L154,38 L162,38 L162,30 L170,30 L170,38 L178,38 L178,48 L185,48 L185,65 L196,65 L196,53 L206,53 L206,62 L216,62 L216,48 L226,48 L226,40 L232,32 L238,40 L238,48 L248,48 L248,63 L262,63 L262,54 L272,54 L272,44 L280,44 L280,34 L287,34 L287,44 L297,44 L297,58 L312,58 L312,47 L322,47 L322,38 L330,38 L330,47 L342,47 L342,60 L356,60 L356,50 L366,50 L366,42 L374,42 L374,50 L384,50 L384,63 L397,63 L397,52 L407,52 L407,40 L417,40 L417,32 L424,24 L431,32 L431,40 L440,40 L440,52 L452,52 L452,65 L462,65 L462,55 L472,55 L472,44 L480,44 L480,55 L492,55 L492,67 L502,67 L502,55 L512,55 L512,48 L520,48 L520,40 L527,34 L534,40 L534,48 L542,48 L542,58 L557,58 L557,65 L572,65 L572,55 L582,55 L582,44 L590,44 L590,55 L602,55 L602,68 L616,68 L616,58 L626,58 L626,50 L634,50 L634,42 L640,36 L646,42 L646,50 L654,50 L654,62 L667,62 L667,50 L677,50 L677,42 L685,42 L685,50 L697,50 L697,63 L712,63 L712,52 L722,52 L722,65 L732,65 L732,74 L747,74 L747,67 L757,67 L757,58 L764,58 L764,67 L778,67 L778,74 L793,74 L793,72 L810,72 L810,80 L830,80 L830,72 L850,72 L850,65 L900,65 L900,90 Z" fill="url(#sky2)"/>
         </svg>
-      </motion.div>
+      </div>
 
-      {/* ── Floating glass cards ── */}
-      {FLOAT_CARDS.map((card) => (
+      {/* ════ FLOATING CARDS ════ */}
+      {mounted && CARDS.map(card => {
+        const { top, left, right } = card as any;
+        return (
         <motion.div
           key={card.id}
-          initial={mounted ? { opacity: 0, scale: 0.8 } : false}
-          animate={{
-            opacity: 1, scale: 1,
-            y: [0, -8, 0],
-          }}
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1, y: [0, -7, 0] }}
           transition={{
-            opacity: { duration: 0.5, delay: 0.6 + card.delay },
-            scale:   { duration: 0.5, delay: 0.6 + card.delay },
-            y: { duration: 3 + card.delay * 0.5, repeat: Infinity, ease: "easeInOut", delay: card.delay * 0.3 },
+            opacity: { duration: 0.35, delay: card.delay },
+            scale:   { duration: 0.35, delay: card.delay },
+            y: { duration: 3.5 + card.delay*0.3, repeat: Infinity, ease: "easeInOut", delay: card.delay*0.4 },
           }}
-          className="absolute z-20 pointer-events-none"
-          style={card.style as React.CSSProperties}
+          className="absolute pointer-events-none"
+          style={{ top, left, right, zIndex: 20 }}
         >
-          <div
-            className="px-3 py-2.5 rounded-xl"
-            style={{
-              background: "rgba(255,255,255,0.82)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
-              border: "1px solid rgba(255,255,255,0.9)",
-              boxShadow: "0 4px 20px rgba(37,99,235,0.1), 0 1px 4px rgba(0,0,0,0.04)",
-            }}
-          >
+          <div className="rounded-xl overflow-hidden" style={GLASS}>
             {card.content}
           </div>
         </motion.div>
-      ))}
+        );
+      })}
 
-      {/* ── Particle dots scattered ── */}
-      {mounted && Array.from({ length: 18 }).map((_, i) => (
+      {/* ════ AMBIENT PARTICLES ════ */}
+      {mounted && Array.from({length:18}).map((_,i) => (
         <motion.div
-          key={`p-${i}`}
+          key={`p${i}`}
           className="absolute rounded-full pointer-events-none"
           style={{
-            width: i % 3 === 0 ? 3 : 2,
-            height: i % 3 === 0 ? 3 : 2,
-            left: `${10 + (i * 73) % 80}%`,
-            top:  `${5  + (i * 53) % 85}%`,
-            background: i % 2 === 0 ? "rgba(99,179,237,0.6)" : "rgba(196,181,253,0.5)",
+            width: i%3===0?3:2, height: i%3===0?3:2,
+            left: `${8+(i*79)%82}%`, top: `${4+(i*53)%88}%`,
+            background: i%2===0?"rgba(96,165,250,0.7)":"rgba(192,132,252,0.55)",
+            zIndex: 3,
           }}
-          animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.5, 1] }}
-          transition={{ duration: 2 + (i % 4), repeat: Infinity, delay: (i * 0.2) % 3 }}
+          animate={{ opacity:[0.2,0.9,0.2], scale:[1,1.6,1] }}
+          transition={{ duration: 2.2+(i%5)*0.4, repeat:Infinity, delay:(i*0.18)%3 }}
         />
       ))}
     </div>
