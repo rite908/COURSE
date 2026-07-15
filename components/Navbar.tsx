@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Menu, X, LogOut, User, BookOpen, Home, Search } from "lucide-react";
+import { Menu, X, LogOut, ChevronRight } from "lucide-react";
 import { getCurrentUser, clearCurrentUser, type UserName } from "@/lib/storage";
 
-const USER_COLORS: Record<UserName, string> = {
-  TWH: "text-accent-cyan",
-  Prince: "text-accent-purple",
-  Ashish: "text-accent-green",
+const USER_CONFIG: Record<UserName, { color: string; bg: string }> = {
+  TWH:    { color: "#2563EB", bg: "#EEF3FF" },
+  Prince: { color: "#7C3AED", bg: "#F3EEFF" },
+  Ashish: { color: "#059669", bg: "#ECFDF5" },
 };
 
 export default function Navbar() {
@@ -24,96 +24,106 @@ export default function Navbar() {
   useEffect(() => {
     setUser(getCurrentUser());
     setMounted(true);
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const handleLogout = () => {
     clearCurrentUser();
+    setMenuOpen(false);
     router.push("/login");
   };
 
-  const navLinks = user
-    ? [
-        { href: "/dashboard", label: "Dashboard", icon: <Home size={15} /> },
-        { href: "/chapters", label: "Chapters", icon: <BookOpen size={15} /> },
-      ]
-    : [];
+  const navLinks = [
+    { href: "/", label: "Home" },
+    ...(user ? [
+      { href: "/chapters", label: "Chapters" },
+      { href: "/dashboard", label: "Dashboard" },
+    ] : []),
+  ];
+
+  const userConf = user ? USER_CONFIG[user] : null;
 
   return (
     <motion.nav
-      initial={mounted ? { y: -60, opacity: 0 } : false}
+      initial={mounted ? { y: -72, opacity: 0 } : false}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-bg-secondary/90 backdrop-blur-xl border-b border-white/5 shadow-lg"
-          : "bg-transparent"
-      }`}
+      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{
+        background: scrolled ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0)",
+        backdropFilter: scrolled ? "blur(20px)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(226,232,240,0.8)" : "none",
+        boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.05)" : "none",
+      }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2.5 group">
-          <div className="relative">
-            <Shield
-              size={22}
-              className="text-accent-cyan group-hover:scale-110 transition-transform"
-            />
-            <div className="absolute inset-0 blur-md bg-accent-cyan/30 rounded-full scale-150" />
+          <div className="relative w-8 h-8 flex items-center justify-center rounded-lg bg-blue-600">
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="none">
+              <path d="M8 0.5L15 4V10C15 13.6 11.9 17 8 17C4.1 17 1 13.6 1 10V4L8 0.5Z"
+                fill="none" stroke="white" strokeWidth="1.4"/>
+              <path d="M5.5 9.5L7 11L10.5 7.5" stroke="white" strokeWidth="1.6"
+                strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
-          <span className="font-bold text-base tracking-wide">
-            <span className="text-accent-cyan">TWH</span>
-            <span className="text-white/70 font-normal"> Academy</span>
+          <span className="font-bold text-sm text-gray-900">
+            TWH <span className="text-blue-600">Academy</span>
           </span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                pathname === link.href
-                  ? "bg-accent-cyan/10 text-accent-cyan"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              {link.icon}
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const active = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  active
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Right side */}
+        {/* Right */}
         <div className="flex items-center gap-3">
-          {user ? (
-            <>
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg glass border border-white/10">
-                <User size={13} className={USER_COLORS[user]} />
-                <span className={`text-sm font-semibold ${USER_COLORS[user]}`}>{user}</span>
+          {user && userConf ? (
+            <div className="hidden md:flex items-center gap-2">
+              <div
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold"
+                style={{ color: userConf.color, background: userConf.bg }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: userConf.color }} />
+                {user}
               </div>
               <button
                 onClick={handleLogout}
-                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-white/50 hover:text-white/80 hover:bg-white/5 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all"
               >
-                <LogOut size={14} />
+                <LogOut size={13} />
                 Logout
               </button>
-            </>
+            </div>
           ) : (
             <Link
               href="/login"
-              className="px-4 py-1.5 rounded-lg bg-accent-cyan text-bg-primary text-sm font-bold hover:bg-accent-cyan/90 transition-all shadow-glow-cyan"
+              className="hidden md:flex items-center gap-1.5 px-5 py-2 text-sm font-semibold text-white rounded-lg bg-blue-600 hover:bg-blue-700 transition-all shadow-sm"
             >
-              Login
+              Start Learning <ChevronRight size={14} />
             </Link>
           )}
 
-          {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-lg glass"
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-all"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -128,38 +138,44 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-white/5 overflow-hidden"
+            className="md:hidden overflow-hidden border-t border-gray-100 bg-white"
           >
-            <div className="px-4 py-4 space-y-2">
+            <div className="px-5 py-4 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                     pathname === link.href
-                      ? "bg-accent-cyan/10 text-accent-cyan"
-                      : "text-white/70 hover:bg-white/5"
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
-                  {link.icon}
                   {link.label}
                 </Link>
               ))}
-              {user && (
+              {user && userConf ? (
                 <>
-                  <div className="flex items-center gap-2 px-3 py-2.5">
-                    <User size={14} className={USER_COLORS[user]} />
-                    <span className={`text-sm font-semibold ${USER_COLORS[user]}`}>{user}</span>
+                  <div className="flex items-center gap-2 px-3 py-2.5 text-sm font-semibold" style={{ color: userConf.color }}>
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: userConf.color }} />
+                    {user}
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-white/50 hover:bg-white/5 transition-all"
+                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:bg-gray-50 transition-all"
                   >
-                    <LogOut size={14} />
-                    Logout
+                    <LogOut size={13} /> Logout
                   </button>
                 </>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-1.5 px-3 py-2.5 text-sm font-semibold text-blue-600"
+                >
+                  Start Learning <ChevronRight size={14} />
+                </Link>
               )}
             </div>
           </motion.div>

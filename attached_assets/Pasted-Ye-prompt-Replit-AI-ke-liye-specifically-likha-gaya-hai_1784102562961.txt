@@ -1,0 +1,395 @@
+Ye prompt Replit AI ke liye specifically likha gaya hai. Isko image references ke saath de dena.
+
+---
+
+# MASTER REDESIGN PROMPT
+
+You have been given UI reference images.
+
+Your job is NOT to improve the existing website.
+
+Your job is to completely redesign it from scratch using the reference images.
+
+The current UI is unacceptable.
+
+It looks like a cheap admin dashboard.
+
+I DO NOT WANT AN ADMIN PANEL.
+
+I WANT A PREMIUM LEARNING EXPERIENCE.
+
+The design quality should be comparable to Apple, Linear, Nothing, Stripe and Framer.
+
+The website should immediately feel like a futuristic Cyber Security Academy.
+
+---
+
+## IMPORTANT
+
+Use the attached images as your PRIMARY DESIGN REFERENCE.
+
+Do not copy them exactly.
+
+Understand the layout, spacing, typography, animations, color palette and premium feeling.
+
+The final UI should feel even better than the reference.
+
+---
+
+## THEME
+
+The current dark theme is too dark.
+
+Create a LIGHT CYBER theme.
+
+Primary background:
+
+White
+
+Secondary:
+
+#F5F8FF
+
+Accent Colors
+
+Electric Blue
+
+Cyan
+
+Purple
+
+Glassmorphism
+
+Soft Shadows
+
+Soft Gradient Backgrounds
+
+Rounded Corners
+
+Floating Cards
+
+Minimal Design
+
+Premium Typography
+
+---
+
+## LANDING PAGE
+
+Make it cinematic.
+
+Huge Hero Section.
+
+Large heading.
+
+Beautiful subtitle.
+
+Animated glowing globe.
+
+Network animation.
+
+Floating particles.
+
+Mouse parallax.
+
+Premium buttons.
+
+Smooth scrolling.
+
+---
+
+## CHAPTER LIST
+
+Do NOT create boring cards.
+
+Each chapter should feel unique.
+
+Each chapter should contain:
+
+Large Illustration
+
+Progress
+
+Difficulty
+
+Topics
+
+MCQs
+
+Estimated Reading Time
+
+Unlock Status
+
+Hover Animation
+
+3D Effect
+
+Gradient Border
+
+Glowing Icon
+
+---
+
+Startup
+
+Blue + Rocket Theme
+
+---
+
+Computer Works
+
+CPU
+
+RAM
+
+Motherboard
+
+Circuit
+
+---
+
+Networking
+
+World Map
+
+Moving Packets
+
+Nodes
+
+Connections
+
+Blue Network Theme
+
+---
+
+Linux
+
+Green Terminal
+
+Typing Animation
+
+Terminal Window
+
+---
+
+Kali Linux
+
+Purple
+
+Cyber Lab
+
+Security Interface
+
+---
+
+## CHAPTER PAGE
+
+Every chapter should start with
+
+Animated Hero
+
+Large Title
+
+Beautiful Introduction
+
+Statistics Cards
+
+Continue Reading Button
+
+Video Button
+
+Then content starts.
+
+---
+
+## READING EXPERIENCE
+
+Markdown should NOT look like markdown.
+
+It should feel like reading an Apple Product Page.
+
+Huge Typography.
+
+Beautiful Spacing.
+
+Floating Images.
+
+Glass Cards.
+
+Animated Quotes.
+
+Premium Tables.
+
+Modern Code Blocks.
+
+Sticky Navigation.
+
+Reading Progress Bar.
+
+Estimated Reading Time.
+
+---
+
+## MCQ
+
+One Question At A Time.
+
+Beautiful Animations.
+
+Correct Answer Animation.
+
+Wrong Answer Animation.
+
+Progress Indicator.
+
+Question Counter.
+
+Timer.
+
+Final Result Screen.
+
+---
+
+## PASS SYSTEM
+
+If user scores
+
+9 or 10
+
+Unlock Next Topic.
+
+If score is 8 or below
+
+Next Topic remains locked.
+
+User must retry.
+
+Progress should save locally.
+
+---
+
+## LOGIN
+
+Remove current login button.
+
+Create Profile Selection Screen.
+
+Only
+
+TWH
+
+Prince
+
+Ashish
+
+Each profile should look like a futuristic identity card.
+
+Glassmorphism.
+
+Hover Animation.
+
+Avatar.
+
+---
+
+## VIDEO SECTION
+
+Every topic should have
+
+Video Card
+
+Currently show
+
+COMING SOON
+
+Premium Illustration.
+
+Future Ready.
+
+---
+
+## ANIMATIONS
+
+Framer Motion
+
+GSAP
+
+Smooth Scroll
+
+Page Transition
+
+Fade
+
+Scale
+
+Slide
+
+Mouse Glow
+
+Hover Glow
+
+Floating Elements
+
+---
+
+## MOBILE
+
+Pixel Perfect Responsive.
+
+Desktop First.
+
+Tablet.
+
+Mobile.
+
+No layout breaking.
+
+---
+
+## PERFORMANCE
+
+Fast.
+
+Clean Code.
+
+Reusable Components.
+
+No unnecessary libraries.
+
+---
+
+## IMPORTANT
+
+DO NOT reuse any component from the current website.
+
+Delete the existing design completely.
+
+Rebuild everything from scratch using the attached reference images.
+
+The final product should look like a ₹50 lakh professionally designed Cyber Security Academy.
+
+---
+
+## FINAL CHECKLIST
+
+* Premium UI
+* Light Cyber Theme
+* Apple-level spacing
+* Linear-style cards
+* Stripe animations
+* Framer transitions
+* Beautiful typography
+* Story-driven learning experience
+* Not an admin dashboard
+* Not a documentation website
+* Not a generic LMS
+* Every chapter has its own visual identity
+* Reference images are followed closely while keeping the design original
+
+---
+
+💡 **Ek aur suggestion:** Replit AI ko ek hi baar mein poori website mat banwane bol. Is prompt ke end mein ye line bhi add kar:
+
+> **"First redesign only the Landing Page and Chapter List according to the references. Wait for my approval before redesigning the Chapter Reader, MCQ System, Login, and remaining pages."**
+
+Isse quality kaafi better aati hai aur AI ek saath sab kuch kharab nahi karta.

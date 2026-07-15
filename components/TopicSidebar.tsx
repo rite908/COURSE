@@ -17,19 +17,16 @@ interface Props {
 }
 
 export default function TopicSidebar({
-  topics,
-  currentTopicId,
-  unlockedTopics,
-  passedTopics,
-  accentColor,
-  chapterTitle,
-  isOpen,
-  onClose,
-  onSelectTopic,
+  topics, currentTopicId, unlockedTopics, passedTopics,
+  accentColor, chapterTitle, isOpen, onClose, onSelectTopic,
 }: Props) {
+  const passed  = passedTopics.size;
+  const total   = topics.length;
+  const percent = total > 0 ? Math.round((passed / total) * 100) : 0;
+
   return (
     <>
-      {/* Overlay on mobile */}
+      {/* Mobile overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -37,7 +34,7 @@ export default function TopicSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 z-30 lg:hidden"
+            className="fixed inset-0 bg-black/30 z-30 lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -46,118 +43,115 @@ export default function TopicSidebar({
       <motion.aside
         initial={false}
         animate={{ x: isOpen ? 0 : "-100%" }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        transition={{ type: "spring", damping: 28, stiffness: 220 }}
         className="fixed left-0 top-0 bottom-0 w-72 z-40 lg:sticky lg:top-20 lg:translate-x-0 lg:h-[calc(100vh-5rem)] flex flex-col"
       >
-        <div className="glass border-r border-white/8 h-full flex flex-col overflow-hidden">
+        <div className="bg-white border-r border-gray-100 h-full flex flex-col overflow-hidden shadow-sm">
           {/* Header */}
-          <div className="p-4 border-b border-white/8 flex items-center justify-between shrink-0">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2 min-w-0">
-              <BookOpen size={15} style={{ color: accentColor }} className="shrink-0" />
-              <span className="text-sm font-semibold text-white truncate">{chapterTitle}</span>
+              <BookOpen size={14} style={{ color: accentColor }} className="shrink-0" />
+              <span className="text-sm font-bold text-gray-900 truncate">{chapterTitle}</span>
             </div>
             <button
               onClick={onClose}
-              className="lg:hidden p-1.5 rounded-lg hover:bg-white/5 text-white/40 hover:text-white transition-all shrink-0"
+              className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all shrink-0"
             >
-              <X size={16} />
+              <X size={14} />
             </button>
           </div>
 
-          {/* Progress bar */}
-          <div className="px-4 py-3 border-b border-white/5 shrink-0">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs text-white/40">Progress</span>
-              <span className="text-xs font-mono" style={{ color: accentColor }}>
-                {passedTopics.size}/{topics.length}
+          {/* Progress */}
+          <div className="px-5 py-3.5 border-b border-gray-50 shrink-0">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-gray-400 font-medium">Progress</span>
+              <span className="text-xs font-bold" style={{ color: accentColor }}>
+                {passed}/{total} topics
               </span>
             </div>
-            <div className="h-1 bg-white/8 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <motion.div
                 className="h-full rounded-full"
                 style={{ background: accentColor }}
                 initial={{ width: 0 }}
-                animate={{
-                  width: `${topics.length > 0 ? (passedTopics.size / topics.length) * 100 : 0}%`,
-                }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                animate={{ width: `${percent}%` }}
+                transition={{ duration: 0.7, delay: 0.2 }}
               />
+            </div>
+            <div className="text-right mt-1">
+              <span className="text-[10px] text-gray-300">{percent}%</span>
             </div>
           </div>
 
-          {/* Topics list */}
-          <div className="flex-1 overflow-y-auto py-2">
+          {/* Topics */}
+          <div className="flex-1 overflow-y-auto">
             {topics.map((topic, idx) => {
               const isUnlocked = unlockedTopics.has(topic.id);
-              const isPassed = passedTopics.has(topic.id);
-              const isCurrent = topic.id === currentTopicId;
-              const isLocked = !isUnlocked;
+              const isPassed   = passedTopics.has(topic.id);
+              const isCurrent  = topic.id === currentTopicId;
+              const isLocked   = !isUnlocked;
 
               return (
                 <motion.button
                   key={topic.id}
                   onClick={() => {
-                    if (!isLocked) {
-                      onSelectTopic(topic.id);
-                      onClose();
-                    }
+                    if (!isLocked) { onSelectTopic(topic.id); onClose(); }
                   }}
-                  whileHover={!isLocked ? { x: 4 } : {}}
+                  whileHover={!isLocked ? { x: 3 } : {}}
                   disabled={isLocked}
-                  className={`w-full text-left px-4 py-3 flex items-start gap-3 transition-all group relative ${
+                  className={`w-full text-left px-4 py-3.5 flex items-center gap-3 transition-all relative group ${
                     isCurrent
-                      ? "bg-white/5"
+                      ? "bg-blue-50"
                       : isLocked
-                      ? "opacity-45 cursor-not-allowed"
-                      : "hover:bg-white/4 cursor-pointer"
+                      ? "opacity-40 cursor-not-allowed"
+                      : "hover:bg-gray-50 cursor-pointer"
                   }`}
                 >
                   {/* Active indicator */}
                   {isCurrent && (
                     <motion.div
-                      layoutId="activeIndicator"
+                      layoutId="sidebar-active"
                       className="absolute left-0 top-0 bottom-0 w-0.5 rounded-r"
                       style={{ background: accentColor }}
                     />
                   )}
 
                   {/* Status icon */}
-                  <div className="shrink-0 mt-0.5">
+                  <div className="shrink-0">
                     {isPassed ? (
-                      <CheckCircle size={15} className="text-accent-green" />
+                      <CheckCircle size={15} className="text-green-500" />
                     ) : isLocked ? (
-                      <Lock size={15} className="text-white/30" />
+                      <Lock size={14} className="text-gray-300" />
                     ) : (
                       <div
                         className={`w-[15px] h-[15px] rounded-full border-2 ${
-                          isCurrent ? "border-accent-cyan" : "border-white/20"
+                          isCurrent ? "" : "border-gray-200"
                         }`}
+                        style={isCurrent ? { borderColor: accentColor } : {}}
                       />
                     )}
                   </div>
 
-                  {/* Text */}
-                  <div className="min-w-0 flex-1">
+                  {/* Topic info */}
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-0.5">
                       <span
-                        className="text-[10px] font-mono font-bold"
-                        style={isCurrent || isUnlocked ? { color: accentColor } : { color: "rgba(255,255,255,0.3)" }}
+                        className="text-[10px] font-bold font-mono"
+                        style={{
+                          color: isCurrent || isUnlocked ? accentColor : "#CBD5E1",
+                        }}
                       >
                         {topic.id}
                       </span>
                       {isLocked && (
-                        <span className="text-[9px] bg-white/8 text-white/30 px-1.5 py-0.5 rounded font-medium">
-                          LOCKED
-                        </span>
+                        <span className="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded font-medium">LOCKED</span>
                       )}
                     </div>
                     <p
                       className={`text-xs leading-snug line-clamp-2 ${
-                        isCurrent
-                          ? "text-white font-medium"
-                          : isLocked
-                          ? "text-white/30"
-                          : "text-white/65 group-hover:text-white/90"
+                        isCurrent ? "text-gray-900 font-semibold" :
+                        isLocked  ? "text-gray-300" :
+                        "text-gray-500 group-hover:text-gray-800"
                       }`}
                     >
                       {topic.title}
@@ -165,7 +159,7 @@ export default function TopicSidebar({
                   </div>
 
                   {isCurrent && (
-                    <ChevronRight size={12} style={{ color: accentColor }} className="shrink-0 mt-0.5" />
+                    <ChevronRight size={12} style={{ color: accentColor }} className="shrink-0" />
                   )}
                 </motion.button>
               );

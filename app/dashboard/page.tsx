@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  Shield, BookOpen, Clock, Target, TrendingUp, ArrowRight,
-  Lock, CheckCircle, Play, Star, Zap
-} from "lucide-react";
+import { ArrowRight, Play, CheckCircle, Lock, BookOpen, Target, TrendingUp, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import {
   getCurrentUser, getUserProgress, getChapterStats, getOverallStats, type UserName,
@@ -15,15 +12,22 @@ import {
 import { CHAPTERS } from "@/lib/chapters";
 import { formatTime } from "@/lib/utils";
 
-const USER_COLORS: Record<UserName, { color: string; glow: string; greeting: string }> = {
-  TWH: { color: "#00E5FF", glow: "rgba(0,229,255,0.2)", greeting: "Waapas aagaye, Afsar Bhai! 🔥" },
-  Prince: { color: "#8A5CFF", glow: "rgba(138,92,255,0.2)", greeting: "Waapas aagaye, Prince! 💪" },
-  Ashish: { color: "#00FF95", glow: "rgba(0,255,149,0.2)", greeting: "Waapas aagaye, Ashish! 🚀" },
+const USER_CONFIG: Record<UserName, {
+  color: string; bg: string; light: string;
+  greeting: string; emoji: string;
+}> = {
+  TWH:    { color: "#2563EB", bg: "#EEF3FF", light: "#DBEAFE", greeting: "Waapas aagaye, Afsar Bhai!", emoji: "🔥" },
+  Prince: { color: "#7C3AED", bg: "#F3EEFF", light: "#EDE9FE", greeting: "Waapas aagaye, Prince!", emoji: "💪" },
+  Ashish: { color: "#059669", bg: "#ECFDF5", light: "#D1FAE5", greeting: "Waapas aagaye, Ashish!", emoji: "🚀" },
+};
+
+const CH_COLORS: Record<string, string> = {
+  "1": "#2563EB", "2": "#0EA5E9", "3": "#7C3AED", "4": "#059669", "5": "#DC2626",
 };
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<UserName | null>(null);
+  const [user, setUser]     = useState<UserName | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -35,271 +39,210 @@ export default function DashboardPage() {
 
   if (!mounted || !user) return <DashboardSkeleton />;
 
-  const overallStats = getOverallStats(user);
-  const userConf = USER_COLORS[user];
+  const overall = getOverallStats(user);
+  const conf    = USER_CONFIG[user];
 
-  // Build chapter cards
-  const chapterCards = CHAPTERS.map((ch) => {
+  const chapters = CHAPTERS.map((ch) => {
     const stats = getChapterStats(user, ch.id, ch.totalTopics);
-    const isLocked = stats.unlocked === 0;
-    const isCompleted = stats.completed === ch.totalTopics;
-    return { ch, stats, isLocked, isCompleted };
+    return {
+      ch, stats,
+      isLocked:    stats.unlocked === 0,
+      isCompleted: stats.completed === ch.totalTopics,
+    };
   });
 
-  const completedChapters = chapterCards.filter((c) => c.isCompleted).length;
-  const inProgressChapters = chapterCards.filter((c) => !c.isLocked && !c.isCompleted).length;
-  const lockedChapters = chapterCards.filter((c) => c.isLocked).length;
+  const doneCount    = chapters.filter((c) => c.isCompleted).length;
+  const activeCount  = chapters.filter((c) => !c.isLocked && !c.isCompleted).length;
+  const continuePath = overall.currentChapter ? `/chapter/${overall.currentChapter}` : `/chapter/1`;
 
-  const continuePath = overallStats.currentChapter
-    ? `/chapter/${overallStats.currentChapter}`
-    : `/chapter/1`;
+  const statCards = [
+    { icon: <BookOpen size={16} />, value: `${doneCount}/5`, label: "Chapters Done",   color: "#2563EB", bg: "#EEF3FF" },
+    { icon: <Target size={16} />,   value: `${overall.topicsPassed}`, label: "Topics Passed",  color: "#7C3AED", bg: "#F3EEFF" },
+    { icon: <TrendingUp size={16} />, value: `${overall.mcqAccuracy}%`, label: "MCQ Accuracy", color: "#059669", bg: "#ECFDF5" },
+    { icon: <Clock size={16} />,    value: formatTime(overall.timeSpentMinutes), label: "Time Spent", color: "#D97706", bg: "#FFFBEB" },
+  ];
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-screen bg-[#F5F8FF]">
       <Navbar />
 
-      {/* Background */}
-      <div className="fixed inset-0 cyber-grid-bg opacity-60 pointer-events-none" />
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 60% 40% at 80% 20%, ${userConf.glow} 0%, transparent 60%)`,
-        }}
-      />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-16">
 
-      <main className="relative pt-24 pb-16 px-4 max-w-7xl mx-auto">
-        {/* Welcome header */}
+        {/* ── Welcome Banner ── */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-2xl p-6 sm:p-8 mb-8 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
         >
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm text-white/40">Namaste,</span>
+          <div>
+            <p className="text-sm text-gray-400 mb-1">Good to see you,</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900" style={{ letterSpacing: "-0.02em" }}>
+              {conf.greeting} {conf.emoji}
+            </h1>
+            <p className="text-gray-400 mt-1.5 text-sm">
+              Your learning dashboard — track missions, unlock topics.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white">
-            {userConf.greeting}
-          </h1>
-          <p className="text-white/40 mt-2">
-            Aapka learning dashboard — progress track karo, topics unlock karo.
-          </p>
+
+          {overall.currentChapter && (
+            <Link href={continuePath}>
+              <motion.div
+                whileHover={{ scale: 1.04, boxShadow: "0 8px 24px rgba(37,99,235,0.2)" }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-3 px-6 py-3.5 rounded-xl text-white text-sm font-bold shrink-0 shadow-sm"
+                style={{ background: conf.color }}
+              >
+                <Play size={15} className="fill-white" />
+                Continue Learning
+              </motion.div>
+            </Link>
+          )}
         </motion.div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-          {[
-            {
-              icon: <BookOpen size={18} />,
-              value: `${completedChapters}/5`,
-              label: "Chapters Done",
-              color: "#00E5FF",
-            },
-            {
-              icon: <Target size={18} />,
-              value: `${overallStats.topicsPassed}`,
-              label: "Topics Passed",
-              color: "#8A5CFF",
-            },
-            {
-              icon: <TrendingUp size={18} />,
-              value: `${overallStats.mcqAccuracy}%`,
-              label: "MCQ Accuracy",
-              color: "#00FF95",
-            },
-            {
-              icon: <Clock size={18} />,
-              value: formatTime(overallStats.timeSpentMinutes),
-              label: "Time Spent",
-              color: "#FF7A00",
-            },
-          ].map((s, i) => (
+        {/* ── Stat Cards ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          {statCards.map((s, i) => (
             <motion.div
               key={s.label}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="glass rounded-xl p-4 border border-white/8"
+              transition={{ delay: i * 0.07 }}
+              className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"
             >
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center mb-3"
-                style={{ background: `${s.color}15`, color: s.color }}
+                className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
+                style={{ background: s.bg, color: s.color }}
               >
                 {s.icon}
               </div>
-              <div className="text-2xl font-black text-white">{s.value}</div>
-              <div className="text-xs text-white/40 mt-0.5">{s.label}</div>
+              <div className="text-2xl font-black text-gray-900 mb-0.5">{s.value}</div>
+              <div className="text-xs text-gray-400 font-medium">{s.label}</div>
             </motion.div>
           ))}
         </div>
 
-        {/* Continue learning */}
-        {overallStats.currentChapter && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-10"
-          >
-            <Link href={continuePath}>
-              <div
-                className="glass rounded-2xl p-6 border border-white/10 hover:border-accent-cyan/40 transition-all group flex items-center gap-5 relative overflow-hidden"
-                style={{ boxShadow: "0 0 0 0 rgba(0,229,255,0)" }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLElement).style.boxShadow = "0 0 20px rgba(0,229,255,0.1)")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 0 rgba(0,229,255,0)")
-                }
-              >
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(0,229,255,0.04) 0%, transparent 60%)",
-                  }}
-                />
-
-                <div className="w-14 h-14 rounded-xl bg-accent-cyan/10 flex items-center justify-center shrink-0">
-                  <Play size={22} className="text-accent-cyan ml-0.5" />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-mono font-bold text-accent-cyan uppercase tracking-widest mb-1">
-                    Continue Learning
+        {/* ── Continue Banner ── */}
+        {overall.currentChapter && (() => {
+          const currentCh = CHAPTERS.find((c) => c.id === overall.currentChapter);
+          const accentColor = CH_COLORS[overall.currentChapter] || "#2563EB";
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mb-8"
+            >
+              <Link href={continuePath}>
+                <motion.div
+                  whileHover={{ y: -2, boxShadow: `0 8px 32px ${accentColor}18` }}
+                  className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 group cursor-pointer transition-all"
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white shrink-0"
+                    style={{ background: accentColor }}
+                  >
+                    <Play size={20} className="fill-white ml-0.5" />
                   </div>
-                  <div className="text-white font-bold text-lg">
-                    {CHAPTERS.find((c) => c.id === overallStats.currentChapter)?.title}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Continue where you left off</div>
+                    <div className="font-bold text-gray-900">{currentCh?.title}</div>
+                    {overall.currentTopic && (
+                      <div className="text-xs text-gray-400 mt-0.5 font-mono">Topic {overall.currentTopic}</div>
+                    )}
                   </div>
-                  {overallStats.currentTopic && (
-                    <div className="text-white/40 text-sm mt-0.5 font-mono">
-                      Topic {overallStats.currentTopic}
-                    </div>
-                  )}
-                </div>
+                  <ArrowRight size={16} className="text-gray-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all shrink-0" />
+                </motion.div>
+              </Link>
+            </motion.div>
+          );
+        })()}
 
-                <ArrowRight
-                  size={20}
-                  className="text-white/20 group-hover:text-accent-cyan transition-all shrink-0 group-hover:translate-x-1"
-                />
-              </div>
-            </Link>
-          </motion.div>
-        )}
+        {/* ── Chapter Grid ── */}
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="font-bold text-gray-900 text-lg">All Chapters</h2>
+          <div className="flex items-center gap-3 text-xs font-semibold">
+            <span className="text-green-600">{doneCount} done</span>
+            <span className="text-blue-600">{activeCount} in progress</span>
+          </div>
+        </div>
 
-        {/* Chapter overview */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
         >
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xl font-bold text-white">All Chapters</h2>
-            <div className="flex items-center gap-3 text-xs font-mono">
-              <span className="text-accent-green">{completedChapters} done</span>
-              <span className="text-accent-cyan">{inProgressChapters} in progress</span>
-              <span className="text-white/30">{lockedChapters} locked</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {chapterCards.map(({ ch, stats, isLocked, isCompleted }, i) => (
+          {chapters.map(({ ch, stats, isLocked, isCompleted }, i) => {
+            const accent = CH_COLORS[ch.id] || "#2563EB";
+            return (
               <motion.div
                 key={ch.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 + i * 0.07 }}
               >
                 <Link href={isLocked ? "#" : `/chapter/${ch.id}`}>
                   <motion.div
-                    whileHover={!isLocked ? { y: -4 } : {}}
-                    className={`glass rounded-xl p-5 border transition-all h-full ${
+                    whileHover={!isLocked ? { y: -4, boxShadow: `0 8px 28px ${accent}14` } : {}}
+                    className={`bg-white rounded-2xl p-5 border transition-all h-full ${
                       isLocked
-                        ? "border-white/5 opacity-50 cursor-not-allowed"
+                        ? "border-gray-100 opacity-55 cursor-not-allowed"
                         : isCompleted
-                        ? "border-accent-green/20 hover:border-accent-green/40"
-                        : `border-white/8 hover:border-white/20`
+                        ? "border-green-200 cursor-pointer"
+                        : "border-gray-100 cursor-pointer"
                     }`}
-                    style={
-                      !isLocked
-                        ? { borderColor: `${ch.accentColor}25` }
-                        : {}
-                    }
+                    style={{ boxShadow: "0 1px 8px rgba(0,0,0,0.04)" }}
                   >
+                    {/* Top row */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center text-xl"
-                          style={{ background: `${ch.accentColor}15` }}
+                          className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                          style={{ background: isLocked ? "#F1F5F9" : `${accent}12` }}
                         >
-                          {isLocked ? "🔒" : ch.icon}
+                          {isLocked ? <Lock size={16} className="text-gray-300" /> : ch.icon}
                         </div>
                         <div>
                           <div
-                            className="text-xs font-mono font-bold"
-                            style={{ color: isLocked ? "rgba(255,255,255,0.3)" : ch.accentColor }}
+                            className="text-[10px] font-bold tracking-widest uppercase"
+                            style={{ color: isLocked ? "#CBD5E1" : accent }}
                           >
-                            CH {ch.number}
+                            CH {String(ch.number).padStart(2, "0")}
                           </div>
-                          <h3 className="text-sm font-bold text-white leading-tight">{ch.title}</h3>
+                          <div className="font-bold text-gray-900 text-sm leading-tight">{ch.title}</div>
                         </div>
                       </div>
-
                       {isCompleted ? (
-                        <CheckCircle size={16} className="text-accent-green shrink-0" />
+                        <CheckCircle size={16} className="text-green-500 shrink-0" />
                       ) : isLocked ? (
-                        <Lock size={14} className="text-white/20 shrink-0" />
+                        <Lock size={14} className="text-gray-200 shrink-0" />
                       ) : null}
                     </div>
 
-                    {/* Progress bar */}
+                    {/* Progress */}
                     <div className="space-y-1.5">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-white/40">
-                          {stats.completed}/{ch.totalTopics} topics
-                        </span>
-                        <span
-                          className="font-mono font-bold"
-                          style={{ color: isLocked ? "rgba(255,255,255,0.2)" : ch.accentColor }}
-                        >
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-400">{stats.completed}/{ch.totalTopics} topics</span>
+                        <span className="font-bold" style={{ color: isLocked ? "#CBD5E1" : accent }}>
                           {stats.percent}%
                         </span>
                       </div>
-                      <div className="h-1.5 bg-white/6 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         <motion.div
                           className="h-full rounded-full"
                           initial={{ width: 0 }}
                           animate={{ width: `${stats.percent}%` }}
-                          transition={{ duration: 0.8, delay: 0.5 + i * 0.07 }}
-                          style={{ background: isLocked ? "rgba(255,255,255,0.15)" : ch.accentColor }}
+                          transition={{ duration: 0.9, delay: 0.5 + i * 0.07 }}
+                          style={{ background: isCompleted ? "#10B981" : isLocked ? "#E2E8F0" : accent }}
                         />
                       </div>
                     </div>
                   </motion.div>
                 </Link>
               </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Quick links */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-          className="mt-10 glass rounded-xl p-5 border border-white/8"
-        >
-          <h3 className="text-sm font-semibold text-white/60 mb-4 uppercase tracking-wider text-xs">Quick Access</h3>
-          <div className="flex flex-wrap gap-3">
-            {CHAPTERS.map((ch) => (
-              <Link key={ch.id} href={`/chapter/${ch.id}`}>
-                <div
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass border border-white/8 hover:border-white/20 text-sm text-white/60 hover:text-white transition-all"
-                >
-                  <span>{ch.icon}</span>
-                  <span>{ch.title}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+            );
+          })}
         </motion.div>
       </main>
     </div>
@@ -308,17 +251,13 @@ export default function DashboardPage() {
 
 function DashboardSkeleton() {
   return (
-    <div className="min-h-screen bg-bg-primary pt-24 px-4 max-w-7xl mx-auto">
-      <div className="h-10 skeleton rounded-xl w-64 mb-10" />
-      <div className="grid grid-cols-4 gap-4 mb-10">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-24 skeleton rounded-xl" />
-        ))}
+    <div className="min-h-screen bg-[#F5F8FF] pt-24 px-4 max-w-7xl mx-auto">
+      <div className="h-32 skeleton rounded-2xl mb-8" />
+      <div className="grid grid-cols-4 gap-4 mb-8">
+        {[...Array(4)].map((_, i) => <div key={i} className="h-24 skeleton rounded-2xl" />)}
       </div>
       <div className="grid grid-cols-3 gap-5">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-36 skeleton rounded-xl" />
-        ))}
+        {[...Array(5)].map((_, i) => <div key={i} className="h-36 skeleton rounded-2xl" />)}
       </div>
     </div>
   );

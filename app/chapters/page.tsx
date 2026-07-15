@@ -3,10 +3,120 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Lock, CheckCircle, BookOpen } from "lucide-react";
+import { ArrowRight, Lock, CheckCircle, Clock, BookOpen, HelpCircle, BarChart2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { CHAPTERS } from "@/lib/chapters";
 import { getCurrentUser, getChapterStats, type UserName } from "@/lib/storage";
+
+interface ChapterVisual {
+  accent: string;
+  bg: string;
+  lightBg: string;
+  tag: string;
+  difficulty: string;
+  diffColor: string;
+  diffBg: string;
+  hours: string;
+  illustration: React.ReactNode;
+}
+
+const VISUALS: Record<string, ChapterVisual> = {
+  "1": {
+    accent: "#2563EB", bg: "from-blue-50 to-white", lightBg: "#EEF3FF",
+    tag: "Startup", difficulty: "Beginner", diffColor: "#059669", diffBg: "#ECFDF5",
+    hours: "2–3h",
+    illustration: (
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="32" stroke="#2563EB" strokeWidth="1.5" strokeDasharray="6 4" opacity="0.3"/>
+        <circle cx="40" cy="40" r="22" fill="#EEF3FF" stroke="#2563EB" strokeWidth="1.5" opacity="0.6"/>
+        <path d="M40 28 L44 36 L52 37 L46 43 L48 51 L40 47 L32 51 L34 43 L28 37 L36 36 Z"
+          fill="#2563EB" opacity="0.8"/>
+        <circle cx="40" cy="16" r="3" fill="#2563EB" opacity="0.5"/>
+        <circle cx="64" cy="40" r="3" fill="#2563EB" opacity="0.5"/>
+        <circle cx="40" cy="64" r="3" fill="#2563EB" opacity="0.3"/>
+        <circle cx="16" cy="40" r="3" fill="#2563EB" opacity="0.3"/>
+        <line x1="40" y1="18" x2="40" y2="26" stroke="#2563EB" strokeWidth="1" opacity="0.4"/>
+        <line x1="62" y1="40" x2="54" y2="40" stroke="#2563EB" strokeWidth="1" opacity="0.4"/>
+      </svg>
+    ),
+  },
+  "2": {
+    accent: "#0EA5E9", bg: "from-sky-50 to-white", lightBg: "#F0F9FF",
+    tag: "Computer", difficulty: "Beginner", diffColor: "#059669", diffBg: "#ECFDF5",
+    hours: "3–4h",
+    illustration: (
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <rect x="12" y="22" width="56" height="38" rx="4" fill="#F0F9FF" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.7"/>
+        <rect x="12" y="22" width="56" height="10" rx="4" fill="#E0F2FE" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.5"/>
+        <rect x="20" y="30" width="8" height="6" rx="1" fill="#0EA5E9" opacity="0.5"/>
+        <rect x="36" y="30" width="8" height="6" rx="1" fill="#0EA5E9" opacity="0.5"/>
+        <rect x="52" y="30" width="8" height="6" rx="1" fill="#0EA5E9" opacity="0.5"/>
+        <rect x="20" y="42" width="18" height="10" rx="2" fill="#0EA5E9" opacity="0.3"/>
+        <rect x="44" y="42" width="16" height="10" rx="2" fill="#0EA5E9" opacity="0.2"/>
+        <path d="M40 60 L40 68" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M28 68 L52 68" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  "3": {
+    accent: "#7C3AED", bg: "from-violet-50 to-white", lightBg: "#F3EEFF",
+    tag: "Networking", difficulty: "Intermediate", diffColor: "#D97706", diffBg: "#FFFBEB",
+    hours: "4–5h",
+    illustration: (
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="24" stroke="#7C3AED" strokeWidth="1" opacity="0.2"/>
+        <circle cx="40" cy="40" r="5" fill="#7C3AED" opacity="0.9"/>
+        {[
+          [20, 20], [60, 20], [20, 60], [60, 60], [40, 14], [66, 40],
+        ].map(([cx, cy], i) => (
+          <g key={i}>
+            <circle cx={cx} cy={cy} r="4" fill="#7C3AED" opacity={0.4 + i * 0.08}/>
+            <line x1="40" y1="40" x2={cx} y2={cy} stroke="#7C3AED" strokeWidth="1" opacity="0.25"/>
+          </g>
+        ))}
+        <circle cx="40" cy="40" r="14" stroke="#7C3AED" strokeWidth="1" strokeDasharray="3 3" opacity="0.3"/>
+      </svg>
+    ),
+  },
+  "4": {
+    accent: "#059669", bg: "from-emerald-50 to-white", lightBg: "#ECFDF5",
+    tag: "Linux CLI", difficulty: "Intermediate", diffColor: "#D97706", diffBg: "#FFFBEB",
+    hours: "4–5h",
+    illustration: (
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <rect x="10" y="16" width="60" height="48" rx="5" fill="#ECFDF5" stroke="#059669" strokeWidth="1.5" opacity="0.7"/>
+        <rect x="10" y="16" width="60" height="12" rx="5" fill="#D1FAE5" stroke="#059669" strokeWidth="1.5" opacity="0.5"/>
+        <circle cx="22" cy="22" r="3" fill="#EF4444" opacity="0.7"/>
+        <circle cx="32" cy="22" r="3" fill="#FBBF24" opacity="0.7"/>
+        <circle cx="42" cy="22" r="3" fill="#10B981" opacity="0.7"/>
+        <text x="18" y="40" fontFamily="monospace" fontSize="9" fill="#059669" opacity="0.9">$ sudo ls -la</text>
+        <text x="18" y="52" fontFamily="monospace" fontSize="8" fill="#059669" opacity="0.6">drwxr-xr-x  3 root</text>
+        <rect x="18" y="56" width="3" height="9" rx="1" fill="#059669" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0;0.9" dur="1s" repeatCount="indefinite"/>
+        </rect>
+      </svg>
+    ),
+  },
+  "5": {
+    accent: "#DC2626", bg: "from-red-50 to-white", lightBg: "#FEF2F2",
+    tag: "Kali Linux", difficulty: "Advanced", diffColor: "#DC2626", diffBg: "#FEF2F2",
+    hours: "5–6h",
+    illustration: (
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="28" stroke="#DC2626" strokeWidth="1" opacity="0.15"/>
+        <circle cx="40" cy="40" r="20" stroke="#DC2626" strokeWidth="1" opacity="0.2" strokeDasharray="4 3"/>
+        <circle cx="40" cy="40" r="4" fill="#DC2626" opacity="0.9"/>
+        {/* Radar sweep */}
+        <path d="M40 40 L40 14" stroke="#DC2626" strokeWidth="2" strokeLinecap="round" opacity="0.8">
+          <animateTransform attributeName="transform" type="rotate" from="0 40 40" to="360 40 40" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <circle cx="28" cy="24" r="3" fill="#DC2626" opacity="0.5"/>
+        <circle cx="55" cy="35" r="2.5" fill="#DC2626" opacity="0.7"/>
+        <circle cx="32" cy="52" r="2" fill="#DC2626" opacity="0.4"/>
+      </svg>
+    ),
+  },
+};
 
 export default function ChaptersPage() {
   const [user, setUser] = useState<UserName | null>(null);
@@ -18,120 +128,164 @@ export default function ChaptersPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <div className="fixed inset-0 cyber-grid-bg opacity-50 pointer-events-none" />
 
-      <main className="relative pt-28 pb-16 px-4 max-w-5xl mx-auto">
-        <motion.div
-          initial={mounted ? { opacity: 0, y: -10 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-10 text-center"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-accent-cyan/20 text-xs font-mono font-bold text-accent-cyan mb-5">
-            <BookOpen size={12} />
-            COURSE CURRICULUM
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white mb-4">
-            All <span className="text-accent-cyan">Chapters</span>
-          </h1>
-          <p className="text-white/40 max-w-xl mx-auto">
-            5 chapters · 30+ topics · 450+ MCQs · Structured path from zero to ethical hacking
-          </p>
-        </motion.div>
+      {/* Page hero */}
+      <div className="bg-gradient-to-b from-[#F5F8FF] to-white pt-28 pb-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={mounted ? { opacity: 0, y: -16 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <p className="text-sm font-semibold text-blue-600 mb-3">Choose Your Path</p>
+            <h1
+              className="font-black text-gray-900 mb-4"
+              style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)", letterSpacing: "-0.03em" }}
+            >
+              All <span className="text-blue-600">Chapters</span>
+            </h1>
+            <p className="text-gray-400 max-w-md mx-auto">
+              Structured path from zero to ethical hacking expert.
+            </p>
+          </motion.div>
+        </div>
+      </div>
 
-        <div className="space-y-5">
+      <main className="px-4 pb-24 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {CHAPTERS.map((ch, i) => {
-            const stats =
-              mounted && user
-                ? getChapterStats(user, ch.id, ch.totalTopics)
-                : { completed: 0, unlocked: 0, total: ch.totalTopics, percent: 0 };
-            const isLocked = mounted && user ? stats.unlocked === 0 : false;
+            const vis = VISUALS[ch.id];
+            const stats = mounted && user
+              ? getChapterStats(user, ch.id, ch.totalTopics)
+              : { completed: 0, unlocked: 0, total: ch.totalTopics, percent: 0 };
+            const isLocked    = mounted && user ? stats.unlocked === 0 : false;
             const isCompleted = mounted && user ? stats.completed === ch.totalTopics : false;
 
             return (
               <motion.div
                 key={ch.id}
-                initial={mounted ? { opacity: 0, y: 20 } : false}
+                initial={mounted ? { opacity: 0, y: 28 } : false}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: mounted ? i * 0.1 : 0 }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
               >
-                <Link href={`/chapter/${ch.id}`}>
+                <Link href={isLocked ? "#" : `/chapter/${ch.id}`}>
                   <motion.div
-                    whileHover={{ y: -3, x: 4 }}
-                    className={`glass rounded-2xl p-6 border transition-all group relative overflow-hidden ${
-                      isCompleted ? "border-accent-green/25" : "border-white/8 hover:border-white/20"
+                    whileHover={!isLocked ? {
+                      y: -6,
+                      boxShadow: `0 16px 48px ${vis.accent}18`,
+                      borderColor: `${vis.accent}30`,
+                    } : {}}
+                    transition={{ type: "spring", stiffness: 280, damping: 28 }}
+                    className={`group relative bg-white rounded-2xl border overflow-hidden transition-all ${
+                      isLocked ? "opacity-60 cursor-not-allowed border-gray-100" :
+                      isCompleted ? "border-green-200" : "border-gray-100 cursor-pointer"
                     }`}
+                    style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.05)" }}
                   >
-                    {/* Hover glow */}
+                    {/* Gradient top bar */}
                     <div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl"
+                      className="h-1 w-full"
                       style={{
-                        background: `linear-gradient(135deg, ${ch.accentColor}08 0%, transparent 60%)`,
+                        background: isCompleted
+                          ? "linear-gradient(90deg,#10B981,#34D399)"
+                          : `linear-gradient(90deg, ${vis.accent}, ${vis.accent}88)`,
                       }}
                     />
 
-                    <div className="flex items-center gap-5 relative">
-                      {/* Number */}
-                      <div
-                        className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl shrink-0"
-                        style={{ background: `${ch.accentColor}12` }}
-                      >
-                        {ch.icon}
-                      </div>
+                    <div className="p-6 sm:p-7">
+                      <div className="flex items-start gap-5">
+                        {/* Illustration */}
+                        <div
+                          className="shrink-0 w-20 h-20 rounded-2xl flex items-center justify-center"
+                          style={{ background: vis.lightBg }}
+                        >
+                          {isLocked ? <Lock size={28} className="text-gray-300" /> : vis.illustration}
+                        </div>
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                          <span
-                            className="text-xs font-mono font-bold"
-                            style={{ color: ch.accentColor }}
-                          >
-                            CHAPTER {ch.number}
-                          </span>
-                          {isCompleted && (
-                            <span className="text-xs bg-accent-green/10 text-accent-green border border-accent-green/20 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
-                              <CheckCircle size={10} /> Completed
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <span
+                              className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                              style={{ color: vis.accent, background: `${vis.accent}12` }}
+                            >
+                              CH {String(ch.number).padStart(2, "0")} · {vis.tag}
                             </span>
-                          )}
-                          {isLocked && (
-                            <span className="text-xs bg-white/5 text-white/30 border border-white/8 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
-                              <Lock size={10} /> Locked
+                            {isCompleted && (
+                              <span className="flex items-center gap-1 text-[11px] font-bold text-green-600 bg-green-50 border border-green-200 px-2.5 py-0.5 rounded-full">
+                                <CheckCircle size={10} /> Complete
+                              </span>
+                            )}
+                            {isLocked && (
+                              <span className="flex items-center gap-1 text-[11px] font-bold text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-0.5 rounded-full">
+                                <Lock size={10} /> Locked
+                              </span>
+                            )}
+                          </div>
+
+                          <h2 className="font-bold text-gray-900 text-lg leading-snug mb-1 group-hover:text-blue-600 transition-colors"
+                            style={{ color: isLocked ? undefined : undefined }}>
+                            {ch.title}
+                          </h2>
+                          <p className="text-gray-400 text-sm leading-relaxed mb-4">{ch.description}</p>
+
+                          {/* Stats row */}
+                          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 mb-4">
+                            <span className="flex items-center gap-1.5">
+                              <BookOpen size={12} className="text-gray-300" />
+                              <strong className="text-gray-600">{ch.totalTopics}</strong> Topics
                             </span>
+                            <span className="flex items-center gap-1.5">
+                              <HelpCircle size={12} className="text-gray-300" />
+                              <strong className="text-gray-600">~{ch.totalTopics * 15}</strong> MCQs
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <Clock size={12} className="text-gray-300" />
+                              <strong className="text-gray-600">{vis.hours}</strong>
+                            </span>
+                            <span
+                              className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                              style={{ color: vis.diffColor, background: vis.diffBg }}
+                            >
+                              {vis.difficulty}
+                            </span>
+                          </div>
+
+                          {/* Progress */}
+                          {mounted && user && !isLocked && (
+                            <div className="space-y-1.5">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="text-gray-400">{stats.completed}/{ch.totalTopics} topics</span>
+                                <span className="font-bold" style={{ color: isCompleted ? "#059669" : vis.accent }}>
+                                  {stats.percent}%
+                                </span>
+                              </div>
+                              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <motion.div
+                                  className="h-full rounded-full"
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${stats.percent}%` }}
+                                  transition={{ duration: 1, delay: 0.3 + i * 0.1, ease: "easeOut" }}
+                                  style={{ background: isCompleted ? "#10B981" : vis.accent }}
+                                />
+                              </div>
+                            </div>
                           )}
                         </div>
 
-                        <h2 className="text-lg sm:text-xl font-black text-white mb-0.5">
-                          {ch.title}
-                        </h2>
-                        <p className="text-white/40 text-sm">{ch.description}</p>
-
-                        {/* Progress */}
-                        {mounted && user && (
-                          <div className="mt-3 flex items-center gap-3">
-                            <div className="flex-1 h-1 bg-white/6 rounded-full overflow-hidden">
-                              <motion.div
-                                className="h-full rounded-full"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${stats.percent}%` }}
-                                transition={{ duration: 0.8, delay: 0.3 + i * 0.1 }}
-                                style={{ background: ch.accentColor }}
-                              />
-                            </div>
-                            <span
-                              className="text-xs font-mono font-bold shrink-0"
-                              style={{ color: ch.accentColor }}
-                            >
-                              {stats.completed}/{ch.totalTopics}
-                            </span>
+                        {/* Arrow */}
+                        {!isLocked && (
+                          <div className="shrink-0 self-center">
+                            <ArrowRight
+                              size={16}
+                              className="text-gray-200 group-hover:text-blue-500 group-hover:translate-x-1 transition-all"
+                            />
                           </div>
                         )}
                       </div>
-
-                      <ArrowRight
-                        size={18}
-                        className="text-white/15 group-hover:text-white/60 transition-all shrink-0 group-hover:translate-x-1"
-                        style={{ color: ch.accentColor + "60" }}
-                      />
                     </div>
                   </motion.div>
                 </Link>

@@ -1,0 +1,255 @@
+The current UI is unacceptable.
+
+Do NOT improve it.
+
+Delete the entire current design and redesign everything from scratch.
+
+The current page looks like a cheap admin dashboard.
+
+I DO NOT WANT A DASHBOARD.
+
+I WANT A PREMIUM STORY-DRIVEN LEARNING EXPERIENCE.
+
+The website should emotionally feel like entering a secret hacker academy.
+
+The user should feel excited before reading the first chapter.
+
+===================================================
+
+DESIGN STYLE
+
+Premium
+Modern
+Luxury
+Cinematic
+Cyberpunk
+Minimal
+Apple-level polish
+
+Dark Theme Only.
+
+No Bootstrap.
+
+No generic cards.
+
+No boring rectangles.
+
+No simple lists.
+
+Everything should be custom designed.
+
+===================================================
+
+REFERENCES
+
+Take inspiration from these websites.
+
+Apple
+https://www.apple.com
+
+Nothing
+https://nothing.tech
+
+Framer
+https://www.framer.com
+
+Linear
+https://linear.app
+
+Vercel
+https://vercel.com
+
+Stripe
+https://stripe.com
+
+Awwwards
+https://www.awwwards.com
+
+Readymag
+https://readymag.com
+
+Do not copy.
+
+Take inspiration from animation quality, spacing, typography and premium feeling.
+
+===================================================
+
+OVERALL EXPERIENCE
+
+This should feel like:
+
+Cyberpunk 2077
+
+TRON Legacy
+
+Mr Robot
+
+The Matrix
+
+Iron Man Jarvis
+
+combined with Apple UI.
+
+===================================================
+
+HOME PAGE
+
+Huge cinematic hero.
+
+Animated particles.
+
+Moving network lines.
+
+Glowing background.
+
+Mouse interaction.
+
+Parallax.
+
+Floating glass objects.
+
+Large typography.
+
+Premium CTA.
+
+Scrolling animations.
+
+===================================================
+
+CHAPTER PAGE
+
+Every chapter must have its own identity.
+
+Startup
+
+Blue futuristic startup theme.
+
+Computer Works
+
+Animated motherboard.
+
+CPU.
+
+RAM.
+
+Electric signals.
+
+Networking
+
+World map.
+
+Packets moving.
+
+IP connections.
+
+Animated network nodes.
+
+Linux
+
+Real terminal.
+
+Typing effect.
+
+Green hacker environment.
+
+Kali Linux
+
+Purple hacker lab.
+
+Security dashboard.
+
+Terminal.
+
+Radar.
+
+===================================================
+
+READING EXPERIENCE
+
+Markdown should NOT look like markdown.
+
+Make it feel like reading a premium digital magazine.
+
+Huge typography.
+
+Lots of spacing.
+
+Beautiful quotes.
+
+Animated headings.
+
+Timeline effects.
+
+Floating illustrations.
+
+Glass panels.
+
+===================================================
+
+MCQ SECTION
+
+One question at a time.
+
+Smooth animation.
+
+Premium cards.
+
+Beautiful transitions.
+
+Progress indicator.
+
+Instant feedback.
+
+Score screen.
+
+===================================================
+
+LOGIN
+
+Remove ugly login button.
+
+Create premium profile selection.
+
+Only 3 users.
+
+TWH
+
+Prince
+
+Ashish
+
+Each profile should look like a futuristic identity card.
+
+===================================================
+
+ANIMATIONS
+
+GSAP
+
+Framer Motion
+
+Page transitions.
+
+Fade.
+
+Scale.
+
+3D tilt.
+
+Hover glow.
+
+Mouse lighting.
+
+===================================================
+
+IMPORTANT
+
+Do NOT use templates.
+
+Do NOT use admin dashboards.
+
+Do NOT use ordinary cards.
+
+Do NOT make it look like a documentation website.
+
+Make it look like the world's most premium cybersecurity academy.
