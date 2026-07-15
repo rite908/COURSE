@@ -1,0 +1,2 @@
+- [Tailwind v4 + Next.js 16 setup](tailwind-v4-nextjs16.md) — @theme syntax, no tailwind.config.ts, @tailwindcss/postcss required
+- [Framer Motion SSR fix](framer-motion-ssr.md) — use `initial={mounted ? {...} : false}` to avoid invisible content on SSR

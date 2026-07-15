@@ -1,0 +1,483 @@
+# MASTER PROMPT FOR REPLIT
+
+Tum ek senior Full-Stack Developer, UI/UX Designer aur Product Architect ho.
+
+Mujhe ek **premium, modern, production-level Ethical Hacking Course Website** banani hai. Yeh koi normal LMS ya blog nahi honi chahiye. Iska feel Netflix, Apple aur Linear.app jaisa premium hona chahiye, lekin theme Cyber Security aur Hacker aesthetic ki honi chahiye.
+
+## Project Name
+
+**Technical White Hat (TWH) Academy**
+
+## Main Goal
+
+Yeh website beginner se expert tak Ethical Hacking aur Computer Fundamentals sikhane ke liye hogi.
+
+Mere paas already complete Markdown chapters hain (Chapter 1, Chapter 2, Chapter 3, Chapter 4, Chapter 5...) aur website automatically unhi Markdown files ko beautiful format mein render kare.
+
+---
+
+# Theme
+
+Pure Cyberpunk + Hacker + Premium.
+
+Dark Theme Only.
+
+Color Palette:
+
+* Background: #05070A
+* Secondary Background: #0B1118
+* Primary Accent: Cyan (#00E5FF)
+* Secondary Accent: Purple (#8A5CFF)
+* Green Accent: #00FF95
+* Text: White
+* Secondary Text: #9CA3AF
+
+Glassmorphism use karo.
+
+Animations buttery smooth honi chahiye.
+
+No cheap templates.
+
+No Bootstrap.
+
+Tailwind CSS use karo.
+
+Framer Motion animations use karo.
+
+---
+
+# Landing Page
+
+Sabse upar ek cinematic Hero Section ho.
+
+Background mein animated particles.
+
+Network lines.
+
+Glow effects.
+
+Binary rain.
+
+Cyber Grid.
+
+Hero Heading:
+
+Technical White Hat
+
+Subtitle:
+
+Learn Computers From Zero To Ethical Hacking Like Never Before.
+
+Ek premium Start Learning button.
+
+Scroll indicator.
+
+---
+
+# Course Page
+
+Har chapter ka apna page hoga.
+
+Example:
+
+Chapter 1
+
+Chapter 2
+
+Chapter 3
+
+Chapter 4
+
+Chapter 5
+
+---
+
+Har chapter ke andar:
+
+## 1. Hero Intro
+
+Topic ke according background change hona chahiye.
+
+Examples:
+
+Networking chapter:
+
+Animated network nodes
+
+Packets
+
+Moving data
+
+IP connections
+
+Linux chapter:
+
+Terminal background
+
+Commands animation
+
+Green hacker style
+
+Kali Linux:
+
+Dark purple
+
+Terminal
+
+Cyber grid
+
+Computer Basics:
+
+Motherboard
+
+CPU
+
+RAM
+
+Circuit animation
+
+Startup chapter:
+
+Minimal futuristic
+
+Blue glowing background
+
+Har chapter ka intro us chapter ke mood ke hisaab se automatically unique lage.
+
+---
+
+## 2. Markdown Renderer
+
+Markdown files beautifully render hon.
+
+Support:
+
+Headings
+
+Tables
+
+Code blocks
+
+Quotes
+
+Lists
+
+Images
+
+MCQ formatting
+
+Notes
+
+Beautiful typography.
+
+---
+
+## 3. Reading Progress
+
+Top par progress bar.
+
+Left side chapter navigation.
+
+Current topic highlight.
+
+Estimated reading time.
+
+Word count.
+
+---
+
+## 4. Topic Navigation
+
+Previous Topic
+
+Next Topic
+
+Keyboard shortcuts.
+
+Smooth scrolling.
+
+Sticky navigation.
+
+---
+
+## 5. MCQ Section
+
+Har topic ke niche wahi MCQs show hon jo markdown mein already diye hue hain.
+
+Beautiful cards.
+
+One question at a time.
+
+Animated options.
+
+Instant feedback.
+
+Final score.
+
+---
+
+## 6. Progress Lock System
+
+Sabse important feature.
+
+Agar kisi topic ke MCQ mein total 10 questions hain:
+
+9 ya 10 correct:
+
+Unlock Next Topic
+
+8 ya usse kam:
+
+Next Topic locked.
+
+User ko dubara MCQ dena hoga.
+
+Without passing MCQ user next topic ya next page open nahi kar sakta.
+
+Progress permanently save honi chahiye.
+
+---
+
+# User System
+
+Is website mein signup nahi hoga.
+
+Sirf 3 pre-approved users honge.
+
+1. TWH
+2. Prince
+3. Ashish
+
+Login screen par cards dikhen.
+
+User sirf card select kare.
+
+Password ki zarurat nahi.
+
+Future mein password add karne ka structure ready rakho.
+
+Har user ki progress alag save hogi.
+
+---
+
+# Dashboard
+
+Login ke baad dashboard.
+
+Show:
+
+Continue Learning
+
+Completed Chapters
+
+Unlocked Chapters
+
+Locked Chapters
+
+Overall Progress
+
+Time Spent
+
+MCQ Accuracy
+
+Recent Activity
+
+Premium cards.
+
+---
+
+# Video Section
+
+Har topic ke niche ek Video Section.
+
+Abhi videos available nahi hain.
+
+Har card par likho:
+
+Coming Soon
+
+Premium glass cards.
+
+Future mein YouTube links ya self-hosted videos easily add ho sakein.
+
+---
+
+# Search
+
+Global Search.
+
+Instant search.
+
+Search inside:
+
+Topics
+
+MCQs
+
+Headings
+
+Keywords
+
+---
+
+# Notes
+
+Har user notes bana sake.
+
+Auto save.
+
+Markdown support.
+
+---
+
+# Bookmark
+
+Bookmark topic.
+
+Bookmark chapter.
+
+Quick access later.
+
+---
+
+# Theme Effects
+
+Glow hover.
+
+Glass cards.
+
+Mouse parallax.
+
+Smooth page transitions.
+
+Cyber cursor.
+
+Loading animations.
+
+Skeleton loading.
+
+Blur effects.
+
+---
+
+# Performance
+
+Lazy loading.
+
+Code splitting.
+
+Fast rendering.
+
+Mobile optimized.
+
+Desktop optimized.
+
+Tablet optimized.
+
+SEO friendly.
+
+PWA ready.
+
+Offline reading support.
+
+---
+
+# Tech Stack
+
+React
+
+Next.js
+
+Tailwind CSS
+
+Framer Motion
+
+TypeScript
+
+Markdown Parser
+
+Local Storage (abhi ke liye)
+
+Architecture future-ready rakho taki Firebase ya Supabase baad mein easily integrate ho sake.
+
+---
+
+# File Structure
+
+/components
+
+/pages
+
+/data
+
+/content
+
+/public
+
+/styles
+
+/lib
+
+/utils
+
+/hooks
+
+/content mein saare markdown chapters rahenge.
+
+Automatically read karo.
+
+Hardcode mat karo.
+
+---
+
+# Future Features (Structure Ready)
+
+Admin Panel
+
+Upload New Chapters
+
+Upload Videos
+
+MCQ Editor
+
+Analytics
+
+Certificates
+
+Leaderboard
+
+Achievements
+
+Dark/Light toggle (future)
+
+Discussion Section
+
+Downloads
+
+---
+
+# Final Requirement
+
+Website dekhte hi premium product lage.
+
+Har page ka design us chapter ke content ke hisaab se dynamically change ho.
+
+Transitions smooth hon.
+
+Typography outstanding ho.
+
+Animations professional hon.
+
+Responsive ho.
+
+Clean architecture follow karo.
+
+Maintainable code likho.
+
+Reusable components banao.
+
+No placeholder-quality UI.
+
+No generic LMS template.
+
+Mujhe aisi website chahiye jo dekhkar lage ki yeh ₹50 lakh budget se professionally design hui hai.
