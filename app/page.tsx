@@ -28,6 +28,7 @@ const WHY_CARDS = [
   { icon: <Award size={22} />,       color: "#D97706", bg: "#FFFBEB", title: "Certificate",         desc: "Earn certificate and showcase your skills."              },
 ];
 
+
 /* ─── Page ──────────────────────────────────── */
 
 export default function LandingPage() {

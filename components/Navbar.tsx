@@ -8,12 +8,12 @@ import { Menu, X, User, Sun, Moon, LogOut } from "lucide-react";
 import { getCurrentUser, clearCurrentUser, type UserName } from "@/lib/storage";
 
 const NAV_LINKS = [
-  { href: "/",         label: "Home"     },
-  { href: "/chapters", label: "Chapters" },
-  { href: "#roadmap",  label: "Roadmap"  },
-  { href: "#about",    label: "About"    },
-  { href: "#features", label: "Features" },
-  { href: "#contact",  label: "Contact"  },
+  { href: "/",          label: "Home"     },
+  { href: "/chapters",  label: "Chapters" },
+  { href: "/roadmap",   label: "Roadmap"  },
+  { href: "/about",     label: "About"    },
+  { href: "/features",  label: "Features" },
+  { href: "/contact",   label: "Contact"  },
 ];
 
 export default function Navbar() {
