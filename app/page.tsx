@@ -278,12 +278,12 @@ export default function LandingPage() {
       </section>
 
       {/* ── Stats row — outside overflow-hidden hero ── */}
-      <div className="px-6 sm:px-10 py-8" style={{ background: "linear-gradient(180deg,#EEF2FF 0%,#FFFFFF 100%)" }}>
+      <div className="px-4 sm:px-10 py-10" style={{ background: "linear-gradient(180deg,#EEF2FF 0%,#FFFFFF 100%)" }}>
         <motion.div
           initial={mounted ? { opacity: 0, y: 24 } : false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.55 }}
-          className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4"
+          className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"
         >
           {STATS.map((s, i) => (
             <motion.div
@@ -292,18 +292,24 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.07, duration: 0.4 }}
               whileHover={{ y: -5, boxShadow: `0 12px 32px ${s.color}18` }}
-              className="flex items-center gap-4 px-5 py-5 rounded-2xl bg-white border border-gray-100 transition-all cursor-default"
+              className="relative flex flex-col items-center text-center gap-2.5
+                sm:flex-row sm:items-center sm:text-left sm:gap-4
+                px-3 py-5 sm:px-5 sm:py-5 rounded-2xl bg-white border border-gray-100 overflow-hidden transition-all cursor-default"
               style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.05)" }}
             >
+              <span
+                className="absolute top-0 left-0 right-0 h-[3px]"
+                style={{ background: `linear-gradient(90deg, ${s.color}, transparent)` }}
+              />
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0"
                 style={{ background: s.bg, color: s.color }}
               >
                 {s.icon}
               </div>
-              <div>
-                <div className="font-black text-[1.6rem] text-gray-900 leading-none">{s.value}</div>
-                <div className="text-xs text-gray-400 font-semibold mt-1 uppercase tracking-wider">{s.label}</div>
+              <div className="min-w-0">
+                <div className="font-black text-[1.35rem] sm:text-[1.6rem] text-gray-900 leading-none whitespace-nowrap">{s.value}</div>
+                <div className="text-[10px] sm:text-xs text-gray-400 font-semibold mt-1.5 sm:mt-1 uppercase tracking-wider whitespace-nowrap">{s.label}</div>
               </div>
             </motion.div>
           ))}
@@ -313,7 +319,7 @@ export default function LandingPage() {
       {/* ════════════════════════════════════════
           WHY CHOOSE TWH ACADEMY
       ════════════════════════════════════════ */}
-      <section className="py-24 px-6" style={{ background: "#FFFFFF" }} id="features">
+      <section className="py-16 sm:py-24 px-4 sm:px-6" style={{ background: "#FFFFFF" }} id="features">
         <div className="max-w-6xl mx-auto">
 
           {/* Section header */}
@@ -321,14 +327,14 @@ export default function LandingPage() {
             initial={mounted ? { opacity: 0, y: 20 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="text-center mb-14"
+            className="text-center mb-10 sm:mb-14 px-2"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 mb-5">
               <Shield size={13} className="text-blue-500" />
               <span className="text-[12px] font-bold text-blue-600 uppercase tracking-wider">Why TWH Academy</span>
             </div>
             <h2
-              className="text-[2rem] font-black text-gray-900 mb-4"
+              className="text-[1.65rem] sm:text-[2rem] font-black text-gray-900 mb-4 leading-tight"
               style={{ letterSpacing: "-0.025em" }}
             >
               Everything you need to become a{" "}
@@ -339,13 +345,13 @@ export default function LandingPage() {
                 Cybersecurity Expert
               </span>
             </h2>
-            <p className="text-gray-400 text-base max-w-lg mx-auto">
+            <p className="text-gray-400 text-[15px] sm:text-base max-w-lg mx-auto">
               Structured curriculum, hands-on labs, and a community built for the next generation of ethical hackers.
             </p>
           </motion.div>
 
           {/* 5 cards — flex-wrap so the trailing row centers instead of hugging the left edge */}
-          <div className="flex flex-wrap justify-center gap-5">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-5">
             {WHY_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
@@ -353,10 +359,14 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08, duration: 0.45 }}
                 whileHover={{ y: -8, boxShadow: `0 20px 48px ${card.color}1A` }}
-                className="flex flex-col gap-4 bg-white rounded-2xl p-6 border border-gray-100 transition-all cursor-default
+                className="relative flex flex-col gap-4 bg-white rounded-2xl p-5 sm:p-6 border border-gray-100 overflow-hidden transition-all cursor-default
                   w-full sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]"
                 style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.05)" }}
               >
+                <span
+                  className="absolute top-0 left-0 right-0 h-[3px]"
+                  style={{ background: `linear-gradient(90deg, ${card.color}, transparent)` }}
+                />
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                   style={{ background: card.bg, color: card.color }}
