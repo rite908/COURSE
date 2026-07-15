@@ -244,38 +244,41 @@ export default function LandingPage() {
             </motion.div>
           </div>
 
-          {/* ── Stats row ── */}
-          <motion.div
-            initial={mounted ? { opacity: 0, y: 24 } : false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45, duration: 0.55 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 pb-8"
-          >
-            {STATS.map((s, i) => (
-              <motion.div
-                key={s.label}
-                initial={mounted ? { opacity: 0, y: 14 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + i * 0.07 }}
-                whileHover={{ y: -5, boxShadow: `0 12px 32px ${s.color}18` }}
-                className="flex items-center gap-4 px-5 py-5 rounded-2xl bg-white border border-gray-100 transition-all cursor-default"
-                style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.05)" }}
-              >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: s.bg, color: s.color }}
-                >
-                  {s.icon}
-                </div>
-                <div>
-                  <div className="font-black text-[1.6rem] text-gray-900 leading-none">{s.value}</div>
-                  <div className="text-xs text-gray-400 font-semibold mt-1 uppercase tracking-wider">{s.label}</div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </section>
+
+      {/* ── Stats row — outside overflow-hidden hero ── */}
+      <div className="px-6 sm:px-10 py-8" style={{ background: "linear-gradient(180deg,#EEF2FF 0%,#FFFFFF 100%)" }}>
+        <motion.div
+          initial={mounted ? { opacity: 0, y: 24 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.55 }}
+          className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+          {STATS.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={mounted ? { opacity: 0, y: 14 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 + i * 0.07 }}
+              whileHover={{ y: -5, boxShadow: `0 12px 32px ${s.color}18` }}
+              className="flex items-center gap-4 px-5 py-5 rounded-2xl bg-white border border-gray-100 transition-all cursor-default"
+              style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.05)" }}
+            >
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: s.bg, color: s.color }}
+              >
+                {s.icon}
+              </div>
+              <div>
+                <div className="font-black text-[1.6rem] text-gray-900 leading-none">{s.value}</div>
+                <div className="text-xs text-gray-400 font-semibold mt-1 uppercase tracking-wider">{s.label}</div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
 
       {/* ════════════════════════════════════════
           WHY CHOOSE TWH ACADEMY
@@ -285,7 +288,7 @@ export default function LandingPage() {
 
           {/* Section header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55 }}
@@ -317,7 +320,7 @@ export default function LandingPage() {
             {WHY_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
-                initial={{ opacity: 0, y: 24 }}
+                initial={mounted ? { opacity: 0, y: 24 } : false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.45 }}
@@ -347,7 +350,7 @@ export default function LandingPage() {
       <section className="py-20 px-6" style={{ background: "#F4F8FF" }}>
         <div className="max-w-2xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={mounted ? { opacity: 0, y: 24 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.55 }}
