@@ -120,10 +120,8 @@ export default function LandingPage() {
         className="relative overflow-hidden"
         style={{
           background: "linear-gradient(150deg, #FFFFFF 0%, #F5F8FF 55%, #EEF2FF 100%)",
-          /* Navbar is 72 px; add top + bottom breathing room */
-          paddingTop: "calc(72px + 56px)",
-          paddingBottom: 40,
-          minHeight: "100vh",
+          paddingTop: "calc(72px + 48px)",
+          paddingBottom: 48,
         }}
       >
         {/* Dot grid */}
@@ -139,7 +137,7 @@ export default function LandingPage() {
         <div className="absolute pointer-events-none" style={{ right: "-8%",  top: "-5%", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 65%)" }} />
 
         {/* ── Inner wrapper — constrained width, no overflow ── */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="relative z-10" style={{ maxWidth: 1280, margin: "0 auto", padding: "0 40px" }}>
 
           {/* Two-column grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-6 items-center">
