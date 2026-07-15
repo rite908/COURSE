@@ -288,9 +288,8 @@ export default function LandingPage() {
           {STATS.map((s, i) => (
             <motion.div
               key={s.label}
-              initial={{ opacity: 0, y: 14 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              initial={mounted ? { opacity: 0, y: 14 } : false}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.07, duration: 0.4 }}
               whileHover={{ y: -5, boxShadow: `0 12px 32px ${s.color}18` }}
               className="flex items-center gap-4 px-5 py-5 rounded-2xl bg-white border border-gray-100 transition-all cursor-default"
@@ -319,9 +318,8 @@ export default function LandingPage() {
 
           {/* Section header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
             className="text-center mb-14"
           >
@@ -351,9 +349,8 @@ export default function LandingPage() {
             {WHY_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                initial={mounted ? { opacity: 0, y: 24 } : false}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08, duration: 0.45 }}
                 whileHover={{ y: -8, boxShadow: `0 20px 48px ${card.color}1A` }}
                 className="flex flex-col gap-4 bg-white rounded-2xl p-6 border border-gray-100 transition-all cursor-default"
@@ -381,9 +378,8 @@ export default function LandingPage() {
       <section className="py-20 px-6" style={{ background: "#F4F8FF" }}>
         <div className="max-w-2xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={mounted ? { opacity: 0, y: 24 } : false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
             className="relative rounded-3xl p-14 text-center overflow-hidden"
             style={{
