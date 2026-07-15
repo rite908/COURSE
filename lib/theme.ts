@@ -5,10 +5,13 @@ import { useEffect, useState, useCallback } from "react";
 const KEY = "twh-theme";
 const EVENT = "twh-theme-change";
 
-/** Dispatch a custom event so ALL useTheme() hooks update together */
+/** Dispatch a custom event so ALL useTheme() hooks update together.
+ *  Deferred with setTimeout so it never fires during another component's render. */
 function broadcast(isDark: boolean) {
   document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-  window.dispatchEvent(new CustomEvent(EVENT, { detail: isDark }));
+  setTimeout(() => {
+    window.dispatchEvent(new CustomEvent(EVENT, { detail: isDark }));
+  }, 0);
 }
 
 /** Returns { isDark, toggle } — shared across all components via custom event */
