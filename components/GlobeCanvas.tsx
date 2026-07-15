@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 interface Point3D { x: number; y: number; z: number }
-interface Arc { lat1: number; lng1: number; lat2: number; lng2: number; progress: number; speed: number; color: string }
+interface Arc { lat1: number; lng1: number; lat2: number; lng2: number; progress: number; speed: number; hue: number }
 
 function toXYZ(lat: number, lng: number, r: number): Point3D {
   const phi   = (90 - lat) * (Math.PI / 180);
@@ -15,30 +15,23 @@ function toXYZ(lat: number, lng: number, r: number): Point3D {
   };
 }
 
-function rotateY(p: Point3D, angle: number): Point3D {
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  return { x: p.x * cos + p.z * sin, y: p.y, z: -p.x * sin + p.z * cos };
+function rotateY(p: Point3D, a: number): Point3D {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
 }
-
-function rotateX(p: Point3D, angle: number): Point3D {
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  return { x: p.x, y: p.y * cos - p.z * sin, z: p.y * sin + p.z * cos };
+function rotateX(p: Point3D, a: number): Point3D {
+  const c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
 }
 
 const CITIES = [
-  { lat: 40.7, lng: -74.0, label: "NY" },
-  { lat: 51.5, lng: -0.1,  label: "LO" },
-  { lat: 35.7, lng: 139.7, label: "TK" },
-  { lat: 28.6, lng: 77.2,  label: "DL" },
-  { lat: 1.3,  lng: 103.8, label: "SG" },
-  { lat: -23.5, lng: -46.6, label: "SP" },
-  { lat: 48.9, lng: 2.3,   label: "PA" },
-  { lat: 37.6, lng: -122.4, label: "SF" },
-  { lat: 55.7, lng: 37.6,  label: "MO" },
-  { lat: 31.2, lng: 121.5, label: "SH" },
+  { lat: 40.7, lng: -74.0 }, { lat: 51.5, lng: -0.1  }, { lat: 35.7, lng: 139.7 },
+  { lat: 28.6, lng:  77.2 }, { lat:  1.3, lng: 103.8 }, { lat: 48.9, lng:   2.3 },
+  { lat: 37.6, lng:-122.4 }, { lat: 55.7, lng:  37.6 }, { lat: 31.2, lng: 121.5 },
+  { lat:-23.5, lng: -46.6 }, { lat: 19.4, lng: -99.1 }, { lat: 59.9, lng:  30.3 },
+  { lat: 25.2, lng:  55.3 }, { lat:-33.9, lng: 151.2 }, { lat: 41.0, lng:  29.0 },
+  { lat: 43.7, lng: -79.4 }, { lat: 52.4, lng:  13.4 }, { lat: 39.9, lng: 116.4 },
 ];
-
-const ARC_COLORS = ["#2563EB", "#0EA5E9", "#7C3AED"];
 
 export default function GlobeCanvas({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -52,72 +45,75 @@ export default function GlobeCanvas({ className = "" }: { className?: string }) 
     if (!ctx) return;
 
     const resize = () => {
-      const parent = canvas.parentElement;
-      const size = parent
-        ? Math.min(parent.offsetWidth, parent.offsetHeight)
-        : 400;
-      canvas.width  = size || 400;
-      canvas.height = size || 400;
+      // Use the canvas's own bounding rect (works with CSS w-full h-full)
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.round(rect.width)  || canvas.parentElement?.offsetWidth  || 500;
+      const h = Math.round(rect.height) || canvas.parentElement?.offsetHeight || 500;
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width  = w;
+        canvas.height = h;
+      }
     };
     resize();
-    // Delay one frame to let layout settle
     requestAnimationFrame(resize);
     const observer = new ResizeObserver(() => requestAnimationFrame(resize));
-    observer.observe(canvas.parentElement ?? canvas);
+    observer.observe(canvas);
 
-    const arcs: Arc[] = Array.from({ length: 8 }, (_, i) => ({
+    const arcs: Arc[] = Array.from({ length: 14 }, (_, i) => ({
       lat1: CITIES[i % CITIES.length].lat,
       lng1: CITIES[i % CITIES.length].lng,
-      lat2: CITIES[(i + 3) % CITIES.length].lat,
-      lng2: CITIES[(i + 3) % CITIES.length].lng,
+      lat2: CITIES[(i + 5) % CITIES.length].lat,
+      lng2: CITIES[(i + 5) % CITIES.length].lng,
       progress: Math.random(),
-      speed: 0.003 + Math.random() * 0.003,
-      color: ARC_COLORS[i % ARC_COLORS.length],
+      speed: 0.002 + Math.random() * 0.003,
+      hue: Math.random() > 0.6 ? 260 : 220, // mix blue & purple
     }));
 
     const TILT = -0.3;
 
     const draw = () => {
       const w = canvas.width, h = canvas.height;
-      const R = w * 0.38;
+      const R  = w * 0.40;
       const cx = w / 2, cy = h / 2;
-      angleRef.current += 0.003;
+      angleRef.current += 0.0025;
       ctx.clearRect(0, 0, w, h);
 
-      // Outer glow ring
-      const grad = ctx.createRadialGradient(cx, cy, R * 0.85, cx, cy, R * 1.15);
-      grad.addColorStop(0, "rgba(37,99,235,0.08)");
-      grad.addColorStop(1, "rgba(37,99,235,0)");
+      // ── Outer glow ring (CSS-like blur via compositing) ──
+      const outerGlow = ctx.createRadialGradient(cx, cy, R * 0.7, cx, cy, R * 1.3);
+      outerGlow.addColorStop(0,   "rgba(67,97,238,0)");
+      outerGlow.addColorStop(0.6, "rgba(67,97,238,0.12)");
+      outerGlow.addColorStop(1,   "rgba(124,58,237,0)");
       ctx.beginPath();
-      ctx.arc(cx, cy, R * 1.15, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
+      ctx.arc(cx, cy, R * 1.3, 0, Math.PI * 2);
+      ctx.fillStyle = outerGlow;
       ctx.fill();
 
-      // Globe base
-      const sphereGrad = ctx.createRadialGradient(cx - R * 0.2, cy - R * 0.2, R * 0.05, cx, cy, R);
-      sphereGrad.addColorStop(0, "rgba(239,246,255,0.9)");
-      sphereGrad.addColorStop(0.6, "rgba(219,234,254,0.5)");
-      sphereGrad.addColorStop(1, "rgba(147,197,253,0.2)");
+      // ── Globe base sphere (filled glow) ──
+      const sphereFill = ctx.createRadialGradient(cx - R * 0.15, cy - R * 0.15, R * 0.02, cx, cy, R);
+      sphereFill.addColorStop(0,   "rgba(147,197,253,0.32)");
+      sphereFill.addColorStop(0.4, "rgba(99,179,237,0.22)");
+      sphereFill.addColorStop(0.75,"rgba(67,97,238,0.16)");
+      sphereFill.addColorStop(1,   "rgba(124,58,237,0.08)");
       ctx.beginPath();
       ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.fillStyle = sphereGrad;
+      ctx.fillStyle = sphereFill;
       ctx.fill();
 
-      // Lat/Lng lines
-      const totalLat = 8, totalLng = 12;
-      ctx.strokeStyle = "rgba(37,99,235,0.12)";
-      ctx.lineWidth = 0.6;
-
-      for (let i = 1; i < totalLat; i++) {
-        const lat = -90 + (180 / totalLat) * i;
+      // ── Latitude lines ──
+      const latCount = 10;
+      for (let i = 1; i < latCount; i++) {
+        const lat = -90 + (180 / latCount) * i;
         ctx.beginPath();
         let first = true;
-        for (let j = 0; j <= 72; j++) {
-          const lng = -180 + (360 / 72) * j;
+        for (let j = 0; j <= 80; j++) {
+          const lng = -180 + (360 / 80) * j;
           let p = toXYZ(lat, lng, R);
           p = rotateY(p, angleRef.current);
           p = rotateX(p, TILT);
-          if (p.z >= 0) {
+          if (p.z >= -R * 0.1) {
+            const alpha = Math.max(0, (p.z + R) / (2 * R));
+            ctx.strokeStyle = `rgba(147,197,253,${0.15 + alpha * 0.35})`;
+            ctx.lineWidth = 0.7;
             const px = cx + p.x, py = cy - p.y;
             first ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
             first = false;
@@ -126,16 +122,21 @@ export default function GlobeCanvas({ className = "" }: { className?: string }) 
         ctx.stroke();
       }
 
-      for (let i = 0; i < totalLng; i++) {
-        const lng = -180 + (360 / totalLng) * i;
+      // ── Longitude lines ──
+      const lngCount = 16;
+      for (let i = 0; i < lngCount; i++) {
+        const lng = -180 + (360 / lngCount) * i;
         ctx.beginPath();
         let first = true;
-        for (let j = 0; j <= 72; j++) {
-          const lat = -90 + (180 / 72) * j;
+        for (let j = 0; j <= 80; j++) {
+          const lat = -90 + (180 / 80) * j;
           let p = toXYZ(lat, lng, R);
           p = rotateY(p, angleRef.current);
           p = rotateX(p, TILT);
-          if (p.z >= 0) {
+          if (p.z >= -R * 0.1) {
+            const alpha = Math.max(0, (p.z + R) / (2 * R));
+            ctx.strokeStyle = `rgba(147,197,253,${0.12 + alpha * 0.3})`;
+            ctx.lineWidth = 0.6;
             const px = cx + p.x, py = cy - p.y;
             first ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
             first = false;
@@ -144,93 +145,124 @@ export default function GlobeCanvas({ className = "" }: { className?: string }) 
         ctx.stroke();
       }
 
-      // Arcs
+      // ── Arcs ──
       arcs.forEach((arc) => {
         arc.progress += arc.speed;
-        if (arc.progress > 1) arc.progress = 0;
+        if (arc.progress > 1.3) arc.progress = 0;
 
-        const steps = 60;
-        const pts: { x: number; y: number; visible: boolean }[] = [];
+        const steps  = 60;
+        const pts: { x: number; y: number; z: number }[] = [];
 
         for (let i = 0; i <= steps; i++) {
-          const t = i / steps;
-          const lat = arc.lat1 + (arc.lat2 - arc.lat1) * t;
-          const lng = arc.lat1 + (arc.lng2 - arc.lng1) * t;
-          // Proper interpolation
+          const t    = i / steps;
           const lat2 = arc.lat1 * (1 - t) + arc.lat2 * t;
           const lng2 = arc.lng1 * (1 - t) + arc.lng2 * t;
-          const h2   = Math.sin(Math.PI * t) * R * 0.3;
-          let p  = toXYZ(lat2, lng2, R + h2);
+          const lift = Math.sin(Math.PI * t) * R * 0.28;
+          let p  = toXYZ(lat2, lng2, R + lift);
           p = rotateY(p, angleRef.current);
           p = rotateX(p, TILT);
-          pts.push({ x: cx + p.x, y: cy - p.y, visible: p.z >= 0 });
+          pts.push({ ...p, x: cx + p.x, y: cy - p.y });
         }
 
-        // Draw trail (last 30% of arc behind progress point)
-        const trailStart = Math.max(0, arc.progress - 0.3);
+        // Trail
+        const trailStart = Math.max(0, arc.progress - 0.35);
+        const startIdx   = Math.floor(trailStart * steps);
+        const endIdx     = Math.min(steps, Math.floor(arc.progress * steps));
+
         ctx.beginPath();
         let drawing = false;
-        for (let i = Math.floor(trailStart * steps); i <= Math.floor(arc.progress * steps); i++) {
+        for (let i = startIdx; i <= endIdx; i++) {
           const pt = pts[i];
-          if (!pt || !pt.visible) { drawing = false; continue }
+          if (!pt || pt.z < -R * 0.05) { drawing = false; continue }
+          const alpha = ((i - startIdx) / Math.max(1, endIdx - startIdx));
           if (!drawing) { ctx.moveTo(pt.x, pt.y); drawing = true }
           else ctx.lineTo(pt.x, pt.y);
         }
-        const trailGrad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        trailGrad.addColorStop(0, `${arc.color}00`);
-        trailGrad.addColorStop(1, arc.color);
-        ctx.strokeStyle = arc.color;
-        ctx.lineWidth = 1.5;
-        ctx.globalAlpha = 0.7;
+        const isBlue = arc.hue === 220;
+        ctx.strokeStyle = isBlue ? "rgba(99,179,237,0.8)" : "rgba(167,139,250,0.7)";
+        ctx.lineWidth = 1.2;
+        ctx.shadowBlur  = 8;
+        ctx.shadowColor = isBlue ? "#60A5FA" : "#A78BFA";
         ctx.stroke();
-        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
 
         // Packet dot
-        const dotIdx = Math.floor(arc.progress * steps);
+        const dotIdx = Math.min(endIdx, Math.floor(arc.progress * steps));
         const dot = pts[dotIdx];
-        if (dot && dot.visible) {
+        if (dot && dot.z >= -R * 0.05) {
           ctx.beginPath();
-          ctx.arc(dot.x, dot.y, 3, 0, Math.PI * 2);
-          ctx.fillStyle = arc.color;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = arc.color;
+          ctx.arc(dot.x, dot.y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle   = isBlue ? "#93C5FD" : "#C4B5FD";
+          ctx.shadowBlur  = 12;
+          ctx.shadowColor = isBlue ? "#3B82F6" : "#7C3AED";
           ctx.fill();
           ctx.shadowBlur = 0;
         }
       });
 
-      // City nodes
-      CITIES.forEach((city) => {
+      // ── City nodes ──
+      CITIES.forEach((city, idx) => {
         let p = toXYZ(city.lat, city.lng, R);
         p = rotateY(p, angleRef.current);
         p = rotateX(p, TILT);
-        if (p.z < 0) return;
+        if (p.z < -R * 0.05) return;
         const px = cx + p.x, py = cy - p.y;
+        const depthAlpha = Math.max(0.3, (p.z + R) / (2 * R));
+        const isPurple = idx % 3 === 2;
 
-        // Ping ring
+        // Pulse ring
         ctx.beginPath();
-        ctx.arc(px, py, 5, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(37,99,235,0.25)";
+        ctx.arc(px, py, 7, 0, Math.PI * 2);
+        ctx.strokeStyle = isPurple
+          ? `rgba(196,181,253,${depthAlpha * 0.35})`
+          : `rgba(147,197,253,${depthAlpha * 0.35})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+        ctx.strokeStyle = isPurple
+          ? `rgba(196,181,253,${depthAlpha * 0.6})`
+          : `rgba(147,197,253,${depthAlpha * 0.6})`;
         ctx.lineWidth = 1;
         ctx.stroke();
 
+        // Inner dot
         ctx.beginPath();
-        ctx.arc(px, py, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "#2563EB";
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = "#2563EB";
+        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle   = isPurple ? `rgba(216,180,254,${depthAlpha})` : `rgba(147,197,253,${depthAlpha})`;
+        ctx.shadowBlur  = 12;
+        ctx.shadowColor = isPurple ? "#A78BFA" : "#60A5FA";
         ctx.fill();
         ctx.shadowBlur = 0;
       });
+
+      // ── Edge highlight (rim light) ──
+      const edgeGrad = ctx.createRadialGradient(cx, cy, R * 0.7, cx, cy, R);
+      edgeGrad.addColorStop(0,   "rgba(99,179,237,0)");
+      edgeGrad.addColorStop(0.65,"rgba(99,179,237,0)");
+      edgeGrad.addColorStop(0.85,"rgba(147,197,253,0.18)");
+      edgeGrad.addColorStop(1,   "rgba(147,197,253,0.28)");
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fillStyle = edgeGrad;
+      ctx.fill();
+
+      // ── Inner specular highlight (top-left) ──
+      const specGrad = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.3, 0, cx - R * 0.3, cy - R * 0.3, R * 0.55);
+      specGrad.addColorStop(0,   "rgba(219,234,254,0.18)");
+      specGrad.addColorStop(1,   "rgba(219,234,254,0)");
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fillStyle = specGrad;
+      ctx.fill();
 
       animRef.current = requestAnimationFrame(draw);
     };
 
     draw();
-    return () => {
-      cancelAnimationFrame(animRef.current);
-      observer.disconnect();
-    };
+    return () => { cancelAnimationFrame(animRef.current); observer.disconnect(); };
   }, []);
 
   return (

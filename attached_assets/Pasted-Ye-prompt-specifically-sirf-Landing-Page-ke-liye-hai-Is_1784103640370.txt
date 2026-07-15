@@ -1,0 +1,309 @@
+Ye prompt specifically **sirf Landing Page** ke liye hai. Isme Replit ko poora direction milega aur woh homepage ko premium banayega.
+
+---
+
+# TWH Academy Landing Page Redesign Prompt
+
+The attached image is the exact design direction I want.
+
+Do not copy it pixel-by-pixel, but recreate the same premium feeling, layout quality and visual hierarchy.
+
+The current landing page is too empty and unfinished.
+
+I want a premium Apple-quality cybersecurity academy homepage.
+
+## General Theme
+
+Modern
+
+Premium
+
+Minimal
+
+Bright Theme
+
+White Background
+
+Blue + Purple Gradient
+
+Soft Glassmorphism
+
+Soft Shadows
+
+Rounded Components
+
+Luxury Typography
+
+Smooth Animations
+
+No cheap dashboard feeling.
+
+No Bootstrap components.
+
+Everything should feel custom designed.
+
+---
+
+## Navigation Bar
+
+Sticky Navigation.
+
+Transparent at top.
+
+Blur on scroll.
+
+Logo on left.
+
+TWH Academy
+
+Small subtitle
+
+Ethical Hacking Academy
+
+Center Navigation
+
+Home
+
+Chapters
+
+Roadmap
+
+About
+
+Features
+
+Contact
+
+Right Side
+
+Choose Profile Button
+
+Theme Toggle
+
+Everything should animate smoothly.
+
+---
+
+## Hero Section
+
+Split Layout
+
+Left = Content
+
+Right = Premium Illustration
+
+Large Heading
+
+Master Computers.
+
+Hack The World.
+
+The heading should use bold typography similar to Apple.
+
+The second line should have a blue-purple gradient.
+
+Subtitle
+
+From zero to ethical hacking hero.
+
+A complete roadmap for future cybersecurity experts.
+
+Buttons
+
+Primary
+
+Start Your Journey
+
+Secondary
+
+Explore Chapters
+
+Rounded Buttons
+
+Soft Hover
+
+Magnetic Hover Effect
+
+---
+
+## Right Side Hero
+
+Create a huge glowing futuristic 3D globe.
+
+Animated network connections.
+
+Soft particles.
+
+Floating IP address cards.
+
+Packet transfer animation.
+
+City silhouette at the bottom.
+
+A hooded cybersecurity learner standing in front of the globe.
+
+Do NOT make it look scary.
+
+It should represent learning, not hacking criminals.
+
+---
+
+## Floating Elements
+
+Around the globe show small glass cards:
+
+IP Scanning
+
+Packet Analysis
+
+450+ MCQs
+
+30+ Topics
+
+5+ Chapters
+
+100% Practical
+
+Animated floating motion.
+
+---
+
+## Background
+
+Soft white gradient.
+
+Blue glow.
+
+Purple glow.
+
+Light network lines.
+
+Tiny particles.
+
+Everything should feel alive but minimal.
+
+No empty white space.
+
+---
+
+## Statistics Section
+
+Below Hero.
+
+Premium floating cards.
+
+Show
+
+5+ Chapters
+
+30+ Topics
+
+450+ MCQs
+
+100% Practical
+
+Each card should have
+
+Icon
+
+Value
+
+Small description
+
+Hover animation
+
+Glassmorphism
+
+---
+
+## Why Choose TWH Academy
+
+Premium cards
+
+Beginner Friendly
+
+Practical Learning
+
+Industry Relevant
+
+Progress Tracking
+
+Certificate Ready
+
+Nice Icons
+
+Soft shadows
+
+Rounded corners
+
+Hover Lift Animation
+
+---
+
+## Animations
+
+Use Framer Motion.
+
+Fade In.
+
+Scale.
+
+Slide Up.
+
+Mouse Parallax.
+
+Floating Animation.
+
+Glow Hover.
+
+Smooth Scroll.
+
+---
+
+## UI Rules
+
+Large whitespace.
+
+Apple-level spacing.
+
+Modern typography.
+
+No clutter.
+
+No generic cards.
+
+No admin dashboard design.
+
+No boring rectangles.
+
+Every section should feel premium.
+
+---
+
+## Tech
+
+React
+
+Next.js
+
+Tailwind CSS
+
+Framer Motion
+
+TypeScript
+
+---
+
+## Final Goal
+
+When someone opens this website they should immediately think:
+
+"This is a premium cybersecurity academy."
+
+The landing page should look comparable to Apple, Stripe, Linear and Nothing.
+
+Do NOT build the Chapter page yet.
+
+Focus ONLY on making the Landing Page perfect.
+
+Do not continue until I approve the homepage.

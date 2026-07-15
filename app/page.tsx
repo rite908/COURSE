@@ -1,81 +1,87 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, ChevronDown, Shield, Brain, Lock, Zap, Target, CheckCircle } from "lucide-react";
-import GlobeCanvas from "@/components/GlobeCanvas";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import {
+  ArrowRight, BookOpen, Layers, HelpCircle, Target,
+  User, FlaskConical, Briefcase, TrendingUp, Award, Shield,
+} from "lucide-react";
+import HeroScene from "@/components/HeroScene";
 import { CHAPTERS } from "@/lib/chapters";
 import { getCurrentUser } from "@/lib/storage";
 
+/* ─────────────── Data ─────────────── */
+
 const STATS = [
-  { value: "5+",    label: "Chapters" },
-  { value: "30+",   label: "Topics" },
-  { value: "450+",  label: "MCQs" },
-  { value: "100%",  label: "Practical" },
+  { icon: <BookOpen size={22} />,  value: "5+",   label: "Chapters",  color: "#2563EB", bg: "#EEF3FF" },
+  { icon: <Layers   size={22} />,  value: "30+",  label: "Topics",    color: "#7C3AED", bg: "#F3EEFF" },
+  { icon: <HelpCircle size={22}/>, value: "450+", label: "MCQs",      color: "#0EA5E9", bg: "#F0F9FF" },
+  { icon: <Target   size={22} />,  value: "100%", label: "Practical", color: "#059669", bg: "#ECFDF5" },
 ];
 
-const FEATURES = [
+const WHY_CARDS = [
   {
-    icon: <Brain size={20} />,
-    color: "#2563EB",
-    bg: "#EEF3FF",
-    title: "Hinglish Mein Seekho",
-    desc: "Complex concepts asaan Hinglish mein — jaise dost samjha raha ho.",
+    icon: <User size={18} />,
+    color: "#2563EB", bg: "#EEF3FF",
+    title: "Beginner Friendly",
+    desc: "Start from zero. No prior knowledge required.",
   },
   {
-    icon: <Lock size={20} />,
-    color: "#7C3AED",
-    bg: "#F3EEFF",
-    title: "Smart Lock System",
-    desc: "MCQ pass karo, next topic unlock karo. Genuine understanding mandatory.",
+    icon: <FlaskConical size={18} />,
+    color: "#7C3AED", bg: "#F3EEFF",
+    title: "Practical Learning",
+    desc: "Real world labs, tools and projects.",
   },
   {
-    icon: <Target size={20} />,
-    color: "#059669",
-    bg: "#ECFDF5",
-    title: "Hands-On Tasks",
-    desc: "Har topic ke baad ek real practical challenge. No rote learning.",
+    icon: <Briefcase size={18} />,
+    color: "#0EA5E9", bg: "#F0F9FF",
+    title: "Industry Relevant",
+    desc: "Skills that are in demand in cybersecurity industry.",
   },
   {
-    icon: <Zap size={20} />,
-    color: "#D97706",
-    bg: "#FFFBEB",
-    title: "Cinematic Experience",
-    desc: "Premium animations, buttery smooth UI. Padhai boring nahi lagegi.",
+    icon: <TrendingUp size={18} />,
+    color: "#059669", bg: "#ECFDF5",
+    title: "Progress Tracking",
+    desc: "Track your progress and measure your mastery.",
   },
   {
-    icon: <CheckCircle size={20} />,
-    color: "#0EA5E9",
-    bg: "#F0F9FF",
-    title: "Structured Path",
-    desc: "Computer fundamentals se ethical hacking tak — ek clear learning roadmap.",
-  },
-  {
-    icon: <Shield size={20} />,
-    color: "#2563EB",
-    bg: "#EEF3FF",
-    title: "Absolute Beginner",
-    desc: "Zero knowledge assumed. Jahan bhi ho — yahan se shuru karo.",
+    icon: <Award size={18} />,
+    color: "#D97706", bg: "#FFFBEB",
+    title: "Certificate Ready",
+    desc: "Earn certificate and showcase your skills.",
   },
 ];
 
-const CHAPTER_META: Record<string, { accent: string; tag: string; difficulty: string; hours: string }> = {
-  "1": { accent: "#2563EB", tag: "🚀 STARTUP",    difficulty: "Easy",   hours: "2h" },
-  "2": { accent: "#0EA5E9", tag: "💻 COMPUTER",   difficulty: "Easy",   hours: "3h" },
-  "3": { accent: "#7C3AED", tag: "🌐 NETWORKING", difficulty: "Medium", hours: "4h" },
-  "4": { accent: "#059669", tag: "🐧 LINUX",      difficulty: "Medium", hours: "4h" },
-  "5": { accent: "#DC2626", tag: "⚔️ KALI",        difficulty: "Hard",   hours: "5h" },
-};
+/* ─────────────── Page ─────────────── */
 
 export default function LandingPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<string | null>(null);
+  const router  = useRouter();
+  const [user,    setUser]    = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+
+  // Parallax
   const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 600], [0, 60]);
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const leftY  = useTransform(scrollY, [0, 600], [0, 40]);
+  const rightY = useTransform(scrollY, [0, 600], [0, -30]);
+
+  // Magnetic mouse effect for primary CTA
+  const btnRef   = useRef<HTMLButtonElement>(null);
+  const btnX     = useMotionValue(0);
+  const btnY     = useMotionValue(0);
+  const springX  = useSpring(btnX, { stiffness: 300, damping: 30 });
+  const springY  = useSpring(btnY, { stiffness: 300, damping: 30 });
+
+  const handleMagnet = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!btnRef.current) return;
+    const rect   = btnRef.current.getBoundingClientRect();
+    const cx     = rect.left + rect.width  / 2;
+    const cy     = rect.top  + rect.height / 2;
+    btnX.set((e.clientX - cx) * 0.35);
+    btnY.set((e.clientY - cy) * 0.35);
+  };
+  const handleMagnetLeave = () => { btnX.set(0); btnY.set(0); };
 
   useEffect(() => {
     setUser(getCurrentUser());
@@ -87,377 +93,283 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
 
-      {/* ─────────────── HERO ─────────────── */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-white via-[#F5F8FF] to-[#EEF3FF]">
+      {/* ═══════════════════════════════
+          HERO
+      ═══════════════════════════════ */}
+      <section
+        className="relative min-h-[100svh] flex items-center overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #FFFFFF 0%, #F5F8FF 50%, #EEF3FF 100%)" }}
+      >
+        {/* Background effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Dot grid */}
+          <div className="absolute inset-0 opacity-[0.45]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #C7D2FE 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
+          {/* Blue radial glow — left */}
+          <div className="absolute -left-48 top-1/4"
+            style={{ width: 680, height: 680, borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(37,99,235,0.07) 0%, transparent 70%)" }} />
+          {/* Purple radial glow — right */}
+          <div className="absolute -right-40 top-0"
+            style={{ width: 600, height: 600, borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%)" }} />
+          {/* Bottom-left subtle */}
+          <div className="absolute -bottom-40 left-1/4"
+            style={{ width: 500, height: 500, borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(14,165,233,0.05) 0%, transparent 70%)" }} />
+        </div>
 
-        {/* Dot grid */}
-        <div className="absolute inset-0 dot-grid opacity-60 pointer-events-none" />
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-[80px] pb-12
+          grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-8 items-center min-h-[100svh]">
 
-        {/* Blue radial glow top-left */}
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 70%)" }} />
+          {/* ── Left: Content ── */}
+          <motion.div style={{ y: leftY }} className="flex flex-col justify-center">
 
-        {/* Cyan glow bottom-right */}
-        <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)" }} />
-
-        <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-24 pb-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen"
-        >
-          {/* Left — Text */}
-          <div>
             {/* Badge */}
             <motion.div
               initial={mounted ? { opacity: 0, y: -16 } : false}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-xs font-semibold text-blue-600 mb-8"
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 self-start px-4 py-1.5 rounded-full
+                border border-blue-200 bg-white/80 backdrop-blur-sm text-xs font-semibold text-blue-700 mb-8
+                shadow-sm"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              India's Premier Ethical Hacking Academy
+              <Shield size={11} className="text-blue-500" />
+              India's Premier Ethical Hacking{" "}
+              <span className="text-blue-500">Academy</span>
             </motion.div>
 
             {/* Heading */}
             <motion.h1
-              initial={mounted ? { opacity: 0, y: 30 } : false}
+              initial={mounted ? { opacity: 0, y: 32 } : false}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }}
-              className="text-5xl sm:text-6xl xl:text-7xl font-black leading-none tracking-tight text-gray-900 mb-6"
-              style={{ letterSpacing: "-0.03em" }}
+              transition={{ delay: 0.12, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              className="font-black leading-[0.95] tracking-tight mb-6"
+              style={{ fontSize: "clamp(2.4rem, 5vw, 4.2rem)", letterSpacing: "-0.035em" }}
             >
-              Master Computers.
+              <span className="text-gray-900">Master Computers.</span>
               <br />
-              <span className="text-blue-600">Hack The World.</span>
+              <span
+                style={{
+                  background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                Hack The World.
+              </span>
             </motion.h1>
 
             {/* Subtitle */}
             <motion.p
               initial={mounted ? { opacity: 0, y: 20 } : false}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.5 }}
-              className="text-lg text-gray-500 leading-relaxed mb-10 max-w-lg"
+              transition={{ delay: 0.28, duration: 0.55 }}
+              className="text-[1.05rem] text-gray-500 leading-relaxed mb-10 max-w-[440px]"
             >
-              Zero se shuru karo ethical hacking hero tak.{" "}
-              <span className="text-gray-700 font-medium">A complete roadmap for future cybersecurity experts.</span>
+              From zero to ethical hacking hero.
+              <br />
+              A complete roadmap for future cybersecurity experts.
             </motion.p>
 
             {/* CTAs */}
             <motion.div
               initial={mounted ? { opacity: 0, y: 20 } : false}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.5 }}
-              className="flex flex-col sm:flex-row gap-3 mb-14"
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="flex flex-col sm:flex-row gap-3 mb-16"
             >
+              {/* Primary — magnetic */}
               <motion.button
-                whileHover={{ scale: 1.03, boxShadow: "0 8px 30px rgba(37,99,235,0.3)" }}
+                ref={btnRef}
+                style={{ x: springX, y: springY }}
+                onMouseMove={handleMagnet}
+                onMouseLeave={handleMagnetLeave}
+                whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handleStart}
-                className="flex items-center justify-center gap-2.5 px-8 py-3.5 bg-blue-600 text-white text-sm font-bold rounded-xl shadow-sm transition-all"
+                className="relative flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl
+                  text-[15px] font-bold text-white overflow-hidden"
+                style={{
+                  background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
+                  boxShadow: "0 8px 32px rgba(37,99,235,0.32), 0 2px 8px rgba(0,0,0,0.06)",
+                }}
               >
-                {user ? "Continue Learning" : "Start Your Journey"}
-                <ArrowRight size={16} />
+                {/* Shimmer */}
+                <motion.div
+                  className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)",
+                  }}
+                  animate={{ x: ["-100%", "200%"] }}
+                  transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2 }}
+                />
+                <span className="relative z-10">
+                  {user ? "Continue Learning" : "Start Your Journey"}
+                </span>
+                <motion.div
+                  className="relative z-10 w-7 h-7 rounded-full bg-white/20 flex items-center justify-center"
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ArrowRight size={14} />
+                </motion.div>
               </motion.button>
+
+              {/* Secondary */}
               <Link href="/chapters">
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="flex items-center justify-center gap-2 px-8 py-3.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
+                  whileHover={{ scale: 1.02, borderColor: "rgba(37,99,235,0.3)" }}
+                  className="flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl
+                    text-[15px] font-semibold text-gray-600 bg-white border border-gray-200
+                    hover:bg-gray-50 transition-all cursor-pointer"
+                  style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
                 >
+                  <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-gray-400" />
+                  </div>
                   Explore Chapters
                 </motion.div>
               </Link>
             </motion.div>
 
-            {/* Stats */}
+            {/* Stats row */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="flex items-center gap-8 flex-wrap"
+              transition={{ delay: 0.6 }}
+              className="grid grid-cols-4 gap-3 max-w-[420px]"
             >
               {STATS.map((s, i) => (
                 <motion.div
                   key={s.label}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={mounted ? { opacity: 0, y: 12 } : false}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + i * 0.08 }}
+                  transition={{ delay: 0.6 + i * 0.07 }}
+                  whileHover={{ y: -4, boxShadow: "0 8px 24px rgba(37,99,235,0.1)" }}
+                  className="flex flex-col items-center justify-center py-3 px-2 rounded-2xl
+                    bg-white border border-gray-100 cursor-default transition-shadow"
+                  style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
                 >
-                  <div className="text-2xl font-black text-gray-900">{s.value}</div>
-                  <div className="text-xs text-gray-400 font-medium mt-0.5">{s.label}</div>
+                  <span style={{ color: s.color }} className="mb-1.5">{s.icon}</span>
+                  <div className="font-black text-xl text-gray-900 leading-none">{s.value}</div>
+                  <div className="text-[10px] text-gray-400 font-medium mt-0.5">{s.label}</div>
                 </motion.div>
               ))}
             </motion.div>
-          </div>
+          </motion.div>
 
-          {/* Right — Globe */}
+          {/* ── Right: Hero Scene ── */}
           <motion.div
-            initial={mounted ? { opacity: 0, scale: 0.9 } : false}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            style={{ y: rightY }}
             className="relative flex items-center justify-center"
           >
-            {/* Outer decoration rings */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[420px] h-[420px] rounded-full border border-blue-100"
-                style={{ borderStyle: "dashed" }}
-              />
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[340px] h-[340px] rounded-full border border-blue-100"
-              />
-            </div>
-
-            {/* Floating badges */}
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-[15%] right-[5%] bg-white rounded-xl px-3.5 py-2.5 shadow-lg border border-gray-100 z-10"
-            >
-              <div className="text-xs font-bold text-gray-900">🔐 SSL Encrypted</div>
-              <div className="text-[10px] text-gray-400 mt-0.5">Secure learning env</div>
-            </motion.div>
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute bottom-[15%] left-[5%] bg-white rounded-xl px-3.5 py-2.5 shadow-lg border border-gray-100 z-10"
-            >
-              <div className="text-xs font-bold text-gray-900">⚡ Live Progress</div>
-              <div className="text-[10px] text-gray-400 mt-0.5">Track your mastery</div>
-            </motion.div>
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute top-[50%] right-[-2%] bg-blue-600 rounded-xl px-3.5 py-2.5 shadow-lg z-10"
-            >
-              <div className="text-xs font-bold text-white">450+ MCQs</div>
-              <div className="text-[10px] text-blue-200 mt-0.5">Quiz bank ready</div>
-            </motion.div>
-
-            {/* Globe */}
-            <div className="relative w-[360px] h-[360px] sm:w-[420px] sm:h-[420px]">
-              <GlobeCanvas />
+            <div className="relative w-full" style={{ paddingBottom: "100%" }}>
+              <div className="absolute inset-0">
+                <HeroScene />
+              </div>
             </div>
           </motion.div>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.4 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-gray-400"
-        >
-          <span className="text-[10px] font-semibold tracking-widest uppercase">Scroll</span>
-          <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-            <ChevronDown size={16} />
-          </motion.div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ─────────────── CHAPTERS PREVIEW ─────────────── */}
-      <section className="relative py-28 px-4 bg-white">
+      {/* ═══════════════════════════════
+          WHY CHOOSE TWH ACADEMY
+      ═══════════════════════════════ */}
+      <section className="py-20 px-4 bg-white" id="features">
         <div className="max-w-6xl mx-auto">
+
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="flex items-center justify-center gap-4 mb-14"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs font-semibold text-blue-600 mb-5">
-              Course Path
+            <div className="flex-1 max-w-[100px] h-px bg-gradient-to-r from-transparent to-gray-200" />
+            <div className="flex flex-col items-center gap-2">
+              <Shield size={18} className="text-blue-500" />
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 text-center" style={{ letterSpacing: "-0.02em" }}>
+                Why Choose TWH Academy?
+              </h2>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4" style={{ letterSpacing: "-0.025em" }}>
-              Your Journey to{" "}
-              <span className="text-blue-600">Ethical Hacking</span>
-            </h2>
-            <p className="text-gray-400 max-w-md mx-auto">
-              Zero se shuru karke expert tak — ek structured learning path.
-            </p>
+            <div className="flex-1 max-w-[100px] h-px bg-gradient-to-l from-transparent to-gray-200" />
           </motion.div>
 
-          {/* Chapter grid — 2 col left, 3 col right, like reference */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {CHAPTERS.map((ch, i) => {
-              const meta = CHAPTER_META[ch.id];
-              return (
-                <motion.div
-                  key={ch.id}
-                  initial={{ opacity: 0, y: 28 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.09, duration: 0.5 }}
-                >
-                  <Link href={`/chapter/${ch.id}`}>
-                    <motion.div
-                      whileHover={{ y: -6, boxShadow: `0 12px 40px ${meta.accent}18` }}
-                      transition={{ type: "spring", stiffness: 300, damping: 28 }}
-                      className="group relative bg-white rounded-2xl border border-gray-100 p-6 overflow-hidden cursor-pointer h-full"
-                      style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
-                    >
-                      {/* Gradient top bar */}
-                      <div
-                        className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
-                        style={{ background: `linear-gradient(90deg, ${meta.accent}, ${meta.accent}88)` }}
-                      />
-
-                      {/* Chapter number watermark */}
-                      <div
-                        className="absolute -right-3 -top-3 font-black text-6xl leading-none select-none"
-                        style={{ color: `${meta.accent}08` }}
-                      >
-                        {String(ch.number).padStart(2, "0")}
-                      </div>
-
-                      {/* Tag */}
-                      <div className="mb-5">
-                        <span
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide"
-                          style={{ color: meta.accent, background: `${meta.accent}10` }}
-                        >
-                          {meta.tag}
-                        </span>
-                      </div>
-
-                      {/* Title */}
-                      <h3 className="font-bold text-gray-900 text-lg mb-1.5 leading-snug group-hover:text-blue-600 transition-colors">
-                        {ch.title}
-                      </h3>
-                      <p className="text-gray-400 text-sm leading-relaxed mb-5">{ch.description}</p>
-
-                      {/* Stats row */}
-                      <div className="flex items-center gap-4 text-xs text-gray-400 mb-4">
-                        <span className="flex items-center gap-1">
-                          <span className="font-bold text-gray-700">{ch.totalTopics}</span> Topics
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="font-bold text-gray-700">~{ch.totalTopics * 15}</span> MCQs
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="font-bold text-gray-700">{meta.hours}</span> read
-                        </span>
-                      </div>
-
-                      {/* Difficulty */}
-                      <div className="flex items-center justify-between">
-                        <span
-                          className="text-[11px] font-bold px-2.5 py-1 rounded-full"
-                          style={{
-                            color: meta.difficulty === "Hard" ? "#DC2626" : meta.difficulty === "Medium" ? "#D97706" : "#059669",
-                            background: meta.difficulty === "Hard" ? "#FEF2F2" : meta.difficulty === "Medium" ? "#FFFBEB" : "#ECFDF5",
-                          }}
-                        >
-                          {meta.difficulty}
-                        </span>
-                        <ArrowRight size={14} className="text-gray-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
-                      </div>
-                    </motion.div>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <motion.button
-              whileHover={{ scale: 1.03, boxShadow: "0 8px 30px rgba(37,99,235,0.25)" }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleStart}
-              className="inline-flex items-center gap-2 px-10 py-3.5 bg-blue-600 text-white text-sm font-bold rounded-xl shadow-sm"
-            >
-              {user ? "Continue Learning" : "Begin Training"}
-              <ArrowRight size={15} />
-            </motion.button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─────────────── FEATURES ─────────────── */}
-      <section className="py-28 px-4 bg-[#F5F8FF]">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-blue-100 text-xs font-semibold text-blue-600 mb-5 shadow-sm">
-              Why TWH Academy?
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-gray-900 mb-4" style={{ letterSpacing: "-0.025em" }}>
-              Not just a course.
-              <br />
-              <span className="text-blue-600">A transformation.</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {FEATURES.map((f, i) => (
+          {/* Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {WHY_CARDS.map((card, i) => (
               <motion.div
-                key={f.title}
+                key={card.title}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.5 }}
-                whileHover={{ y: -4 }}
-                className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all"
+                whileHover={{ y: -6, boxShadow: `0 12px 32px ${card.color}14` }}
+                className="flex flex-col items-start gap-3 bg-white rounded-2xl p-5
+                  border border-gray-100 shadow-sm hover:border-blue-100 transition-all cursor-default"
               >
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: f.bg, color: f.color }}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: card.bg, color: card.color }}
                 >
-                  {f.icon}
+                  {card.icon}
                 </div>
-                <h3 className="font-bold text-gray-900 mb-2">{f.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{f.desc}</p>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm leading-snug mb-1">{card.title}</h3>
+                  <p className="text-gray-400 text-xs leading-relaxed">{card.desc}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─────────────── CTA BANNER ─────────────── */}
-      <section className="py-28 px-4 bg-white">
-        <div className="max-w-3xl mx-auto text-center">
+      {/* ═══════════════════════════════
+          CTA BANNER
+      ═══════════════════════════════ */}
+      <section className="py-20 px-4 bg-[#F5F8FF]">
+        <div className="max-w-2xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl p-12 relative overflow-hidden"
-            style={{ boxShadow: "0 20px 60px rgba(37,99,235,0.3)" }}
+            className="relative rounded-3xl p-12 overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
+              boxShadow: "0 24px 64px rgba(37,99,235,0.28)",
+            }}
           >
-            {/* Decoration */}
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2"
-              style={{ background: "rgba(255,255,255,0.05)" }} />
-            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2"
-              style={{ background: "rgba(255,255,255,0.05)" }} />
+            {/* Decoration bubbles */}
+            <div className="absolute top-0 right-0 w-56 h-56 rounded-full -translate-y-1/2 translate-x-1/2
+              bg-white/5" />
+            <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full translate-y-1/2 -translate-x-1/2
+              bg-white/5" />
 
             <div className="relative z-10">
-              <h2 className="text-3xl sm:text-4xl font-black text-white mb-4" style={{ letterSpacing: "-0.025em" }}>
+              <div className="w-12 h-12 bg-white/15 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Shield size={22} className="text-white" />
+              </div>
+              <h2 className="text-3xl font-black text-white mb-3" style={{ letterSpacing: "-0.025em" }}>
                 Ready to become a
-                <br />
-                White Hat Hacker?
+                <br />White Hat Hacker?
               </h2>
-              <p className="text-blue-200 mb-8 text-lg">
+              <p className="text-blue-200 mb-8 text-base">
                 Join the academy. Start free. Master everything.
               </p>
               <motion.button
-                whileHover={{ scale: 1.04, boxShadow: "0 8px 30px rgba(0,0,0,0.2)" }}
+                whileHover={{ scale: 1.04, boxShadow: "0 8px 32px rgba(0,0,0,0.2)" }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handleStart}
-                className="inline-flex items-center gap-2 px-10 py-4 bg-white text-blue-600 font-bold rounded-xl text-sm shadow-lg"
+                className="inline-flex items-center gap-2.5 px-10 py-3.5 rounded-2xl
+                  bg-white text-blue-600 font-bold text-[15px] shadow-lg"
               >
                 {user ? "Go to Dashboard" : "Start Learning — It's Free"}
                 <ArrowRight size={16} />
@@ -467,14 +379,20 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─────────────── FOOTER ─────────────── */}
-      <footer className="border-t border-gray-100 py-10 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+      {/* ═══════════════════════════════
+          FOOTER
+      ═══════════════════════════════ */}
+      <footer className="border-t border-gray-100 py-8 px-4 bg-white">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #2563EB, #7C3AED)" }}>
               <Shield size={13} className="text-white" />
             </div>
-            <span className="font-bold text-sm text-gray-800">TWH Academy</span>
+            <div>
+              <div className="font-bold text-sm text-gray-900 leading-none">TWH Academy</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">Ethical Hacking Academy</div>
+            </div>
           </div>
           <p className="text-gray-400 text-sm">
             Built with ❤️ by{" "}
