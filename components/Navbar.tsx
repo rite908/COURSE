@@ -77,17 +77,17 @@ export default function Navbar() {
         </Link>
 
         {/* ── Center Nav ── */}
-        <div className="hidden lg:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-8">
           {NAV_LINKS.map((link) => {
             const active = isActive(link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative px-5 py-2.5 rounded-xl text-[14px] font-medium transition-colors duration-200 ${
+                className={`relative py-2 text-[14px] font-medium transition-colors duration-200 ${
                   active
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                    ? "text-blue-600"
+                    : "text-gray-500 hover:text-gray-900"
                 }`}
               >
                 {link.label}
