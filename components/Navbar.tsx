@@ -50,11 +50,11 @@ export default function Navbar() {
       transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
-        background: scrolled ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0)",
-        backdropFilter: scrolled ? "blur(24px)" : "none",
-        WebkitBackdropFilter: scrolled ? "blur(24px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(226,232,240,0.7)" : "none",
-        boxShadow: scrolled ? "0 1px 24px rgba(0,0,0,0.05)" : "none",
+        background: "rgba(255,255,255,0.96)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderBottom: scrolled ? "1px solid rgba(226,232,240,0.7)" : "1px solid rgba(226,232,240,0.4)",
+        boxShadow: scrolled ? "0 1px 24px rgba(0,0,0,0.07)" : "0 1px 0 rgba(226,232,240,0.6)",
       }}
     >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 h-[68px] flex items-center justify-between gap-6">

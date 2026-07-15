@@ -69,7 +69,6 @@ export default function ChapterPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
 
       {/* ── Chapter Hero ── */}
       <div

@@ -1,0 +1,373 @@
+Haan, yaad hai. Pichli baar problem ye thi ki Replit ne prompt ka aadha follow kiya aur baaki apni taraf se bana diya. Is baar usko **strict instructions** deni padengi ki **reference image ke layout se ek pixel bhi unnecessarily deviate nahi karna hai**.
+
+Ye prompt use kar:
+
+---
+
+# STRICT LANDING PAGE IMPLEMENTATION (FOLLOW THE REFERENCE EXACTLY)
+
+## IMPORTANT
+
+The attached reference image is the **MASTER DESIGN**.
+
+Do **NOT** redesign it.
+
+Do **NOT** simplify it.
+
+Do **NOT** change the layout.
+
+Do **NOT** replace sections with your own ideas.
+
+Your job is to recreate this landing page in code as accurately as possible while keeping it responsive.
+
+If anything conflicts with your own design decisions, **the reference image always wins**.
+
+---
+
+# VERY IMPORTANT RULES
+
+❌ Do NOT create a dashboard.
+
+❌ Do NOT create a generic LMS.
+
+❌ Do NOT remove any section.
+
+❌ Do NOT reduce spacing.
+
+❌ Do NOT replace illustrations.
+
+❌ Do NOT replace colors.
+
+❌ Do NOT invent new layouts.
+
+❌ Do NOT use placeholder boxes.
+
+❌ Do NOT change typography hierarchy.
+
+Everything should match the reference.
+
+---
+
+# PAGE STRUCTURE (EXACT ORDER)
+
+### SECTION 1
+
+Sticky Navigation Bar
+
+Logo
+
+TWH Academy
+
+Subtitle
+
+Ethical Hacking Academy
+
+Center Navigation
+
+Home
+
+Chapters
+
+Roadmap
+
+About
+
+Features
+
+Contact
+
+Right Side
+
+Choose Profile Button
+
+Theme Toggle
+
+Navbar should become blurred while scrolling.
+
+---
+
+### SECTION 2
+
+Hero Section
+
+Split Layout
+
+Left = Text
+
+Right = Illustration
+
+DO NOT STACK THEM.
+
+---
+
+Left Side
+
+Badge
+
+India's Premier Ethical Hacking Academy
+
+Large Heading
+
+Master Computers.
+
+Hack The World.
+
+Exactly this typography hierarchy.
+
+"Master Computers"
+
+Black
+
+"Hack The World"
+
+Blue Purple Gradient
+
+Subtitle
+
+Two Lines
+
+Buttons
+
+Start Your Journey
+
+Explore Chapters
+
+Buttons must look premium.
+
+Rounded.
+
+Large.
+
+Hover animation.
+
+---
+
+### Right Side
+
+Large Futuristic Globe
+
+Large enough to dominate the hero section.
+
+Blue/Purple glow.
+
+Animated network lines.
+
+Orbit rings.
+
+Particles.
+
+Floating cards around globe.
+
+DO NOT REMOVE THEM.
+
+Cards:
+
+IP Scanning
+
+Packet Analysis
+
+Floating IP Address
+
+Network Status
+
+These cards should animate slowly.
+
+---
+
+Foreground
+
+A hooded learner
+
+Standing
+
+Facing the globe
+
+NOT facing camera.
+
+NOT scary.
+
+The hoodie should contain
+
+"TWH"
+
+with glowing shield logo.
+
+---
+
+Background
+
+City skyline.
+
+Soft gradients.
+
+Blue glow.
+
+Purple glow.
+
+Network particles.
+
+No empty white area.
+
+---
+
+### SECTION 3
+
+Statistics Cards
+
+Exactly four cards.
+
+5+
+
+Chapters
+
+30+
+
+Topics
+
+450+
+
+MCQs
+
+100%
+
+Practical
+
+Each card should have
+
+Icon
+
+Title
+
+Subtitle
+
+Rounded
+
+Glass
+
+Shadow
+
+Hover Lift
+
+---
+
+### SECTION 4
+
+Why Choose TWH Academy
+
+Centered heading.
+
+Decorative line.
+
+Five premium feature cards.
+
+Beginner Friendly
+
+Practical Learning
+
+Industry Relevant
+
+Progress Tracking
+
+Certificate
+
+Exactly like the reference.
+
+No extra cards.
+
+---
+
+# COLORS
+
+Background
+
+White
+
+Very Light Blue
+
+Very Soft Purple
+
+Gradient
+
+Do NOT use dark mode.
+
+---
+
+# TYPOGRAPHY
+
+Modern.
+
+Large.
+
+Bold.
+
+Apple style.
+
+Lots of whitespace.
+
+Do NOT compress anything.
+
+---
+
+# ANIMATIONS
+
+Framer Motion only.
+
+Navbar fade.
+
+Buttons scale.
+
+Cards hover.
+
+Particles floating.
+
+Globe rotating slowly.
+
+Orbit animation.
+
+Mouse parallax.
+
+Nothing flashy.
+
+Everything smooth.
+
+---
+
+# RESPONSIVE
+
+Desktop first.
+
+Then tablet.
+
+Then mobile.
+
+Do NOT break layout.
+
+Maintain same visual hierarchy.
+
+---
+
+# TECHNOLOGY
+
+Next.js
+
+React
+
+Tailwind CSS
+
+Framer Motion
+
+TypeScript
+
+---
+
+# FINAL INSTRUCTION
+
+Before writing any code, compare every section with the attached reference image.
+
+If your implementation is less than **95% visually similar**, do not consider it complete.
+
+Do not move to the next page until this Landing Page is approved.
+
+---
+
+Is prompt ke saath woh reference image attach kar dena. Is baar AI ko kaafi kam freedom milegi aur uske reference se hatne ke chances bahut kam ho jayenge.

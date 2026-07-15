@@ -123,157 +123,168 @@ export default function LandingPage() {
               background: "radial-gradient(circle, rgba(14,165,233,0.05) 0%, transparent 70%)" }} />
         </div>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-[80px] pb-12
-          grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-8 items-center min-h-[100svh]">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 pt-[88px] pb-0
+          flex flex-col min-h-[100svh]">
 
-          {/* ── Left: Content ── */}
-          <motion.div style={{ y: leftY }} className="flex flex-col justify-center">
+          {/* ── Hero Split ── */}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-8 items-center py-10">
 
-            {/* Badge */}
-            <motion.div
-              initial={mounted ? { opacity: 0, y: -16 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 self-start px-4 py-1.5 rounded-full
-                border border-blue-200 bg-white/80 backdrop-blur-sm text-xs font-semibold text-blue-700 mb-8
-                shadow-sm"
-            >
-              <Shield size={11} className="text-blue-500" />
-              India's Premier Ethical Hacking{" "}
-              <span className="text-blue-500">Academy</span>
-            </motion.div>
+            {/* ── Left: Content ── */}
+            <motion.div style={{ y: leftY }} className="flex flex-col justify-center">
 
-            {/* Heading */}
-            <motion.h1
-              initial={mounted ? { opacity: 0, y: 32 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-              className="font-black leading-[0.95] tracking-tight mb-6"
-              style={{ fontSize: "clamp(2.4rem, 5vw, 4.2rem)", letterSpacing: "-0.035em" }}
-            >
-              <span className="text-gray-900">Master Computers.</span>
-              <br />
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
+              {/* Badge */}
+              <motion.div
+                initial={mounted ? { opacity: 0, y: -16 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 self-start px-4 py-1.5 rounded-full
+                  border border-blue-200 bg-white/80 backdrop-blur-sm text-xs font-semibold text-blue-700 mb-8
+                  shadow-sm"
               >
-                Hack The World.
-              </span>
-            </motion.h1>
+                <Shield size={11} className="text-blue-500" />
+                India's Premier Ethical Hacking{" "}
+                <span className="text-blue-500">Academy</span>
+              </motion.div>
 
-            {/* Subtitle */}
-            <motion.p
-              initial={mounted ? { opacity: 0, y: 20 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.28, duration: 0.55 }}
-              className="text-[1.05rem] text-gray-500 leading-relaxed mb-10 max-w-[440px]"
-            >
-              From zero to ethical hacking hero.
-              <br />
-              A complete roadmap for future cybersecurity experts.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              initial={mounted ? { opacity: 0, y: 20 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-              className="flex flex-col sm:flex-row gap-3 mb-16"
-            >
-              {/* Primary — magnetic */}
-              <motion.button
-                ref={btnRef}
-                style={{ x: springX, y: springY }}
-                onMouseMove={handleMagnet}
-                onMouseLeave={handleMagnetLeave}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={handleStart}
-                className="relative flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl
-                  text-[15px] font-bold text-white overflow-hidden"
-                style={{
-                  background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
-                  boxShadow: "0 8px 32px rgba(37,99,235,0.32), 0 2px 8px rgba(0,0,0,0.06)",
-                }}
+              {/* Heading */}
+              <motion.h1
+                initial={mounted ? { opacity: 0, y: 32 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.12, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+                className="font-black leading-[0.95] tracking-tight mb-6"
+                style={{ fontSize: "clamp(2.4rem, 5vw, 4.2rem)", letterSpacing: "-0.035em" }}
               >
-                {/* Shimmer */}
-                <motion.div
-                  className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500"
+                <span className="text-gray-900">Master Computers.</span>
+                <br />
+                <span
                   style={{
-                    background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)",
+                    background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
                   }}
-                  animate={{ x: ["-100%", "200%"] }}
-                  transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2 }}
-                />
-                <span className="relative z-10">
-                  {user ? "Continue Learning" : "Start Your Journey"}
+                >
+                  Hack The World.
                 </span>
-                <motion.div
-                  className="relative z-10 w-7 h-7 rounded-full bg-white/20 flex items-center justify-center"
-                  animate={{ x: [0, 3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <ArrowRight size={14} />
-                </motion.div>
-              </motion.button>
+              </motion.h1>
 
-              {/* Secondary */}
-              <Link href="/chapters">
-                <motion.div
-                  whileHover={{ scale: 1.02, borderColor: "rgba(37,99,235,0.3)" }}
-                  className="flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl
-                    text-[15px] font-semibold text-gray-600 bg-white border border-gray-200
-                    hover:bg-gray-50 transition-all cursor-pointer"
-                  style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
+              {/* Subtitle */}
+              <motion.p
+                initial={mounted ? { opacity: 0, y: 20 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.28, duration: 0.55 }}
+                className="text-[1.05rem] text-gray-500 leading-relaxed mb-10 max-w-[440px]"
+              >
+                From zero to ethical hacking hero.
+                <br />
+                A complete roadmap for future cybersecurity experts.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div
+                initial={mounted ? { opacity: 0, y: 20 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="flex flex-col sm:flex-row gap-3"
+              >
+                {/* Primary — magnetic */}
+                <motion.button
+                  ref={btnRef}
+                  style={{ x: springX, y: springY }}
+                  onMouseMove={handleMagnet}
+                  onMouseLeave={handleMagnetLeave}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleStart}
+                  className="relative flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl
+                    text-[15px] font-bold text-white overflow-hidden"
+                  style={{
+                    background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
+                    boxShadow: "0 8px 32px rgba(37,99,235,0.32), 0 2px 8px rgba(0,0,0,0.06)",
+                  }}
                 >
-                  <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400" />
-                  </div>
-                  Explore Chapters
-                </motion.div>
-              </Link>
+                  {/* Shimmer */}
+                  <motion.div
+                    className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)",
+                    }}
+                    animate={{ x: ["-100%", "200%"] }}
+                    transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2 }}
+                  />
+                  <span className="relative z-10">
+                    {user ? "Continue Learning" : "Start Your Journey"}
+                  </span>
+                  <motion.div
+                    className="relative z-10 w-7 h-7 rounded-full bg-white/20 flex items-center justify-center"
+                    animate={{ x: [0, 3, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowRight size={14} />
+                  </motion.div>
+                </motion.button>
+
+                {/* Secondary */}
+                <Link href="/chapters">
+                  <motion.div
+                    whileHover={{ scale: 1.02, borderColor: "rgba(37,99,235,0.3)" }}
+                    className="flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl
+                      text-[15px] font-semibold text-gray-600 bg-white border border-gray-200
+                      hover:bg-gray-50 transition-all cursor-pointer"
+                    style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
+                  >
+                    <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-gray-400" />
+                    </div>
+                    Explore Chapters
+                  </motion.div>
+                </Link>
+              </motion.div>
             </motion.div>
 
-            {/* Stats row */}
+            {/* ── Right: Hero Scene ── */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="grid grid-cols-4 gap-3 max-w-[420px]"
+              style={{ y: rightY }}
+              className="relative flex items-center justify-center"
             >
-              {STATS.map((s, i) => (
-                <motion.div
-                  key={s.label}
-                  initial={mounted ? { opacity: 0, y: 12 } : false}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + i * 0.07 }}
-                  whileHover={{ y: -4, boxShadow: "0 8px 24px rgba(37,99,235,0.1)" }}
-                  className="flex flex-col items-center justify-center py-3 px-2 rounded-2xl
-                    bg-white border border-gray-100 cursor-default transition-shadow"
-                  style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
-                >
-                  <span style={{ color: s.color }} className="mb-1.5">{s.icon}</span>
-                  <div className="font-black text-xl text-gray-900 leading-none">{s.value}</div>
-                  <div className="text-[10px] text-gray-400 font-medium mt-0.5">{s.label}</div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* ── Right: Hero Scene ── */}
-          <motion.div
-            style={{ y: rightY }}
-            className="relative flex items-center justify-center"
-          >
-            <div className="relative w-full" style={{ paddingBottom: "100%" }}>
-              <div className="absolute inset-0">
-                <HeroScene />
+              <div className="relative w-full" style={{ paddingBottom: "100%" }}>
+                <div className="absolute inset-0">
+                  <HeroScene />
+                </div>
               </div>
-            </div>
+            </motion.div>
+          </div>
+
+          {/* ── Stats Row (full-width, below split) ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-4 pb-12 mt-2"
+          >
+            {STATS.map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={mounted ? { opacity: 0, y: 12 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65 + i * 0.07 }}
+                whileHover={{ y: -4, boxShadow: "0 8px 24px rgba(37,99,235,0.12)" }}
+                className="flex items-center gap-3 py-4 px-5 rounded-2xl
+                  bg-white border border-gray-100 cursor-default transition-all"
+                style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: s.bg, color: s.color }}
+                >
+                  {s.icon}
+                </div>
+                <div>
+                  <div className="font-black text-2xl text-gray-900 leading-none">{s.value}</div>
+                  <div className="text-xs text-gray-400 font-medium mt-0.5">{s.label}</div>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
