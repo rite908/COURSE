@@ -132,7 +132,7 @@ export default function ContactPage() {
             {CONTACT_CARDS.map((card, i) => (
               <motion.div
                 key={card.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={mounted ? { opacity: 0, y: 20 } : false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1, duration: 0.50 }}
                 whileHover={{ y: -6, boxShadow: `0 20px 48px ${card.color}14` }}
@@ -194,7 +194,7 @@ export default function ContactPage() {
       <section className="py-20 px-6" style={{ background: "#F8FAFF" }}>
         <div className="max-w-3xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55 }}
@@ -216,7 +216,7 @@ export default function ContactPage() {
             {FAQS.map((faq, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 16 }}
+                initial={mounted ? { opacity: 0, y: 16 } : false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-20px" }}
                 transition={{ delay: i * 0.05, duration: 0.45 }}
@@ -243,7 +243,7 @@ export default function ContactPage() {
       <section className="py-16 px-6" style={{ background: "#FFFFFF" }}>
         <div className="max-w-2xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.50 }}

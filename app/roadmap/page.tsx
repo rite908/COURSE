@@ -186,7 +186,7 @@ export default function RoadmapPage() {
               {PHASES.map((item, i) => (
                 <motion.div
                   key={item.phase}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={mounted ? { opacity: 0, x: -20 } : false}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ delay: i * 0.08, duration: 0.50 }}
@@ -267,7 +267,7 @@ export default function RoadmapPage() {
       <section className="py-16 px-6" style={{ background: "#FFFFFF" }}>
         <div className="max-w-2xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.50 }}

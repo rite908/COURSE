@@ -135,7 +135,7 @@ export default function AboutPage() {
       <section className="py-20 px-6" style={{ background: "#FFFFFF" }}>
         <div className="max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55 }}
@@ -155,7 +155,7 @@ export default function AboutPage() {
 
           {/* Creator card */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.55 }}
@@ -205,7 +205,7 @@ export default function AboutPage() {
       <section className="py-20 px-6" style={{ background: "#F8FAFF" }}>
         <div className="max-w-4xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55 }}
@@ -229,7 +229,7 @@ export default function AboutPage() {
               {JOURNEY.map((item, i) => (
                 <motion.div
                   key={item.year}
-                  initial={{ opacity: 0, x: -16 }}
+                  initial={mounted ? { opacity: 0, x: -16 } : false}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-30px" }}
                   transition={{ delay: i * 0.07, duration: 0.45 }}
@@ -256,7 +256,7 @@ export default function AboutPage() {
       <section className="py-20 px-6" style={{ background: "#FFFFFF" }}>
         <div className="max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={mounted ? { opacity: 0, y: 20 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55 }}
@@ -274,7 +274,7 @@ export default function AboutPage() {
             {VALUES.map((v, i) => (
               <motion.div
                 key={v.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={mounted ? { opacity: 0, y: 20 } : false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.45 }}
