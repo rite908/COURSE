@@ -50,44 +50,32 @@ export default function HeroScene() {
         >
           {/* ── Outer pulse rings ── */}
           <motion.div
-            animate={{ scale: [1, 1.07, 1], opacity: [0.55, 0.08, 0.55] }}
+            animate={{ scale: [1, 1.07, 1], opacity: [0.45, 0.05, 0.45] }}
             transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
             style={{
-              position: "absolute", inset: -14, borderRadius: "50%",
-              border: "1.5px solid rgba(124,58,237,0.75)",
+              position: "absolute", inset: -10, borderRadius: "50%",
+              border: "1.5px solid rgba(124,58,237,0.60)",
               pointerEvents: "none",
             }}
           />
           <motion.div
-            animate={{ scale: [1, 1.13, 1], opacity: [0.28, 0.03, 0.28] }}
+            animate={{ scale: [1, 1.13, 1], opacity: [0.22, 0.02, 0.22] }}
             transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
             style={{
-              position: "absolute", inset: -28, borderRadius: "50%",
-              border: "1px solid rgba(99,102,241,0.40)",
+              position: "absolute", inset: -22, borderRadius: "50%",
+              border: "1px solid rgba(99,102,241,0.35)",
               pointerEvents: "none",
             }}
           />
 
-          {/* ── Purple gradient ring border ── */}
-          <div style={{
-            position: "absolute", inset: -5, borderRadius: "50%",
-            background: "linear-gradient(135deg, #7C3AED 0%, #4F46E5 40%, #2563EB 60%, #7C3AED 100%)",
-            zIndex: 0,
-          }} />
-
-          {/* ── Dark inner circle (clip container) ── */}
-          <div style={{
-            position: "absolute", inset: 3, borderRadius: "50%",
-            background: "#06091a",
-            overflow: "hidden",
-            zIndex: 1,
-          }}>
+          {/* ── Image (already circular with purple border) ── */}
+          <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 1 }}>
             <Image
               src="/hacker.png"
               alt="TWH Hacker"
               fill
-              sizes="(max-width: 768px) 300px, (max-width: 1024px) 360px, 430px"
-              style={{ objectFit: "cover", objectPosition: "center top" }}
+              sizes="(max-width: 768px) 300px, (max-width: 1024px) 380px, 500px"
+              style={{ objectFit: "contain" }}
               priority
             />
           </div>
