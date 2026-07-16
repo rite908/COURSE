@@ -36,7 +36,7 @@ export default function HeroScene() {
       <div style={{
         position: "absolute", inset: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
-        zIndex: 2, pointerEvents: "none",
+        zIndex: 1, pointerEvents: "none",
       }}>
         <motion.div
           animate={{ y: [0, -10, 0] }}
