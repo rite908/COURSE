@@ -69,13 +69,13 @@ export default function HeroScene() {
           />
 
           {/* ── Image (already circular with purple border) ── */}
-          <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 1, overflow: "hidden", borderRadius: "50%" }}>
+          <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 1 }}>
             <Image
               src="/hacker.png"
               alt="TWH Hacker"
               fill
-              sizes="(max-width: 768px) 300px, (max-width: 1024px) 380px, 600px"
-              style={{ objectFit: "contain", transform: "scale(1.90) translateY(6%)", transformOrigin: "center center" }}
+              sizes="(max-width: 768px) 360px, (max-width: 1024px) 500px, 750px"
+              style={{ objectFit: "contain", objectPosition: "center center" }}
               priority
             />
           </div>
