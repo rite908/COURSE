@@ -75,7 +75,7 @@ export default function HeroScene() {
               alt="TWH Hacker"
               fill
               sizes="(max-width: 768px) 300px, (max-width: 1024px) 380px, 600px"
-              style={{ objectFit: "contain", transform: "scale(1.70) translateY(6%)", transformOrigin: "center center" }}
+              style={{ objectFit: "contain", transform: "scale(1.90) translateY(6%)", transformOrigin: "center center" }}
               priority
             />
           </div>
@@ -184,7 +184,7 @@ export default function HeroScene() {
       <motion.div
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-        style={{ position: "absolute", bottom: "6%", left: "0%", zIndex: 20 }}
+        style={{ position: "absolute", top: "60%", left: "0%", zIndex: 20 }}
       >
         <div style={{
           background: "rgba(8,12,24,0.94)",
@@ -222,7 +222,7 @@ export default function HeroScene() {
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
         style={{
-          position: "absolute", bottom: "5%", left: "50%",
+          position: "absolute", top: "72%", left: "52%",
           transform: "translateX(-50%)",
           zIndex: 20, whiteSpace: "nowrap",
         }}
