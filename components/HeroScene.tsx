@@ -44,7 +44,7 @@ export default function HeroScene() {
           style={{
             position: "relative",
             /* Fill most of the column */
-            width: "min(98%, 600px)",
+            width: "min(100%, 720px)",
             aspectRatio: "1",
           }}
         >
@@ -75,7 +75,7 @@ export default function HeroScene() {
               alt="TWH Hacker"
               fill
               sizes="(max-width: 768px) 300px, (max-width: 1024px) 380px, 600px"
-              style={{ objectFit: "contain", transform: "scale(1.18)", transformOrigin: "center center" }}
+              style={{ objectFit: "contain", transform: "scale(1.55)", transformOrigin: "center center" }}
               priority
             />
           </div>
