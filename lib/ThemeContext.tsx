@@ -2,35 +2,31 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
 
-interface ThemeContextType {
-  isDark: boolean;
-  toggle: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType>({ isDark: false, toggle: () => {} });
+interface ThemeCtx { isDark: boolean; toggle: () => void }
+const ThemeContext = createContext<ThemeCtx>({ isDark: false, toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
+  // Read saved preference on mount + apply to <html>
   useEffect(() => {
     const saved = localStorage.getItem("twh-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = saved ? saved === "dark" : prefersDark;
-    setIsDark(initial);
-    document.documentElement.setAttribute("data-theme", initial ? "dark" : "light");
-    setMounted(true);
+    const sys   = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const dark  = saved ? saved === "dark" : sys;
+    setIsDark(dark);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
   }, []);
 
+  // Keep <html data-theme> in sync whenever isDark changes
   useEffect(() => {
-    if (!mounted) return;
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-  }, [isDark, mounted]);
+    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  }, [isDark]);
 
   const toggle = useCallback(() => {
     setIsDark(prev => {
       const next = !prev;
       localStorage.setItem("twh-theme", next ? "dark" : "light");
+      document.documentElement.dataset.theme = next ? "dark" : "light";
       return next;
     });
   }, []);

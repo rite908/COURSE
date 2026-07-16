@@ -3,7 +3,6 @@ import { Orbitron, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import MotionProvider from "@/components/MotionProvider";
-import { ThemeProvider } from "@/lib/ThemeContext";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -47,12 +46,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${orbitron.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="antialiased min-h-screen" style={{ background: "var(--t-bg)", color: "var(--t-text)" }}>
-        <ThemeProvider>
-          <MotionProvider>
-            <Navbar />
-            {children}
-          </MotionProvider>
-        </ThemeProvider>
+        <MotionProvider>
+          <Navbar />
+          {children}
+        </MotionProvider>
       </body>
     </html>
   );
