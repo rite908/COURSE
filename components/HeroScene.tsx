@@ -17,7 +17,7 @@ const PACKET_BARS = [3, 5, 4, 7, 6, 8, 5, 9, 7, 8];
 export default function HeroScene() {
   return (
     /* Outer wrapper — matches the container in page.tsx */
-    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 480 }}>
+    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 520 }}>
 
       {/* ── Big ambient purple glow behind circle ── */}
       <div style={{

@@ -345,8 +345,8 @@ export default function LandingPage() {
               }}>
                 <div style={{
                   width: "100%",
-                  maxWidth: isLg ? "none" : 440,
-                  height: isLg ? "clamp(400px,46vw,560px)" : isMd ? 340 : 260,
+                  maxWidth: isLg ? "none" : 480,
+                  height: isLg ? "clamp(520px,55vw,680px)" : isMd ? 420 : 320,
                 }}>
                   <HeroScene />
                 </div>
