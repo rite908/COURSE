@@ -75,7 +75,7 @@ export default function HeroScene() {
               alt="TWH Hacker"
               fill
               sizes="(max-width: 768px) 360px, (max-width: 1024px) 500px, 750px"
-              style={{ objectFit: "contain", objectPosition: "center center" }}
+              style={{ objectFit: "contain", objectPosition: "center center", mixBlendMode: "multiply" }}
               priority
             />
           </div>
