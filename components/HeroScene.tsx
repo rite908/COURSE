@@ -43,8 +43,8 @@ export default function HeroScene() {
           transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
           style={{
             position: "relative",
-            /* Fill most of the column — clamp keeps it from being huge on wide screens */
-            width: "min(88%, 430px)",
+            /* Fill most of the column */
+            width: "min(98%, 600px)",
             aspectRatio: "1",
           }}
         >
@@ -69,13 +69,13 @@ export default function HeroScene() {
           />
 
           {/* ── Image (already circular with purple border) ── */}
-          <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 1 }}>
+          <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 1, overflow: "hidden", borderRadius: "50%" }}>
             <Image
               src="/hacker.png"
               alt="TWH Hacker"
               fill
-              sizes="(max-width: 768px) 300px, (max-width: 1024px) 380px, 500px"
-              style={{ objectFit: "contain" }}
+              sizes="(max-width: 768px) 300px, (max-width: 1024px) 380px, 600px"
+              style={{ objectFit: "contain", transform: "scale(1.18)", transformOrigin: "center center" }}
               priority
             />
           </div>
