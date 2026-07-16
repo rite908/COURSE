@@ -170,17 +170,31 @@ export default function Navbar() {
                 ><LogOut size={15} /></button>
               </>
             ) : (
-              <Link href="/login" style={{ textDecoration: "none" }}>
-                <motion.div whileHover={{ scale: 1.02 }} style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  padding: "8px 16px", borderRadius: 11,
-                  border: `1px solid ${cardBr}`, fontSize: "13.5px",
-                  fontWeight: 600, color: txtPri, background: cardBg,
-                  cursor: "pointer",
-                }}>
-                  <User size={13} color={txtSec} />Login
-                </motion.div>
-              </Link>
+              <>
+                <Link href="/login" style={{ textDecoration: "none" }}>
+                  <motion.div whileHover={{ scale: 1.02 }} style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    padding: "8px 16px", borderRadius: 11,
+                    border: `1px solid ${cardBr}`, fontSize: "13.5px",
+                    fontWeight: 600, color: txtPri, background: cardBg,
+                    cursor: "pointer",
+                  }}>
+                    <User size={13} color={txtSec} />Login
+                  </motion.div>
+                </Link>
+                <Link href="/chapters" style={{ textDecoration: "none" }}>
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    padding: "8px 18px", borderRadius: 11,
+                    fontSize: "13.5px", fontWeight: 700, color: "white",
+                    background: "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
+                    boxShadow: "0 4px 16px rgba(37,99,235,0.35)",
+                    cursor: "pointer", whiteSpace: "nowrap",
+                  }}>
+                    Get Started
+                  </motion.div>
+                </Link>
+              </>
             )}
 
             {/* Theme toggle */}

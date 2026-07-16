@@ -60,10 +60,11 @@ const CHAPTERS = [
 ];
 
 const STATS = [
-  { icon: <BookOpen size={24} />,  value: "5",    label: "Chapters", color: "#2563EB", darkBg: "rgba(37,99,235,0.15)",  lightBg: "#EEF3FF" },
-  { icon: <Layers size={24} />,    value: "41",   label: "Topics",   color: "#7C3AED", darkBg: "rgba(124,58,237,0.15)", lightBg: "#F3EEFF" },
-  { icon: <HelpCircle size={24}/>, value: "615+", label: "MCQs",     color: "#0EA5E9", darkBg: "rgba(14,165,233,0.15)", lightBg: "#F0F9FF" },
-  { icon: <Target size={24} />,    value: "Free", label: "Forever",  color: "#059669", darkBg: "rgba(5,150,105,0.15)",  lightBg: "#ECFDF5" },
+  { icon: <BookOpen size={22} />,    value: "10,000+", label: "Active Students",    color: "#2563EB", darkBg: "rgba(37,99,235,0.15)",  lightBg: "#EEF3FF" },
+  { icon: <Layers size={22} />,      value: "500+",    label: "Chapters & Lessons", color: "#7C3AED", darkBg: "rgba(124,58,237,0.15)", lightBg: "#F3EEFF" },
+  { icon: <Shield size={22} />,      value: "100%",    label: "Free Forever",       color: "#059669", darkBg: "rgba(5,150,105,0.15)",  lightBg: "#ECFDF5" },
+  { icon: <Star size={22} />,        value: "4.9/5",   label: "Student Rating",     color: "#D97706", darkBg: "rgba(217,119,6,0.15)",  lightBg: "#FFFBEB" },
+  { icon: <HelpCircle size={22} />,  value: "24/7",    label: "Community Support",  color: "#0EA5E9", darkBg: "rgba(14,165,233,0.15)", lightBg: "#F0F9FF" },
 ];
 
 const FOR_WHOM = [
@@ -330,7 +331,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <span style={{ fontSize: "12.5px", color: T.muted, fontWeight: 500 }}>
-                    <strong style={{ color: T.text }}>500+</strong> students enrolled · <strong style={{ color: T.text }}>100%</strong> free
+                    <strong style={{ color: T.text }}>10,000+</strong> students enrolled · <strong style={{ color: T.text }}>100%</strong> free
                   </span>
                 </motion.div>
               </motion.div>
@@ -378,7 +379,7 @@ export default function LandingPage() {
         {W(
           <div style={{
             display: "grid",
-            gridTemplateColumns: isMd ? "repeat(4,1fr)" : "repeat(2,1fr)",
+            gridTemplateColumns: isLg ? "repeat(5,1fr)" : isMd ? "repeat(3,1fr)" : "repeat(2,1fr)",
             gap: 14,
           }}>
             {STATS.map((s, i) => (
