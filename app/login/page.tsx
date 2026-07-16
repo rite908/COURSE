@@ -3,203 +3,199 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { Shield } from "lucide-react";
 import { setCurrentUser, type UserName } from "@/lib/storage";
+import { useTheme } from "@/lib/theme";
 
 const PROFILES: {
-  name: UserName;
-  title: string;
-  role: string;
-  color: string;
-  bg: string;
-  border: string;
-  glow: string;
-  emoji: string;
-  level: string;
+  name: UserName; title: string; role: string;
+  color: string; darkBg: string; lightBg: string; border: string;
+  glow: string; emoji: string; level: string;
 }[] = [
   {
-    name: "TWH",
-    title: "The White Hat",
-    role: "Course Creator & Founder",
-    color: "#2563EB",
-    bg: "from-blue-50 to-indigo-50",
-    border: "#BFDBFE",
-    glow: "rgba(37,99,235,0.15)",
-    emoji: "🛡️",
-    level: "CREATOR",
+    name: "TWH",    title: "The White Hat",  role: "Course Creator & Founder",
+    color: "#2563EB", darkBg: "rgba(37,99,235,0.15)",  lightBg: "#EFF6FF", border: "#BFDBFE",
+    glow: "rgba(37,99,235,0.18)", emoji: "🛡️", level: "CREATOR",
   },
   {
-    name: "Prince",
-    title: "The Learner",
-    role: "Student Operative",
-    color: "#7C3AED",
-    bg: "from-violet-50 to-purple-50",
-    border: "#DDD6FE",
-    glow: "rgba(124,58,237,0.15)",
-    emoji: "🎯",
-    level: "TRAINEE",
+    name: "Prince", title: "The Learner",    role: "Student Operative",
+    color: "#7C3AED", darkBg: "rgba(124,58,237,0.15)", lightBg: "#F5F3FF", border: "#DDD6FE",
+    glow: "rgba(124,58,237,0.18)", emoji: "🎯", level: "TRAINEE",
   },
   {
-    name: "Ashish",
-    title: "The Explorer",
-    role: "Student Operative",
-    color: "#059669",
-    bg: "from-emerald-50 to-teal-50",
-    border: "#A7F3D0",
-    glow: "rgba(5,150,105,0.15)",
-    emoji: "🚀",
-    level: "TRAINEE",
+    name: "Ashish", title: "The Explorer",   role: "Student Operative",
+    color: "#059669", darkBg: "rgba(5,150,105,0.15)",  lightBg: "#ECFDF5", border: "#A7F3D0",
+    glow: "rgba(5,150,105,0.18)", emoji: "🚀", level: "TRAINEE",
   },
 ];
 
 export default function LoginPage() {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const { isDark } = useTheme();
+  const [mounted,   setMounted]   = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selecting, setSelecting] = useState<string | null>(null);
+  const [vw,        setVw]        = useState(1280);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    const u = () => setVw(window.innerWidth);
+    u(); window.addEventListener("resize", u, { passive: true });
+    return () => window.removeEventListener("resize", u);
+  }, []);
+
+  const isMd = vw >= 640;
+  const sp = vw < 640 ? 16 : vw < 768 ? 24 : 40;
+
+  const T = {
+    bg:      isDark ? "#060912"  : "#F8FAFF",
+    bg2:     isDark ? "#0D1117"  : "#FFFFFF",
+    text:    isDark ? "#F1F5F9"  : "#111827",
+    text2:   isDark ? "#94A3B8"  : "#6B7280",
+    muted:   isDark ? "#64748B"  : "#9CA3AF",
+    border:  isDark ? "#1E2433"  : "#E5E7EB",
+    chipTxt: isDark ? "#60A5FA"  : "#2563EB",
+    dot:     isDark ? "rgba(96,165,250,0.08)" : "rgba(148,163,254,0.20)",
+  };
 
   const handleSelect = async (user: UserName) => {
     setSelecting(user);
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 450));
     setCurrentUser(user);
     router.push("/dashboard");
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-white via-[#F5F8FF] to-[#EEF3FF] flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <main style={{
+      minHeight: "100vh", background: T.bg,
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      padding: `80px ${sp}px 40px`, position: "relative", overflow: "hidden",
+    }}>
       {/* Dot grid */}
-      <div className="absolute inset-0 dot-grid opacity-50 pointer-events-none" />
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        backgroundImage: `radial-gradient(circle, ${T.dot} 1.5px, transparent 1.5px)`,
+        backgroundSize: "28px 28px",
+      }} />
+      {/* Glow */}
+      <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 600, height: 400, background: "radial-gradient(ellipse,rgba(37,99,235,0.08) 0%,transparent 70%)", pointerEvents: "none" }} />
 
-      {/* Blue glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, rgba(37,99,235,0.07) 0%, transparent 70%)" }} />
-
-      <div className="relative z-10 w-full max-w-4xl">
+      <div style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: 880 }}>
         {/* Header */}
         <motion.div
           initial={mounted ? { opacity: 0, y: -20 } : false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          transition={{ duration: 0.55 }}
+          style={{ textAlign: "center", marginBottom: 48 }}
         >
           {/* Logo */}
-          <div className="flex items-center justify-center gap-2.5 mb-8">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <svg width="18" height="20" viewBox="0 0 18 20" fill="none">
-                <path d="M9 0.5L17 4.5V11C17 15.1 13.4 18.8 9 19.5C4.6 18.8 1 15.1 1 11V4.5L9 0.5Z"
-                  fill="none" stroke="white" strokeWidth="1.4"/>
-                <path d="M6 10L8 12L12 8" stroke="white" strokeWidth="1.8"
-                  strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 28 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg,#2563EB,#7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 16px rgba(37,99,235,0.35)" }}>
+              <Shield size={20} color="white" />
             </div>
-            <span className="font-bold text-lg text-gray-900">
-              TWH <span className="text-blue-600">Academy</span>
+            <span style={{ fontWeight: 700, fontSize: "18px", color: T.text }}>
+              TWH <span style={{ color: "#2563EB" }}>Academy</span>
             </span>
           </div>
-
-          <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-3" style={{ letterSpacing: "-0.025em" }}>
+          <h1 style={{ fontWeight: 900, fontSize: isMd ? "2.4rem" : "1.9rem", color: T.text, letterSpacing: "-0.025em", marginBottom: 12 }}>
             Welcome Back, Hacker! 👋
           </h1>
-          <p className="text-gray-400 text-base">
+          <p style={{ color: T.text2, fontSize: "15px" }}>
             Choose your identity to continue your learning journey.
           </p>
         </motion.div>
 
         {/* Profile cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMd ? "repeat(3,1fr)" : "1fr",
+          gap: 16,
+          marginBottom: 32,
+        }}>
           {PROFILES.map((p, i) => {
             const isHovered  = hoveredId === p.name;
-            const isSelecting = selecting === p.name;
+            const isSelect   = selecting === p.name;
 
             return (
               <motion.button
                 key={p.name}
                 initial={mounted ? { opacity: 0, y: 32, scale: 0.96 } : false}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: i * 0.1 + 0.2, duration: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
+                transition={{ delay: i * 0.1 + 0.15, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
                 whileHover={{ y: -8, scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onHoverStart={() => setHoveredId(p.name)}
                 onHoverEnd={() => setHoveredId(null)}
                 onClick={() => !selecting && handleSelect(p.name)}
-                className="relative text-left rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer"
                 style={{
-                  background: "#FFFFFF",
-                  border: `1.5px solid ${isHovered ? p.color + "50" : p.border}`,
+                  position: "relative", textAlign: "left", borderRadius: 20,
+                  overflow: "hidden", cursor: "pointer",
+                  background: T.bg2,
+                  border: `1.5px solid ${isHovered ? p.color + "60" : T.border}`,
                   boxShadow: isHovered
-                    ? `0 12px 40px ${p.glow}, 0 2px 8px rgba(0,0,0,0.04)`
-                    : "0 2px 16px rgba(0,0,0,0.05)",
+                    ? `0 12px 40px ${p.glow}`
+                    : `0 2px 16px rgba(0,0,0,${isDark ? 0.25 : 0.05})`,
+                  transition: "border-color 0.25s, box-shadow 0.25s",
                 }}
               >
                 {/* Selecting overlay */}
                 <AnimatePresence>
-                  {isSelecting && (
+                  {isSelect && (
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/90"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                      style={{ position: "absolute", inset: 0, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 20, background: `${T.bg2}ee` }}
                     >
-                      <div className="flex flex-col items-center gap-2">
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                         <motion.div
                           animate={{ rotate: 360 }}
                           transition={{ duration: 0.7, repeat: Infinity, ease: "linear" }}
-                          className="w-6 h-6 rounded-full border-2 border-gray-200"
-                          style={{ borderTopColor: p.color }}
+                          style={{ width: 24, height: 24, borderRadius: "50%", border: `2px solid ${T.border}`, borderTopColor: p.color }}
                         />
-                        <span className="text-xs font-semibold text-gray-500">Entering...</span>
+                        <span style={{ fontSize: "12px", fontWeight: 600, color: T.text2 }}>Entering...</span>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* Gradient top bar */}
-                <div
-                  className="h-1 w-full"
-                  style={{ background: `linear-gradient(90deg, ${p.color}, ${p.color}66)` }}
-                />
+                {/* Top accent bar */}
+                <div style={{ height: 4, background: `linear-gradient(90deg,${p.color},${p.color}77)` }} />
 
-                {/* Avatar section */}
-                <div
-                  className={`bg-gradient-to-br ${p.bg} px-6 pt-8 pb-6 flex flex-col items-center text-center`}
-                >
-                  {/* Avatar circle with emoji */}
+                {/* Avatar area */}
+                <div style={{
+                  background: isDark ? (isHovered ? p.darkBg : "transparent") : (isHovered ? p.lightBg : "#FAFBFF"),
+                  padding: "32px 24px 24px",
+                  display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
+                  transition: "background 0.25s",
+                }}>
                   <motion.div
                     animate={isHovered ? { scale: 1.08, rotate: [0, -5, 5, 0] } : { scale: 1 }}
                     transition={{ duration: 0.4 }}
-                    className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl mb-4 shadow-sm"
-                    style={{ background: "#FFFFFF", border: `2px solid ${p.border}` }}
-                  >
-                    {p.emoji}
-                  </motion.div>
+                    style={{
+                      width: 80, height: 80, borderRadius: 20, fontSize: "2.8rem",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: T.bg2, border: `2px solid ${T.border}`, marginBottom: 16,
+                      boxShadow: `0 2px 12px rgba(0,0,0,${isDark ? 0.3 : 0.06})`,
+                    }}
+                  >{p.emoji}</motion.div>
 
-                  {/* Level badge */}
-                  <span
-                    className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest mb-3"
-                    style={{ color: p.color, background: `${p.color}15` }}
-                  >
-                    {p.level}
-                  </span>
+                  <span style={{
+                    display: "inline-block", padding: "3px 12px", borderRadius: 999,
+                    fontSize: "10px", fontWeight: 700, letterSpacing: "0.1em",
+                    color: p.color, background: isDark ? p.darkBg : p.lightBg,
+                    marginBottom: 10,
+                  }}>{p.level}</span>
 
-                  <h3
-                    className="font-black text-2xl mb-0.5"
-                    style={{ color: p.color }}
-                  >
-                    {p.name}
-                  </h3>
-                  <p className="font-bold text-gray-600 text-sm">{p.title}</p>
+                  <h3 style={{ fontWeight: 900, fontSize: "1.5rem", color: p.color, marginBottom: 2 }}>{p.name}</h3>
+                  <p style={{ fontWeight: 600, fontSize: "13px", color: T.text2 }}>{p.title}</p>
                 </div>
 
-                {/* Footer */}
-                <div className="px-6 py-4 flex items-center justify-between">
-                  <span className="text-xs text-gray-400">{p.role}</span>
-                  <motion.div
-                    animate={isHovered ? { x: 4, opacity: 1 } : { x: 0, opacity: 0.4 }}
-                    className="text-sm font-bold"
-                    style={{ color: p.color }}
-                  >
-                    Enter →
-                  </motion.div>
+                {/* Footer row */}
+                <div style={{ padding: "12px 24px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: `1px solid ${T.border}` }}>
+                  <span style={{ fontSize: "12px", color: T.muted }}>{p.role}</span>
+                  <motion.span
+                    animate={isHovered ? { x: 4, opacity: 1 } : { x: 0, opacity: 0.45 }}
+                    style={{ fontSize: "13px", fontWeight: 700, color: p.color }}
+                  >Enter →</motion.span>
                 </div>
               </motion.button>
             );
@@ -209,8 +205,8 @@ export default function LoginPage() {
         <motion.p
           initial={mounted ? { opacity: 0 } : false}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="text-center text-gray-300 text-xs"
+          transition={{ delay: 0.75 }}
+          style={{ textAlign: "center", color: T.muted, fontSize: "12px" }}
         >
           No password required · Progress automatically saved per profile
         </motion.p>
