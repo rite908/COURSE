@@ -146,61 +146,50 @@ export default function HeroScene() {
         />
       </div>
 
-      {/* ════ HOODED FIGURE ════ */}
+      {/* ════ TWH LOGO ════ */}
       <div
         className="absolute bottom-0 left-1/2 pointer-events-none"
-        style={{ width: "36%", maxWidth: 220, transform: "translateX(-50%)", zIndex: 10 }}
+        style={{ width: "44%", maxWidth: 260, transform: "translateX(-50%)", zIndex: 10 }}
       >
+        {/* Ground glow */}
         <div style={{
           position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
-          width: "220%", height: 28,
-          background: "radial-gradient(ellipse, rgba(37,99,235,0.55) 0%, transparent 70%)",
-          filter: "blur(7px)",
+          width: "200%", height: 28,
+          background: "radial-gradient(ellipse, rgba(37,99,235,0.50) 0%, transparent 70%)",
+          filter: "blur(10px)",
         }} />
+        {/* Pulse rings */}
         <motion.div
-          animate={{ scaleX: [1,1.20,1], opacity: [0.55,0.12,0.55] }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ scaleX: [1,1.20,1], opacity: [0.50,0.10,0.50] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
           style={{
             position:"absolute", bottom:-4, left:"50%", transform:"translateX(-50%)",
-            width:"170%", height:22, borderRadius:"50%",
-            border:"1.5px solid rgba(96,165,250,0.90)", zIndex:1
+            width:"160%", height:20, borderRadius:"50%",
+            border:"1.5px solid rgba(96,165,250,0.85)", zIndex:1
           }}
         />
         <motion.div
-          animate={{ scaleX:[1,1.30,1], opacity:[0.30,0.05,0.30] }}
-          transition={{ duration:2.4, repeat:Infinity, ease:"easeInOut", delay:0.6 }}
+          animate={{ scaleX:[1,1.30,1], opacity:[0.28,0.04,0.28] }}
+          transition={{ duration:2.6, repeat:Infinity, ease:"easeInOut", delay:0.7 }}
           style={{
             position:"absolute", bottom:-4, left:"50%", transform:"translateX(-50%)",
-            width:"210%", height:30, borderRadius:"50%",
-            border:"1px solid rgba(139,92,246,0.65)", zIndex:1
+            width:"200%", height:28, borderRadius:"50%",
+            border:"1px solid rgba(139,92,246,0.60)", zIndex:1
           }}
         />
-        <svg viewBox="0 0 200 265" fill="none" style={{ width:"100%", position:"relative", zIndex:2 }}>
-          <defs>
-            <radialGradient id="figBody" cx="50%" cy="28%" r="60%">
-              <stop offset="0%" stopColor="#18304C"/>
-              <stop offset="100%" stopColor="#06090F"/>
-            </radialGradient>
-            <radialGradient id="figShield" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#93C5FD" stopOpacity="0.90"/>
-              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0"/>
-            </radialGradient>
-            <filter id="figGlow"><feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
-            <filter id="figShadow"><feDropShadow dx="0" dy="6" stdDeviation="12" floodColor="#1D4ED8" floodOpacity="0.36"/></filter>
-          </defs>
-          <path d="M44 88C36 94 27 106 25 126C23 144 28 158 32 174C36 192 38 212 40 235C41 248 42 256 43 265L157 265C158 256 159 248 160 235C162 212 164 192 168 174C172 158 177 144 175 126C173 106 164 94 156 88Z"
-            fill="url(#figBody)" filter="url(#figShadow)"/>
-          <path d="M52 90C52 90 46 62 50 38C54 15 70 3 100 2C130 3 146 15 150 38C154 62 148 90 148 90Z" fill="#0A1220" filter="url(#figShadow)"/>
-          <ellipse cx="100" cy="46" rx="46" ry="44" fill="#111C2E"/>
-          <ellipse cx="100" cy="57" rx="28" ry="27" fill="#0D1725"/>
-          <path d="M54 88Q77 101 100 101Q123 101 146 88" stroke="#1E3A5F" strokeWidth="3" strokeLinecap="round" fill="none" opacity="0.7"/>
-          <ellipse cx="100" cy="163" rx="24" ry="24" fill="url(#figShield)" opacity="0.65"/>
-          <path d="M100 143L80 152L80 169Q80 184 100 192Q120 184 120 169L120 152Z"
-            fill="none" stroke="#60A5FA" strokeWidth="2" filter="url(#figGlow)" opacity="0.96"/>
-          <path d="M100 148L85 155L85 169Q85 180 100 186Q115 180 115 169L115 155Z" fill="rgba(37,99,235,0.16)"/>
-          <path d="M92 162L98 169L110 155" stroke="#BAE6FD" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" filter="url(#figGlow)"/>
-          <text x="100" y="174" textAnchor="middle" fill="#93C5FD" fontSize="11" fontFamily="monospace" fontWeight="bold" filter="url(#figGlow)" opacity="0.95">TWH</text>
-        </svg>
+        {/* Actual logo image */}
+        <motion.img
+          src="/twh-logo.png"
+          alt="TWH Academy"
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 4.0, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            width: "100%",
+            position: "relative",
+            zIndex: 2,
+            filter: "drop-shadow(0 0 24px rgba(37,99,235,0.55)) drop-shadow(0 0 8px rgba(99,102,241,0.40))",
+          }}
+        />
       </div>
 
       {/* ════ CITY SKYLINE ════ */}
