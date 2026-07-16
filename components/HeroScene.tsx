@@ -68,16 +68,9 @@ export default function HeroScene() {
             }}
           />
 
-          {/* ── Purple CSS ring border (outside clip) ── */}
-          <div style={{
-            position: "absolute", inset: -6, borderRadius: "50%",
-            background: "linear-gradient(135deg, #7C3AED 0%, #4F46E5 40%, #2563EB 60%, #7C3AED 100%)",
-            zIndex: 0,
-          }} />
-
           {/* ── Image clipped to circle (no white bg) ── */}
           <div style={{
-            position: "absolute", inset: 4, borderRadius: "50%",
+            position: "absolute", inset: 0, borderRadius: "50%",
             overflow: "hidden", zIndex: 1,
           }}>
             <Image

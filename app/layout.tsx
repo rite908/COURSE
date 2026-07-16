@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${orbitron.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-white text-gray-900 antialiased min-h-screen">
+      <body className="antialiased min-h-screen" style={{ background: "var(--t-bg)", color: "var(--t-text)" }}>
         <MotionProvider>
           <Navbar />
           {children}
