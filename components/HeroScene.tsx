@@ -68,14 +68,24 @@ export default function HeroScene() {
             }}
           />
 
-          {/* ── Image (already circular with purple border) ── */}
-          <div style={{ position: "relative", width: "100%", height: "100%", zIndex: 1 }}>
+          {/* ── Purple CSS ring border (outside clip) ── */}
+          <div style={{
+            position: "absolute", inset: -6, borderRadius: "50%",
+            background: "linear-gradient(135deg, #7C3AED 0%, #4F46E5 40%, #2563EB 60%, #7C3AED 100%)",
+            zIndex: 0,
+          }} />
+
+          {/* ── Image clipped to circle (no white bg) ── */}
+          <div style={{
+            position: "absolute", inset: 4, borderRadius: "50%",
+            overflow: "hidden", zIndex: 1,
+          }}>
             <Image
               src="/hacker.png"
               alt="TWH Hacker"
               fill
               sizes="(max-width: 768px) 360px, (max-width: 1024px) 500px, 750px"
-              style={{ objectFit: "contain", objectPosition: "center center" }}
+              style={{ objectFit: "cover", objectPosition: "center 20%" }}
               priority
             />
           </div>
