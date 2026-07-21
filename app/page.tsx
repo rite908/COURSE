@@ -526,13 +526,12 @@ export default function LandingPage() {
                   borderRadius: 20, background: T.card,
                   border: `1px solid ${T.border}`,
                   boxShadow: `0 2px 16px rgba(0,0,0,${isDark ? 0.28 : 0.05})`,
-                  overflow: "visible",
+                  overflow: "hidden",
                 }}
               >
                 {/* Full-width accent line — solid colour + glow in dark mode */}
                 <span style={{
                   position: "absolute", top: 0, left: 0, right: 0, height: 3,
-                  borderRadius: "20px 20px 0 0",
                   background: s.color,
                   boxShadow: isDark ? `0 0 12px ${s.color}CC, 0 0 28px ${s.color}66` : "none",
                 }} />
@@ -548,7 +547,7 @@ export default function LandingPage() {
                   {s.icon}
                 </div>
                 <div style={{ position: "relative" }}>
-                  <div style={{ fontWeight: 900, fontSize: "1.9rem", color: T.text, lineHeight: 1 }}>{s.value}</div>
+                  <div style={{ fontWeight: 900, fontSize: "clamp(1.4rem, 1.6vw, 1.9rem)", color: T.text, lineHeight: 1.15, whiteSpace: "nowrap" }}>{s.value}</div>
                   <div style={{ fontSize: "11px", color: T.muted, fontWeight: 700, marginTop: 6, textTransform: "uppercase", letterSpacing: "0.09em" }}>{s.label}</div>
                 </div>
               </motion.div>
