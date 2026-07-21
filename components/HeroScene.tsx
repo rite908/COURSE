@@ -251,7 +251,7 @@ export default function HeroScene() {
         <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: "relative", width: "min(55%,380px)", aspectRatio: "1" }}
+          style={{ position: "relative", width: "min(80%,580px)", aspectRatio: "1" }}
         >
           <motion.div
             animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.03, 0.35] }}
