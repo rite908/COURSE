@@ -201,11 +201,10 @@ export default function LandingPage() {
       <section style={{
         position: "relative",
         background: T.heroBg,
-        paddingTop: `calc(72px + ${isLg ? 56 : 32}px)`,
-        paddingBottom: isLg ? 0 : 48,
+        paddingTop: `calc(72px + ${isLg ? 28 : 20}px)`,
+        paddingBottom: isLg ? 36 : 40,
         overflow: "hidden",
-        minHeight: isLg ? "100vh" : "auto",
-        display: "flex", flexDirection: "column", justifyContent: "center",
+        display: "flex", flexDirection: "column",
       }}>
         {/* Dot grid */}
         <div style={{
