@@ -348,7 +348,8 @@ export default function LandingPage() {
                       ref={btnRef}
                       onMouseEnter={() => setBtnHovered(true)}
                       onMouseLeave={() => setBtnHovered(false)}
-                      whileTap={{ scale: 0.97 }}
+                      whileHover={{ scale: 1.035 }}
+                      whileTap={{ scale: 0.96 }}
                       onClick={goStart}
                       style={{
                         position: "relative",
@@ -358,10 +359,10 @@ export default function LandingPage() {
                         border: "none", cursor: "pointer",
                         background: "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
                         boxShadow: btnHovered
-                          ? "0 0 24px rgba(124,58,237,0.65), 0 0 52px rgba(37,99,235,0.35), 0 8px 28px rgba(37,99,235,0.30)"
+                          ? "0 0 36px rgba(124,58,237,0.75), 0 0 72px rgba(37,99,235,0.30), 0 12px 36px rgba(37,99,235,0.38)"
                           : "0 8px 28px rgba(37,99,235,0.40)",
                         overflow: "hidden",
-                        transition: "box-shadow 0.3s ease",
+                        transition: "box-shadow 0.35s ease",
                         zIndex: 1,
                       }}
                     >
@@ -372,28 +373,68 @@ export default function LandingPage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.25 }}
+                            transition={{ duration: 0.3 }}
                             style={{ position: "absolute", inset: 0, borderRadius: 14, overflow: "hidden", zIndex: 0 }}
                           >
+                            {/* Shifting gradient base */}
                             <motion.span
                               animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                              transition={{ duration: 2.2, repeat: Infinity, ease: "linear" }}
+                              transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
                               style={{
                                 position: "absolute", inset: 0,
                                 background: "linear-gradient(270deg,#1D4ED8,#7C3AED,#0EA5E9,#6D28D9,#2563EB)",
                                 backgroundSize: "300% 300%",
                               }}
                             />
+                            {/* Shimmer sweep — runs once on hover entry */}
+                            <motion.span
+                              initial={{ x: "-130%" }}
+                              animate={{ x: "230%" }}
+                              transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
+                              style={{
+                                position: "absolute", top: 0, bottom: 0,
+                                width: "55%",
+                                background: "linear-gradient(105deg, transparent 15%, rgba(255,255,255,0.22) 50%, transparent 85%)",
+                                transform: "skewX(-10deg)",
+                                zIndex: 2,
+                                pointerEvents: "none",
+                              }}
+                            />
                           </motion.span>
                         )}
                       </AnimatePresence>
 
-                      <span style={{ position: "relative", zIndex: 1 }}>
+                      {/* Button label */}
+                      <span style={{
+                        position: "relative", zIndex: 1,
+                        letterSpacing: btnHovered ? "0.025em" : "0em",
+                        transition: "letter-spacing 0.25s ease",
+                      }}>
                         {user ? "Continue Learning" : "Start Free — No Signup"}
                       </span>
-                      <span style={{ position: "relative", zIndex: 1, width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <ArrowRight size={14} />
-                      </span>
+
+                      {/* Arrow badge */}
+                      <motion.span
+                        animate={btnHovered
+                          ? { x: 4, scale: 1.15, backgroundColor: "rgba(255,255,255,0.38)" }
+                          : { x: 0, scale: 1,    backgroundColor: "rgba(255,255,255,0.22)" }
+                        }
+                        transition={{ duration: 0.22, ease: "easeOut" }}
+                        style={{
+                          position: "relative", zIndex: 1,
+                          width: 28, height: 28, borderRadius: "50%",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <motion.span
+                          animate={btnHovered ? { x: 2 } : { x: 0 }}
+                          transition={{ duration: 0.22, ease: "easeOut" }}
+                          style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <ArrowRight size={14} />
+                        </motion.span>
+                      </motion.span>
                     </motion.button>
                   </div>
 
