@@ -66,14 +66,14 @@ const TERM_SCRIPT: TermSegment[] = [
   /* ── Scene 1: nmap scan ── */
   { kind: "cmd",  prompt: "root@kali:~$",          text: " nmap -sV -T4 192.168.1.0/24",          color: "#e6edf3", pauseAfter: 60  },
   { kind: "spin", text: "[*] Starting Nmap 7.94 — scanning /24…",                                  color: "#8b949e", spinMs: 1100, pauseAfter: 40 },
-  { kind: "out",  text: "[+] 192.168.1.1   — 22/ssh  80/http  443/https",                          color: "#79c0ff", pauseAfter: 50  },
-  { kind: "out",  text: "[+] 192.168.1.105 — 21/ftp  3306/mysql",                                  color: "#79c0ff", pauseAfter: 50  },
-  { kind: "out",  text: "[+] 192.168.1.200 — 8080/http-proxy  27017/mongodb",                      color: "#79c0ff", pauseAfter: 50  },
-  { kind: "out",  text: "[!] 192.168.1.105:21 — vsftpd 2.3.4 (BACKDOOR CVE-2011-2523)",            color: "#f85149", bold: true, pauseAfter: 100 },
+  { kind: "out",  text: "[+] 192.168.1.1 — 22/ssh 80/http 443/https",                              color: "#79c0ff", pauseAfter: 50  },
+  { kind: "out",  text: "[+] 192.168.1.105 — 21/ftp 3306/mysql",                                  color: "#79c0ff", pauseAfter: 50  },
+  { kind: "out",  text: "[+] 192.168.1.200 — 8080/http 27017/mongo",                              color: "#79c0ff", pauseAfter: 50  },
+  { kind: "out",  text: "[!] vsftpd 2.3.4 — BACKDOOR CVE-2011-2523",                              color: "#f85149", bold: true, pauseAfter: 100 },
 
   /* ── Scene 2: exploit ── */
-  { kind: "cmd",  prompt: "root@kali:~$",          text: " python3 exploit.py --target 192.168.1.105", color: "#e6edf3", pauseAfter: 60 },
-  { kind: "spin", text: "[*] Loading exploit module — vsftpd_234_backdoor",                        color: "#8b949e", spinMs: 900, pauseAfter: 40 },
+  { kind: "cmd",  prompt: "root@kali:~$",          text: " python3 exploit.py 192.168.1.105",          color: "#e6edf3", pauseAfter: 60 },
+  { kind: "spin", text: "[*] Loading vsftpd_234_backdoor exploit…",                                color: "#8b949e", spinMs: 900, pauseAfter: 40 },
   { kind: "out",  text: "[*] Triggering backdoor on port 6200…",                                   color: "#8b949e", pauseAfter: 50  },
   { kind: "spin", text: "[*] Waiting for shell…",                                                  color: "#8b949e", spinMs: 1200, pauseAfter: 40 },
   { kind: "out",  text: "[+] Shell opened!  uid=0(root) gid=0(root)",                              color: "#00ff41", bold: true, pauseAfter: 80  },
@@ -505,7 +505,7 @@ export default function HeroScene() {
               border: "1px solid rgba(0,255,65,0.35)",
               borderRadius: 12,
               overflow: "hidden",
-              width: 260,
+              width: 320,
               boxShadow: "0 20px 60px rgba(0,0,0,0.8)",
               animation: "termFlicker 8s ease-in-out infinite",
             }}>
@@ -540,7 +540,7 @@ export default function HeroScene() {
                   <div key={i} style={{
                     fontFamily: "'Courier New', Courier, monospace",
                     fontSize: 11, lineHeight: 1.8,
-                    display: "flex", flexWrap: "wrap", whiteSpace: "pre-wrap", wordBreak: "break-all",
+                    display: "flex", flexWrap: "nowrap", whiteSpace: "nowrap",
                     animation: "fadeIn 0.12s ease-out",
                   }}>
                     {seg.kind === "cmd" ? (
@@ -566,7 +566,7 @@ export default function HeroScene() {
                   <div style={{
                     fontFamily: "'Courier New', Courier, monospace",
                     fontSize: 11, lineHeight: 1.8,
-                    display: "flex", flexWrap: "wrap", whiteSpace: "pre-wrap", wordBreak: "break-all",
+                    display: "flex", flexWrap: "nowrap", whiteSpace: "nowrap",
                     alignItems: "center",
                   }}>
                     {activeSeg.kind === "cmd" ? (
