@@ -228,8 +228,8 @@ export default function LandingPage() {
               {/* LEFT */}
               <motion.div style={{
                 y: leftY,
-                flex: isLg ? "0 0 44%" : "unset",
-                width: isLg ? "44%" : "100%",
+                flex: isLg ? "0 0 48%" : "unset",
+                width: isLg ? "48%" : "100%",
               }}>
                 {/* Badge */}
                 <motion.div {...fade(0)} style={{ marginBottom: 20 }}>
@@ -250,9 +250,9 @@ export default function LandingPage() {
 
                 {/* Headline */}
                 <motion.h1 {...fade(0.07)} style={{
-                  fontWeight: 900, lineHeight: 1.04, letterSpacing: "-0.03em",
+                  fontWeight: 900, lineHeight: 1.06, letterSpacing: "-0.03em",
                   marginBottom: 20,
-                  fontSize: isLg ? "clamp(2.8rem,3.8vw,4.6rem)" : isMd ? "2.7rem" : "2.2rem",
+                  fontSize: isLg ? "clamp(2.8rem,3.5vw,4rem)" : isMd ? "2.6rem" : "2.1rem",
                 }}>
                   <span style={{ color: T.text, display: "block" }}>Master Computers.</span>
                   <span style={{
@@ -265,7 +265,7 @@ export default function LandingPage() {
                 {/* Sub */}
                 <motion.p {...fade(0.15)} style={{
                   color: T.text2, lineHeight: 1.75, marginBottom: 32,
-                  fontSize: isMd ? "1.05rem" : "0.95rem", maxWidth: 460,
+                  fontSize: isMd ? "1.05rem" : "0.95rem", maxWidth: 500,
                 }}>
                   From zero to ethical hacking hero. A complete structured roadmap in Hinglish, by{" "}
                   <strong style={{ color: T.chipTxt }}>Afsar Ali (Technical White Hat)</strong>.
