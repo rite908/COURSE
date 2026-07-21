@@ -265,6 +265,7 @@ export default function LandingPage() {
         paddingBottom: isLg ? 36 : 40,
         overflow: "hidden",
         display: "flex", flexDirection: "column",
+        minHeight: isLg ? "calc(100vh - 72px)" : "auto",
       }}>
         {/* Dot grid */}
         <div className="hero-dot-grid" style={{
@@ -485,10 +486,10 @@ export default function LandingPage() {
           )}
         </div>
 
-        {/* Scroll cue */}
+        {/* Scroll cue — centered above marquee */}
         {isLg && mounted && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "20px 0 16px" }}>
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "12px 0 100px" }}>
             <span style={{ fontSize: "10px", fontWeight: 600, color: T.muted, textTransform: "uppercase", letterSpacing: "0.14em" }}>Scroll</span>
             <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
               <ChevronDown size={14} color={T.muted} />
@@ -496,16 +497,25 @@ export default function LandingPage() {
           </motion.div>
         )}
 
-        {/* Chapter marquee strip */}
+        {/* Chapter marquee strip — pinned to bottom edge of hero */}
         <div style={{
-          position: "relative", overflow: "hidden",
-          borderTop: `1px solid ${T.border}`,
-          padding: "18px 0 20px",
-          marginTop: 8,
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          overflow: "hidden",
+          /* Glowing top border */
+          borderTop: `1px solid ${isDark ? "rgba(37,99,235,0.35)" : "rgba(37,99,235,0.18)"}`,
+          boxShadow: isDark
+            ? "0 -1px 0 rgba(124,58,237,0.2), 0 -12px 40px rgba(37,99,235,0.12), inset 0 1px 0 rgba(37,99,235,0.25)"
+            : "0 -6px 24px rgba(37,99,235,0.08)",
+          background: isDark
+            ? "linear-gradient(to bottom, rgba(6,9,18,0.0), rgba(6,9,18,0.55))"
+            : "linear-gradient(to bottom, rgba(248,250,255,0.0), rgba(248,250,255,0.7))",
+          backdropFilter: "blur(6px)",
+          padding: "16px 0 18px",
+          zIndex: 20,
         }}>
           {/* Fade edges */}
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to right,#060912,transparent)" : "linear-gradient(to right,#F8FAFF,transparent)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to left,#060912,transparent)" : "linear-gradient(to left,#F8FAFF,transparent)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 140, zIndex: 2, background: isDark ? "linear-gradient(to right,#060912 20%,transparent)" : "linear-gradient(to right,#F5F8FF 20%,transparent)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 140, zIndex: 2, background: isDark ? "linear-gradient(to left,#060912 20%,transparent)" : "linear-gradient(to left,#F5F8FF 20%,transparent)", pointerEvents: "none" }} />
 
           <div className="chapter-marquee-track">
             {[...CHAPTERS, ...CHAPTERS].map((ch, i) => (
