@@ -516,7 +516,7 @@ export default function LandingPage() {
                 marginRight: 12,
                 flexShrink: 0,
                 borderRadius: 16,
-                background: isDark ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.85)",
+                background: isDark ? "#0D1117" : "#FFFFFF",
                 border: `1px solid ${ch.color}35`,
                 boxShadow: `0 0 18px ${ch.color}45, 0 0 40px ${ch.color}18`,
                 cursor: "default",
