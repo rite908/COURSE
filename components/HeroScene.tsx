@@ -52,25 +52,44 @@ function Float({ dy, dur, delay, children }: {
 const IPS      = ["192.168.1.1", "10.0.0.254", "172.16.4.8", "192.168.0.1"];
 const BAR_BASE = [3, 5, 4, 7, 6, 8, 5, 9, 7, 8];
 const PKT_VALS = ["724K", "731K", "718K", "745K", "712K"];
-/* ── Terminal script: cmd lines type char-by-char; output appears instantly ── */
+/* ── Terminal script ── */
 type TermSegment = {
-  kind: "cmd" | "out";
+  kind: "cmd" | "out" | "spin"; // spin = spinner then instant output
   prompt?: string;
   text: string;
   color: string;
   bold?: boolean;
-  pauseAfter?: number; // ms to wait before next segment
+  pauseAfter?: number;
+  spinMs?: number; // how long spinner runs before line appears
 };
 const TERM_SCRIPT: TermSegment[] = [
-  { kind: "cmd", prompt: "root@kali:~$", text: " nmap -sS 192.168.1.0/24",     color: "#E2E8F0", pauseAfter: 120 },
-  { kind: "out", text: "Starting Nmap 7.94…",                                    color: "#64748B", pauseAfter: 80  },
-  { kind: "out", text: "[+] 192.168.1.1 — ports: 22, 80, 443",                  color: "#60A5FA", pauseAfter: 80  },
-  { kind: "out", text: "[+] 22/tcp  open  ssh   OpenSSH 8.9p1",                  color: "#60A5FA", pauseAfter: 200 },
-  { kind: "cmd", prompt: "root@kali:~$", text: " ssh root@192.168.1.1",          color: "#E2E8F0", pauseAfter: 100 },
-  { kind: "out", text: "root@192.168.1.1's password: ••••••••",                  color: "#94A3B8", pauseAfter: 80  },
-  { kind: "out", text: "Welcome to Kali GNU/Linux 2024.1",                       color: "#4ADE80", pauseAfter: 200 },
-  { kind: "cmd", prompt: "root@192.168.1.1:~$", text: " cat /root/flag.txt",     color: "#E2E8F0", pauseAfter: 80  },
-  { kind: "out", text: "TWH{4cc3ss_gr4nt3d_m4st3r!}",                            color: "#4ADE80", bold: true, pauseAfter: 2800 },
+  /* ── Scene 1: nmap scan ── */
+  { kind: "cmd",  prompt: "root@kali:~$",          text: " nmap -sV -T4 192.168.1.0/24",          color: "#e6edf3", pauseAfter: 60  },
+  { kind: "spin", text: "[*] Starting Nmap 7.94 — scanning /24…",                                  color: "#8b949e", spinMs: 1100, pauseAfter: 40 },
+  { kind: "out",  text: "[+] 192.168.1.1   — 22/ssh  80/http  443/https",                          color: "#79c0ff", pauseAfter: 50  },
+  { kind: "out",  text: "[+] 192.168.1.105 — 21/ftp  3306/mysql",                                  color: "#79c0ff", pauseAfter: 50  },
+  { kind: "out",  text: "[+] 192.168.1.200 — 8080/http-proxy  27017/mongodb",                      color: "#79c0ff", pauseAfter: 50  },
+  { kind: "out",  text: "[!] 192.168.1.105:21 — vsftpd 2.3.4 (BACKDOOR CVE-2011-2523)",            color: "#f85149", bold: true, pauseAfter: 100 },
+
+  /* ── Scene 2: exploit ── */
+  { kind: "cmd",  prompt: "root@kali:~$",          text: " python3 exploit.py --target 192.168.1.105", color: "#e6edf3", pauseAfter: 60 },
+  { kind: "spin", text: "[*] Loading exploit module — vsftpd_234_backdoor",                        color: "#8b949e", spinMs: 900, pauseAfter: 40 },
+  { kind: "out",  text: "[*] Triggering backdoor on port 6200…",                                   color: "#8b949e", pauseAfter: 50  },
+  { kind: "spin", text: "[*] Waiting for shell…",                                                  color: "#8b949e", spinMs: 1200, pauseAfter: 40 },
+  { kind: "out",  text: "[+] Shell opened!  uid=0(root) gid=0(root)",                              color: "#00ff41", bold: true, pauseAfter: 80  },
+
+  /* ── Scene 3: recon ── */
+  { kind: "cmd",  prompt: "root@192.168.1.105:~$", text: " ls -la /var/www/html/",                 color: "#e6edf3", pauseAfter: 50  },
+  { kind: "out",  text: "drwxr-xr-x  admin.php  config.php  uploads/",                             color: "#8b949e", pauseAfter: 40  },
+  { kind: "cmd",  prompt: "root@192.168.1.105:~$", text: " cat config.php | grep pass",            color: "#e6edf3", pauseAfter: 60  },
+  { kind: "out",  text: "$db_pass = \"Sup3r$3cr3t!\";",                                            color: "#ffa657", bold: true, pauseAfter: 80  },
+
+  /* ── Scene 4: flag ── */
+  { kind: "cmd",  prompt: "root@192.168.1.105:~$", text: " find / -name flag.txt 2>/dev/null",     color: "#e6edf3", pauseAfter: 50  },
+  { kind: "spin", text: "[*] Searching filesystem…",                                               color: "#8b949e", spinMs: 1000, pauseAfter: 40 },
+  { kind: "out",  text: "/root/flag.txt",                                                           color: "#8b949e", pauseAfter: 40  },
+  { kind: "cmd",  prompt: "root@192.168.1.105:~$", text: " cat /root/flag.txt",                    color: "#e6edf3", pauseAfter: 60  },
+  { kind: "out",  text: "TWH{pwn3d_by_4fs4r_4l1!}",                                               color: "#00ff41", bold: true, pauseAfter: 2200 },
 ];
 
 /* ══════════════════════════════════════════════════════ */
@@ -91,10 +110,14 @@ export default function HeroScene() {
 
   /* Terminal — char-by-char typewriter */
   type DoneLine = { seg: TermSegment; text: string };
+  const MAX_LINES = 8;
   const [doneLines,  setDoneLines]  = useState<DoneLine[]>([]);
-  const [activeText, setActiveText] = useState("");   // chars revealed so far on current seg
+  const [activeText, setActiveText] = useState("");
   const [activeSeg,  setActiveSeg]  = useState<TermSegment | null>(null);
-  
+  const [spinnerOn,  setSpinnerOn]  = useState(false);
+  const SPIN_FRAMES = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"];
+  const [spinFrame,  setSpinFrame]  = useState(0);
+
 
   /* ── Mount ── */
   useEffect(() => { setMounted(true); }, []);
@@ -141,6 +164,13 @@ export default function HeroScene() {
     return () => { active = false; clearInterval(id); };
   }, [mounted]);
 
+  /* ── Spinner frame ticker ── */
+  useEffect(() => {
+    if (!spinnerOn) return;
+    const id = setInterval(() => setSpinFrame(f => (f + 1) % SPIN_FRAMES.length), 80);
+    return () => clearInterval(id);
+  }, [spinnerOn]);
+
   /* ── Terminal — char-by-char typewriter, StrictMode-safe ── */
   useEffect(() => {
     if (!mounted) return;
@@ -152,17 +182,24 @@ export default function HeroScene() {
       T.push(id);
     };
 
+    const pushLine = (seg: TermSegment, text: string) => {
+      setDoneLines(prev => {
+        const next = [...prev, { seg, text }];
+        return next.length > MAX_LINES ? next.slice(next.length - MAX_LINES) : next;
+      });
+    };
+
     const runScript = () => {
       if (!active) return;
       setDoneLines([]);
       setActiveText("");
       setActiveSeg(null);
+      setSpinnerOn(false);
 
       let segIdx = 0;
 
       const nextSeg = () => {
         if (!active || segIdx >= TERM_SCRIPT.length) {
-          /* loop back after pause */
           sched(runScript, 1200);
           return;
         }
@@ -170,17 +207,29 @@ export default function HeroScene() {
         setActiveSeg(seg);
         setActiveText("");
 
-        if (seg.kind === "out") {
-          /* output lines appear all-at-once then pause */
+        if (seg.kind === "spin") {
+          /* show text immediately + spinner, then commit after spinMs */
           setActiveText(seg.text);
+          setSpinnerOn(true);
           sched(() => {
-            setDoneLines(prev => [...prev, { seg, text: seg.text }]);
+            setSpinnerOn(false);
+            pushLine(seg, seg.text);
             setActiveText("");
             setActiveSeg(null);
-            sched(nextSeg, seg.pauseAfter ?? 100);
-          }, 80);
+            sched(nextSeg, seg.pauseAfter ?? 60);
+          }, seg.spinMs ?? 800);
+
+        } else if (seg.kind === "out") {
+          setActiveText(seg.text);
+          sched(() => {
+            pushLine(seg, seg.text);
+            setActiveText("");
+            setActiveSeg(null);
+            sched(nextSeg, seg.pauseAfter ?? 60);
+          }, 70);
+
         } else {
-          /* command lines type char-by-char at ~38 ms/char */
+          /* cmd — type char-by-char */
           let c = 0;
           const full = seg.text;
           const typeChar = () => {
@@ -188,18 +237,17 @@ export default function HeroScene() {
             c++;
             setActiveText(full.slice(0, c));
             if (c < full.length) {
-              sched(typeChar, 36 + Math.random() * 24);
+              sched(typeChar, 28 + Math.random() * 22);
             } else {
-              /* finished typing — commit, then move on */
               sched(() => {
-                setDoneLines(prev => [...prev, { seg, text: full }]);
+                pushLine(seg, full);
                 setActiveText("");
                 setActiveSeg(null);
-                sched(nextSeg, seg.pauseAfter ?? 120);
-              }, 160);
+                sched(nextSeg, seg.pauseAfter ?? 80);
+              }, 140);
             }
           };
-          sched(typeChar, 36);
+          sched(typeChar, 30);
         }
       };
 
@@ -494,7 +542,7 @@ export default function HeroScene() {
                     fontFamily: "'Courier New', Courier, monospace",
                     fontSize: 11, lineHeight: 1.8,
                     display: "flex", flexWrap: "nowrap", whiteSpace: "nowrap",
-                    animation: "fadeIn 0.1s ease-out",
+                    animation: "fadeIn 0.12s ease-out",
                   }}>
                     {seg.kind === "cmd" ? (
                       <>
@@ -506,20 +554,21 @@ export default function HeroScene() {
                       </>
                     ) : (
                       <span style={{
-                        color: seg.color === "#4ADE80" ? "#00ff41" : seg.color === "#60A5FA" ? "#79c0ff" : "#8b949e",
-                        fontWeight: seg.bold ? 700 : 400, paddingLeft: 2,
-                        textShadow: seg.bold ? "0 0 8px rgba(0,255,65,0.8)" : "none",
+                        color: seg.color,
+                        fontWeight: seg.bold ? 700 : 400,
+                        textShadow: seg.bold ? `0 0 10px ${seg.color}` : "none",
                       }}>{text}</span>
                     )}
                   </div>
                 ))}
 
-                {/* Currently typing line */}
+                {/* Active line: typing (cmd) or spinner (spin) or instant (out) */}
                 {activeSeg && (
                   <div style={{
                     fontFamily: "'Courier New', Courier, monospace",
                     fontSize: 11, lineHeight: 1.8,
                     display: "flex", flexWrap: "nowrap", whiteSpace: "nowrap",
+                    alignItems: "center",
                   }}>
                     {activeSeg.kind === "cmd" ? (
                       <>
@@ -528,18 +577,23 @@ export default function HeroScene() {
                           textShadow: "0 0 6px rgba(0,255,65,0.7)",
                         }}>{activeSeg.prompt}</span>
                         <span style={{ color: "#e6edf3" }}>{activeText}</span>
+                        <span style={{
+                          display: "inline-block", width: 7, height: 13,
+                          background: "#00ff41", marginLeft: 1, verticalAlign: "middle",
+                          boxShadow: "0 0 6px rgba(0,255,65,0.9)",
+                          animation: "termBlink 1s step-end infinite",
+                        }} />
+                      </>
+                    ) : activeSeg.kind === "spin" ? (
+                      <>
+                        <span style={{ color: "#00ff41", marginRight: 6, fontWeight: 700 }}>
+                          {SPIN_FRAMES[spinFrame]}
+                        </span>
+                        <span style={{ color: "#8b949e" }}>{activeText}</span>
                       </>
                     ) : (
-                      <span style={{ color: "#8b949e", paddingLeft: 2 }}>{activeText}</span>
+                      <span style={{ color: activeSeg.color }}>{activeText}</span>
                     )}
-                    {/* CSS-animated cursor — guaranteed to blink regardless of JS */}
-                    <span style={{
-                      display: "inline-block", width: 7, height: 13,
-                      background: "#00ff41",
-                      marginLeft: 1, verticalAlign: "middle",
-                      boxShadow: "0 0 6px rgba(0,255,65,0.9)",
-                      animation: "termBlink 1s step-end infinite",
-                    }} />
                   </div>
                 )}
 
