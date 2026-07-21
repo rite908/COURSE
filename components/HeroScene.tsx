@@ -285,18 +285,19 @@ export default function HeroScene() {
       ))}
 
       {/* ── CARD 1 — IP SCANNING (top-right) ── */}
-      <div style={{ position: "absolute", top: "3%", right: "0%", zIndex: 30 }}>
+      <div style={{ position: "absolute", top: "4%", right: "1%", zIndex: 30 }}>
         <Enter from="right" delay={0.3}>
-          <Float dy={6} dur={4.4} delay={0.5}>
-            <div style={{ ...glass("59,130,246"), minWidth: 142 }}>
+          <Float dy={7} dur={4.4} delay={0.5}>
+            <div style={{ ...glass("59,130,246"), minWidth: 168 }}>
               <TopLine color="#3B82F6" />
-              <div style={{ padding: "10px 13px" }}>
+              <div style={{ padding: "13px 16px" }}>
 
                 {/* header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 9 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ position: "relative", width: 22, height: 22, borderRadius: 7, background: "rgba(59,130,246,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <svg width="11" height="11" viewBox="0 0 13 13" fill="none">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 11 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {/* radar icon */}
+                    <div style={{ position: "relative", width: 26, height: 26, borderRadius: 8, background: "rgba(59,130,246,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                         <circle cx="6.5" cy="6.5" r="5" stroke="#3B82F6" strokeWidth="1" opacity="0.4"/>
                         <circle cx="6.5" cy="6.5" r="2.8" stroke="#3B82F6" strokeWidth="1" strokeDasharray="1.6 1.4" opacity="0.65"/>
                         <circle cx="6.5" cy="6.5" r="1" fill="#3B82F6"/>
@@ -304,29 +305,29 @@ export default function HeroScene() {
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
-                        style={{ position: "absolute", width: 1.5, height: 5, background: "linear-gradient(to top, #3B82F6, transparent)", borderRadius: 1, transformOrigin: "50% 100%", bottom: "50%", left: "calc(50% - 0.75px)" }}
+                        style={{ position: "absolute", width: 1.5, height: 6, background: "linear-gradient(to top, #3B82F6, transparent)", borderRadius: 1, transformOrigin: "50% 100%", bottom: "50%", left: "calc(50% - 0.75px)" }}
                       />
                     </div>
-                    <span style={{ fontSize: 8, fontWeight: 700, color: "rgba(147,197,253,0.85)", textTransform: "uppercase", letterSpacing: "0.12em" }}>IP Scanning</span>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(147,197,253,0.85)", textTransform: "uppercase", letterSpacing: "0.12em" }}>IP Scanning</span>
                   </div>
                   <Dot color="#22C55E" />
                 </div>
 
                 {/* IP */}
-                <div style={{ height: 18, overflow: "hidden", marginBottom: 7 }}>
+                <div style={{ height: 20, overflow: "hidden", marginBottom: 9 }}>
                   <motion.div
                     key={ipKey}
                     initial={ipKey === 0 ? false : { opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.28 }}
-                    style={{ fontFamily: "monospace", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.92)", letterSpacing: "0.02em" }}
+                    style={{ fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.92)", letterSpacing: "0.02em" }}
                   >
                     {IPS[ipIdx]}
                   </motion.div>
                 </div>
 
                 {/* bar */}
-                <div style={{ height: 2.5, borderRadius: 99, background: "rgba(59,130,246,0.14)", overflow: "hidden", marginBottom: 7 }}>
+                <div style={{ height: 3, borderRadius: 99, background: "rgba(59,130,246,0.14)", overflow: "hidden", marginBottom: 9 }}>
                   <motion.div
                     animate={{ width: scanning ? `${scanPct}%` : "100%" }}
                     transition={{ duration: 0.07 }}
@@ -334,7 +335,7 @@ export default function HeroScene() {
                   />
                 </div>
 
-                <span style={{ fontSize: 7.5, fontWeight: 600, letterSpacing: "0.07em", color: scanning ? "#FCD34D" : "#4ADE80" }}>
+                <span style={{ fontSize: 8.5, fontWeight: 600, letterSpacing: "0.07em", color: scanning ? "#FCD34D" : "#4ADE80" }}>
                   {scanning ? "● Scanning…" : "● Active"}
                 </span>
               </div>
@@ -343,43 +344,47 @@ export default function HeroScene() {
         </Enter>
       </div>
 
-      {/* ── CARD 2 — ENCRYPTION (right, below IP) ── */}
-      <div style={{ position: "absolute", top: "27%", right: "0%", zIndex: 30 }}>
-        <Enter from="right" delay={0.5}>
-          <Float dy={6} dur={3.9} delay={1.2}>
-            <div style={{ ...glass("139,92,246"), minWidth: 130 }}>
+      {/* ── CARD 2 — ENCRYPTION (left-center) ── */}
+      <div style={{ position: "absolute", top: "30%", left: "1%", zIndex: 30 }}>
+        <Enter from="left" delay={0.5}>
+          <Float dy={7} dur={3.9} delay={1.2}>
+            <div style={{ ...glass("139,92,246"), minWidth: 152 }}>
               <TopLine color="#8B5CF6" />
-              <div style={{ padding: "10px 13px" }}>
+              <div style={{ padding: "13px 16px" }}>
 
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: "rgba(196,181,253,0.85)", textTransform: "uppercase", letterSpacing: "0.12em" }}>Encryption</span>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(196,181,253,0.85)", textTransform: "uppercase", letterSpacing: "0.12em" }}>Encryption</span>
                   <Dot color="#22C55E" delay={0.6} />
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 9 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 11 }}>
                   <motion.div
-                    animate={{ boxShadow: ["0 0 0 rgba(139,92,246,0)","0 0 12px rgba(139,92,246,0.65)","0 0 0 rgba(139,92,246,0)"] }}
+                    animate={{ boxShadow: [
+                      "0 0 0 rgba(139,92,246,0)",
+                      "0 0 14px rgba(139,92,246,0.65)",
+                      "0 0 0 rgba(139,92,246,0)",
+                    ]}}
                     transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ width: 26, height: 26, borderRadius: 8, background: "rgba(139,92,246,0.18)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "1px solid rgba(139,92,246,0.25)" }}
+                    style={{ width: 32, height: 32, borderRadius: 10, background: "rgba(139,92,246,0.18)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "1px solid rgba(139,92,246,0.25)" }}
                   >
-                    <svg width="11" height="13" viewBox="0 0 13 15" fill="none">
+                    <svg width="13" height="15" viewBox="0 0 13 15" fill="none">
                       <rect x="1.5" y="6.5" width="10" height="7.5" rx="2" stroke="#A78BFA" strokeWidth="1.3"/>
                       <path d="M3.5 6.5V4.8a3 3 0 0 1 6 0v1.7" stroke="#A78BFA" strokeWidth="1.3" strokeLinecap="round"/>
                       <circle cx="6.5" cy="10.3" r="1.2" fill="#A78BFA"/>
                     </svg>
                   </motion.div>
                   <div>
-                    <div style={{ fontFamily: "monospace", fontSize: 13, fontWeight: 800, color: "rgba(255,255,255,0.92)", lineHeight: 1 }}>AES-256</div>
-                    <div style={{ fontSize: 7.5, color: "rgba(196,181,253,0.55)", fontWeight: 500, marginTop: 2 }}>256-bit key</div>
+                    <div style={{ fontFamily: "monospace", fontSize: 15, fontWeight: 800, color: "rgba(255,255,255,0.92)", lineHeight: 1 }}>AES-256</div>
+                    <div style={{ fontSize: 8.5, color: "rgba(196,181,253,0.55)", fontWeight: 500, marginTop: 3 }}>256-bit key</div>
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                    <span style={{ fontSize: 7, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em" }}>Strength</span>
-                    <span style={{ fontSize: 7, color: "#A78BFA", fontWeight: 700 }}>100%</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span style={{ fontSize: 8, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em" }}>Strength</span>
+                    <span style={{ fontSize: 8, color: "#A78BFA", fontWeight: 700 }}>100%</span>
                   </div>
-                  <div style={{ height: 2.5, borderRadius: 99, background: "rgba(139,92,246,0.15)", overflow: "hidden" }}>
+                  <div style={{ height: 3, borderRadius: 99, background: "rgba(139,92,246,0.15)", overflow: "hidden" }}>
                     {mounted && (
                       <motion.div
                         initial={{ width: "0%" }}
@@ -397,16 +402,16 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 3 — PACKETS (right-center) ── */}
-      <div style={{ position: "absolute", top: "50%", right: "0%", zIndex: 30, transform: "translateY(-50%)" }}>
+      <div style={{ position: "absolute", top: "46%", right: "1%", zIndex: 30, transform: "translateY(-50%)" }}>
         <Enter from="right" delay={0.6}>
-          <Float dy={7} dur={3.5} delay={0.8}>
-            <div style={{ ...glass("6,182,212"), minWidth: 126 }}>
+          <Float dy={8} dur={3.5} delay={0.8}>
+            <div style={{ ...glass("6,182,212"), minWidth: 148 }}>
               <TopLine color="#06B6D4" />
-              <div style={{ padding: "10px 13px" }}>
+              <div style={{ padding: "13px 16px" }}>
 
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 7 }}>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: "rgba(103,232,249,0.85)", textTransform: "uppercase", letterSpacing: "0.12em" }}>Packets</span>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: "#4ADE80", display: "flex", alignItems: "center", gap: 2 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(103,232,249,0.85)", textTransform: "uppercase", letterSpacing: "0.12em" }}>Packets</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: "#4ADE80", display: "flex", alignItems: "center", gap: 2 }}>
                     <svg width="7" height="7" viewBox="0 0 7 7" fill="none">
                       <path d="M1 5.5L3.5 2L6 5.5" stroke="#4ADE80" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -417,18 +422,18 @@ export default function HeroScene() {
                 <motion.div
                   animate={{ color: pktFlash ? "#22D3EE" : "rgba(255,255,255,0.92)" }}
                   transition={{ duration: 0.2 }}
-                  style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, marginBottom: 7, fontVariantNumeric: "tabular-nums" }}
+                  style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, marginBottom: 9, fontVariantNumeric: "tabular-nums" }}
                 >
                   {PKT_VALS[pktIdx]}
                 </motion.div>
 
-                <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 26 }}>
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 32 }}>
                   {bars.map((h, i) => (
                     <motion.div key={i}
-                      animate={{ height: h * 2.8 }}
-                      initial={{ height: BAR_BASE[i] * 2.8 }}
+                      animate={{ height: h * 3.4 }}
+                      initial={{ height: BAR_BASE[i] * 3.4 }}
                       transition={{ duration: 0.5, ease: "easeInOut", delay: i * 0.03 }}
-                      style={{ flex: 1, borderRadius: 2, background: `linear-gradient(180deg,#06B6D4,rgba(6,182,212,${0.2 + h * 0.06}))` }}
+                      style={{ flex: 1, borderRadius: 3, background: `linear-gradient(180deg,#06B6D4,rgba(6,182,212,${0.2 + h * 0.06}))` }}
                     />
                   ))}
                 </div>
@@ -438,9 +443,9 @@ export default function HeroScene() {
         </Enter>
       </div>
 
-      {/* ── CARD 4 — TERMINAL (bottom-right) ── */}
-      <div style={{ position: "absolute", top: "66%", right: "0%", zIndex: 30 }}>
-        <Enter from="right" delay={0.4}>
+      {/* ── CARD 4 — TERMINAL (bottom-left) ── */}
+      <div style={{ position: "absolute", top: "63%", left: "1%", zIndex: 30 }}>
+        <Enter from="left" delay={0.4}>
           <Float dy={5} dur={4.9} delay={0.3}>
             <div style={{ position: "relative" }}>
               {/* Outer green glow */}
@@ -448,8 +453,8 @@ export default function HeroScene() {
                 animate={{ opacity: [0.4, 0.75, 0.4] }}
                 transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
                 style={{
-                  position: "absolute", inset: -1, borderRadius: 11, pointerEvents: "none",
-                  boxShadow: "0 0 14px 2px rgba(0,255,65,0.16), 0 0 28px 3px rgba(0,255,65,0.05)",
+                  position: "absolute", inset: -1, borderRadius: 13, pointerEvents: "none",
+                  boxShadow: "0 0 16px 2px rgba(0,255,65,0.18), 0 0 36px 4px rgba(0,255,65,0.06)",
                 }}
               />
               <div style={{
@@ -457,27 +462,27 @@ export default function HeroScene() {
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
                 border: "1px solid rgba(0,255,65,0.22)",
-                borderRadius: 11,
+                borderRadius: 13,
                 overflow: "hidden",
-                width: 188,
-                boxShadow: "0 14px 40px rgba(0,0,0,0.7)",
+                width: 230,
+                boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
               }}>
                 {/* Title bar */}
                 <div style={{
-                  padding: "5px 9px",
+                  padding: "6px 11px",
                   background: "rgba(0,0,0,0.35)",
                   borderBottom: "1px solid rgba(0,255,65,0.10)",
-                  display: "flex", alignItems: "center", gap: 5,
+                  display: "flex", alignItems: "center", gap: 6,
                 }}>
                   {(["#FF5F57","#FEBC2E","#28C840"] as const).map((c, i) => (
-                    <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: c, display: "block", flexShrink: 0, opacity: 0.85 }} />
+                    <span key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: c, display: "block", flexShrink: 0, opacity: 0.85 }} />
                   ))}
-                  <span style={{ fontSize: 8, color: "rgba(0,255,65,0.45)", fontFamily: "monospace", marginLeft: 3 }}>root@kali: ~</span>
-                  <span style={{ marginLeft: "auto", fontSize: 7.5, color: "rgba(0,255,65,0.22)", fontFamily: "monospace" }}>bash</span>
+                  <span style={{ fontSize: 9.5, color: "rgba(0,255,65,0.45)", fontFamily: "monospace", marginLeft: 4 }}>root@kali: ~</span>
+                  <span style={{ marginLeft: "auto", fontSize: 8.5, color: "rgba(0,255,65,0.22)", fontFamily: "monospace" }}>bash</span>
                 </div>
 
                 {/* Screen */}
-                <div style={{ position: "relative", padding: "6px 8px 8px", minHeight: 88, overflow: "hidden" }}>
+                <div style={{ position: "relative", padding: "8px 10px 10px", minHeight: 110, overflow: "hidden" }}>
                   {/* Scanlines */}
                   <div style={{
                     position: "absolute", inset: 0, pointerEvents: "none", zIndex: 10,
@@ -541,10 +546,10 @@ export default function HeroScene() {
         </Enter>
       </div>
 
-      {/* ── CARD 5 — ACCESS GRANTED (bottom-right) ── */}
-      <div style={{ position: "absolute", bottom: "4%", right: "0%", zIndex: 30, whiteSpace: "nowrap" }}>
-        <Enter from="right" delay={0.7}>
-          <Float dy={4} dur={3.9} delay={1.5}>
+      {/* ── CARD 5 — ACCESS GRANTED (bottom-center) ── */}
+      <div style={{ position: "absolute", top: "78%", left: "50%", transform: "translateX(-50%)", zIndex: 30, whiteSpace: "nowrap" }}>
+        <Enter from="bottom" delay={0.7}>
+          <Float dy={5} dur={3.9} delay={1.5}>
             <div style={{ position: "relative", display: "inline-flex" }}>
               {/* Ripple rings */}
               {[0, 1].map(i => (
@@ -552,7 +557,7 @@ export default function HeroScene() {
                   animate={{ scale: [1, 1.5 + i * 0.25, 1], opacity: [0.35 - i * 0.1, 0, 0.35 - i * 0.1] }}
                   transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: i * 0.45 }}
                   style={{
-                    position: "absolute", inset: -(5 + i * 7),
+                    position: "absolute", inset: -(6 + i * 9),
                     borderRadius: 999,
                     border: `1px solid rgba(16,185,129,${0.4 - i * 0.12})`,
                     pointerEvents: "none",
@@ -563,14 +568,14 @@ export default function HeroScene() {
               {/* Badge */}
               <motion.div
                 animate={{ boxShadow: [
-                  "0 4px 16px rgba(16,185,129,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
-                  "0 4px 26px rgba(16,185,129,0.40), inset 0 1px 0 rgba(255,255,255,0.07)",
-                  "0 4px 16px rgba(16,185,129,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
+                  "0 4px 20px rgba(16,185,129,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
+                  "0 4px 32px rgba(16,185,129,0.42), inset 0 1px 0 rgba(255,255,255,0.07)",
+                  "0 4px 20px rgba(16,185,129,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
                 ]}}
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
                 style={{
-                  display: "flex", alignItems: "center", gap: 7,
-                  padding: "7px 14px", borderRadius: 999,
+                  display: "flex", alignItems: "center", gap: 9,
+                  padding: "9px 18px", borderRadius: 999,
                   background: "rgba(6, 12, 24, 0.60)",
                   backdropFilter: "blur(20px)",
                   WebkitBackdropFilter: "blur(20px)",
@@ -580,17 +585,17 @@ export default function HeroScene() {
                 <motion.div
                   animate={{ scale: [1, 1.18, 1] }}
                   transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ width: 18, height: 18, borderRadius: "50%", background: "rgba(16,185,129,0.2)", border: "1.5px solid rgba(16,185,129,0.6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                  style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(16,185,129,0.2)", border: "1.5px solid rgba(16,185,129,0.6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
                 >
-                  <svg width="8" height="7" viewBox="0 0 10 8" fill="none">
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
                     <path d="M1 4L3.8 7L9 1" stroke="#34D399" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </motion.div>
                 <div>
-                  <div style={{ fontSize: 9, fontWeight: 800, color: "#34D399", textTransform: "uppercase", letterSpacing: "0.12em", lineHeight: 1 }}>
+                  <div style={{ fontSize: 10, fontWeight: 800, color: "#34D399", textTransform: "uppercase", letterSpacing: "0.14em", lineHeight: 1 }}>
                     Access Granted
                   </div>
-                  <div style={{ fontSize: 7, color: "rgba(52,211,153,0.5)", fontWeight: 500, marginTop: 2, letterSpacing: "0.04em" }}>
+                  <div style={{ fontSize: 8, color: "rgba(52,211,153,0.5)", fontWeight: 500, marginTop: 2.5, letterSpacing: "0.04em" }}>
                     Authentication complete
                   </div>
                 </div>
