@@ -260,16 +260,6 @@ export default function LandingPage() {
         className="dot-grid-bg"
         style={{ backgroundImage: `radial-gradient(circle, ${T.dot} 1.5px, transparent 1.5px)` }}
       />
-      {/* Vertical scan line */}
-      <div
-        className="dot-scan-v"
-        style={{ background: `linear-gradient(90deg, transparent, ${isDark ? "rgba(37,99,235,0.55)" : "rgba(99,102,241,0.35)"}, transparent)` }}
-      />
-      {/* Horizontal scan line */}
-      <div
-        className="dot-scan-h"
-        style={{ background: `linear-gradient(180deg, transparent, ${isDark ? "rgba(124,58,237,0.40)" : "rgba(99,102,241,0.25)"}, transparent)` }}
-      />
 
       {/* ══════════════════════════
           HERO
