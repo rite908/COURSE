@@ -442,86 +442,130 @@ export default function HeroScene() {
       ══════════════════════════════════════ */}
       <div style={{ position: "absolute", top: "63%", left: "0%", zIndex: 30 }}>
         <Float dy={6} dur={4.8} delay={0.3}>
-          <div style={{
-            background: "rgba(8,12,24,0.97)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(59,130,246,0.25)",
-            borderRadius: 16,
-            overflow: "hidden",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(59,130,246,0.12), 0 0 28px rgba(37,99,235,0.08)",
-            minWidth: 208,
-          }}>
-            {/* macOS title bar */}
-            <div style={{ padding: "8px 12px", background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", gap: 6 }}>
-              {(["#FF5F57","#FEBC2E","#28C840"] as const).map((c, i) => (
-                <span key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: c, display: "block" }} />
-              ))}
-              <span style={{ fontSize: 9, color: "rgba(255,255,255,0.28)", fontFamily: "monospace", marginLeft: 5 }}>twh@kali — bash</span>
-            </div>
+          {/* Outer glow ring */}
+          <div style={{ position: "relative" }}>
+            <motion.div
+              animate={{ opacity: [0.5, 0.9, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              style={{
+                position: "absolute", inset: -1, borderRadius: 12,
+                boxShadow: "0 0 18px 2px rgba(0,255,65,0.25), 0 0 40px 4px rgba(0,255,65,0.08)",
+                pointerEvents: "none",
+              }}
+            />
+            <div style={{
+              background: "#0d1117",
+              border: "1px solid rgba(0,255,65,0.35)",
+              borderRadius: 12,
+              overflow: "hidden",
+              width: 260,
+              boxShadow: "0 20px 60px rgba(0,0,0,0.8)",
+              animation: "termFlicker 8s ease-in-out infinite",
+            }}>
+              {/* Title bar */}
+              <div style={{
+                padding: "7px 12px",
+                background: "#161b22",
+                borderBottom: "1px solid rgba(0,255,65,0.15)",
+                display: "flex", alignItems: "center", gap: 6,
+              }}>
+                {(["#FF5F57","#FEBC2E","#28C840"] as const).map((c, i) => (
+                  <span key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: c, display: "block", flexShrink: 0 }} />
+                ))}
+                <span style={{
+                  fontSize: 10, color: "rgba(0,255,65,0.55)",
+                  fontFamily: "monospace", marginLeft: 4, letterSpacing: "0.04em",
+                }}>root@kali: ~</span>
+                <span style={{ marginLeft: "auto", fontSize: 9, color: "rgba(0,255,65,0.25)", fontFamily: "monospace" }}>bash</span>
+              </div>
 
-            {/* Terminal lines */}
-            <div style={{ padding: "10px 14px", minHeight: 112, overflow: "hidden" }}>
+              {/* Screen area */}
+              <div style={{ position: "relative", padding: "10px 14px 12px", minHeight: 130, overflow: "hidden" }}>
 
-              {/* Completed lines */}
-              {doneLines.map(({ seg, text }, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.14 }}
-                  style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", gap: 0, flexWrap: "nowrap" }}
-                >
-                  {seg.kind === "cmd" ? (
-                    <>
-                      <span style={{ color: "#22C55E", fontWeight: 700, flexShrink: 0, marginRight: 4 }}>{seg.prompt}</span>
-                      <span style={{ color: seg.color }}>{text}</span>
-                    </>
-                  ) : (
-                    <span style={{ color: seg.color, fontWeight: seg.bold ? 700 : 400, paddingLeft: 4 }}>{text}</span>
-                  )}
-                </motion.div>
-              ))}
+                {/* CRT scanlines overlay */}
+                <div style={{
+                  position: "absolute", inset: 0, pointerEvents: "none", zIndex: 10,
+                  backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 4px)",
+                }} />
 
-              {/* Currently typing line */}
-              {activeSeg && (
-                <div style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", flexWrap: "nowrap" }}>
-                  {activeSeg.kind === "cmd" ? (
-                    <>
-                      <span style={{ color: "#22C55E", fontWeight: 700, flexShrink: 0, marginRight: 4 }}>{activeSeg.prompt}</span>
-                      <span style={{ color: activeSeg.color }}>{activeText}</span>
-                    </>
-                  ) : (
-                    <span style={{ color: activeSeg.color, paddingLeft: 4 }}>{activeText}</span>
-                  )}
-                  {/* blinking cursor */}
-                  <motion.span
-                    animate={{ opacity: [1, 1, 0, 0] }}
-                    transition={{ duration: 1.04, repeat: Infinity, ease: "linear", times: [0, 0.48, 0.5, 0.98] }}
-                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12, marginLeft: 1, filter: "drop-shadow(0 0 5px #3B82F6)" }}
-                  >▋</motion.span>
-                </div>
-              )}
+                {/* Completed lines */}
+                {doneLines.map(({ seg, text }, i) => (
+                  <div key={i} style={{
+                    fontFamily: "'Courier New', Courier, monospace",
+                    fontSize: 11, lineHeight: 1.8,
+                    display: "flex", flexWrap: "nowrap", whiteSpace: "nowrap",
+                    animation: "fadeIn 0.1s ease-out",
+                  }}>
+                    {seg.kind === "cmd" ? (
+                      <>
+                        <span style={{
+                          color: "#00ff41", fontWeight: 700, flexShrink: 0, marginRight: 4,
+                          textShadow: "0 0 6px rgba(0,255,65,0.7)",
+                        }}>{seg.prompt}</span>
+                        <span style={{ color: "#e6edf3" }}>{text}</span>
+                      </>
+                    ) : (
+                      <span style={{
+                        color: seg.color === "#4ADE80" ? "#00ff41" : seg.color === "#60A5FA" ? "#79c0ff" : "#8b949e",
+                        fontWeight: seg.bold ? 700 : 400, paddingLeft: 2,
+                        textShadow: seg.bold ? "0 0 8px rgba(0,255,65,0.8)" : "none",
+                      }}>{text}</span>
+                    )}
+                  </div>
+                ))}
 
-              {/* Idle cursor when nothing is typing */}
-              {!activeSeg && doneLines.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, ease: "easeOut" }}
-                  style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", gap: 4, alignItems: "center" }}
-                >
-                  <motion.span
-                    animate={{ textShadow: ["0 0 0px #22C55E", "0 0 8px #22C55E, 0 0 18px rgba(34,197,94,0.45)", "0 0 0px #22C55E"] }}
-                    transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ color: "#22C55E", fontWeight: 700 }}
-                  >root@kali:~$</motion.span>
-                  <motion.span
-                    animate={{ opacity: [1, 1, 0, 0] }}
-                    transition={{ duration: 1.04, repeat: Infinity, ease: "linear", times: [0, 0.48, 0.5, 0.98] }}
-                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12, filter: "drop-shadow(0 0 6px #3B82F6) drop-shadow(0 0 12px rgba(59,130,246,0.5))" }}
-                  >▋</motion.span>
-                </motion.div>
-              )}
+                {/* Currently typing line */}
+                {activeSeg && (
+                  <div style={{
+                    fontFamily: "'Courier New', Courier, monospace",
+                    fontSize: 11, lineHeight: 1.8,
+                    display: "flex", flexWrap: "nowrap", whiteSpace: "nowrap",
+                  }}>
+                    {activeSeg.kind === "cmd" ? (
+                      <>
+                        <span style={{
+                          color: "#00ff41", fontWeight: 700, flexShrink: 0, marginRight: 4,
+                          textShadow: "0 0 6px rgba(0,255,65,0.7)",
+                        }}>{activeSeg.prompt}</span>
+                        <span style={{ color: "#e6edf3" }}>{activeText}</span>
+                      </>
+                    ) : (
+                      <span style={{ color: "#8b949e", paddingLeft: 2 }}>{activeText}</span>
+                    )}
+                    {/* CSS-animated cursor — guaranteed to blink regardless of JS */}
+                    <span style={{
+                      display: "inline-block", width: 7, height: 13,
+                      background: "#00ff41",
+                      marginLeft: 1, verticalAlign: "middle",
+                      boxShadow: "0 0 6px rgba(0,255,65,0.9)",
+                      animation: "termBlink 1s step-end infinite",
+                    }} />
+                  </div>
+                )}
+
+                {/* Idle prompt */}
+                {!activeSeg && doneLines.length === 0 && (
+                  <div style={{
+                    fontFamily: "'Courier New', Courier, monospace",
+                    fontSize: 11, lineHeight: 1.8,
+                    display: "flex", alignItems: "center", whiteSpace: "nowrap",
+                  }}>
+                    <span style={{
+                      color: "#00ff41", fontWeight: 700,
+                      textShadow: "0 0 8px rgba(0,255,65,0.8), 0 0 20px rgba(0,255,65,0.3)",
+                    }}>root@kali:~$</span>
+                    <span style={{ color: "#e6edf3", marginLeft: 4 }}></span>
+                    {/* CSS blink cursor */}
+                    <span style={{
+                      display: "inline-block", width: 7, height: 13,
+                      background: "#00ff41",
+                      marginLeft: 1, verticalAlign: "middle",
+                      boxShadow: "0 0 8px rgba(0,255,65,1), 0 0 16px rgba(0,255,65,0.5)",
+                      animation: "termBlink 1s step-end infinite",
+                    }} />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </Float>
