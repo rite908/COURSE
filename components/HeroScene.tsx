@@ -52,12 +52,25 @@ function Float({ dy, dur, delay, children }: {
 const IPS      = ["192.168.1.1", "10.0.0.254", "172.16.4.8", "192.168.0.1"];
 const BAR_BASE = [3, 5, 4, 7, 6, 8, 5, 9, 7, 8];
 const PKT_VALS = ["724K", "731K", "718K", "745K", "712K"];
-const TERM_LINES = [
-  { text: "whoami",          color: "#94A3B8" },
-  { text: "nmap -sV target", color: "#94A3B8" },
-  { text: "192.168.1.1",     color: "#60A5FA" },
-  { text: "exploit --run",   color: "#FCD34D" },
-  { text: "target_found",    color: "#4ADE80" },
+/* ── Terminal script: cmd lines type char-by-char; output appears instantly ── */
+type TermSegment = {
+  kind: "cmd" | "out";
+  prompt?: string;
+  text: string;
+  color: string;
+  bold?: boolean;
+  pauseAfter?: number; // ms to wait before next segment
+};
+const TERM_SCRIPT: TermSegment[] = [
+  { kind: "cmd", prompt: "root@kali:~$", text: " nmap -sS 192.168.1.0/24",     color: "#E2E8F0", pauseAfter: 120 },
+  { kind: "out", text: "Starting Nmap 7.94…",                                    color: "#64748B", pauseAfter: 80  },
+  { kind: "out", text: "[+] 192.168.1.1 — ports: 22, 80, 443",                  color: "#60A5FA", pauseAfter: 80  },
+  { kind: "out", text: "[+] 22/tcp  open  ssh   OpenSSH 8.9p1",                  color: "#60A5FA", pauseAfter: 200 },
+  { kind: "cmd", prompt: "root@kali:~$", text: " ssh root@192.168.1.1",          color: "#E2E8F0", pauseAfter: 100 },
+  { kind: "out", text: "root@192.168.1.1's password: ••••••••",                  color: "#94A3B8", pauseAfter: 80  },
+  { kind: "out", text: "Welcome to Kali GNU/Linux 2024.1",                       color: "#4ADE80", pauseAfter: 200 },
+  { kind: "cmd", prompt: "root@192.168.1.1:~$", text: " cat /root/flag.txt",     color: "#E2E8F0", pauseAfter: 80  },
+  { kind: "out", text: "TWH{4cc3ss_gr4nt3d_m4st3r!}",                            color: "#4ADE80", bold: true, pauseAfter: 2800 },
 ];
 
 /* ══════════════════════════════════════════════════════ */
@@ -76,9 +89,12 @@ export default function HeroScene() {
   const [pktIdx,   setPktIdx]  = useState(0);
   const [pktFlash, setPktFlash]= useState(false);
 
-  /* Terminal */
-  const [termCount, setTermCount] = useState(0);
-  const [blink,     setBlink]     = useState(true);
+  /* Terminal — char-by-char typewriter */
+  type DoneLine = { seg: TermSegment; text: string };
+  const [doneLines,  setDoneLines]  = useState<DoneLine[]>([]);
+  const [activeText, setActiveText] = useState("");   // chars revealed so far on current seg
+  const [activeSeg,  setActiveSeg]  = useState<TermSegment | null>(null);
+  const [blink,      setBlink]      = useState(true);
 
   /* ── Mount ── */
   useEffect(() => { setMounted(true); }, []);
@@ -125,31 +141,73 @@ export default function HeroScene() {
     return () => { active = false; clearInterval(id); };
   }, [mounted]);
 
-  /* ── Terminal typewriter — StrictMode-safe ── */
+  /* ── Terminal — char-by-char typewriter, StrictMode-safe ── */
   useEffect(() => {
     if (!mounted) return;
     let active = true;
-    const handles: ReturnType<typeof setTimeout>[] = [];
+    const T: ReturnType<typeof setTimeout>[] = [];
 
-    const runLoop = () => {
-      if (!active) return;
-      setTermCount(0);
-      let n = 0;
-      const tick = () => {
-        if (!active) return;
-        n++;
-        setTermCount(n);
-        if (n < TERM_LINES.length) {
-          handles.push(setTimeout(tick, 500 + Math.random() * 200));
-        } else {
-          handles.push(setTimeout(() => { if (active) runLoop(); }, 3000));
-        }
-      };
-      handles.push(setTimeout(tick, 400));
+    const sched = (fn: () => void, ms: number) => {
+      const id = setTimeout(() => { if (active) fn(); }, ms);
+      T.push(id);
     };
 
-    runLoop();
-    return () => { active = false; handles.forEach(clearTimeout); };
+    const runScript = () => {
+      if (!active) return;
+      setDoneLines([]);
+      setActiveText("");
+      setActiveSeg(null);
+
+      let segIdx = 0;
+
+      const nextSeg = () => {
+        if (!active || segIdx >= TERM_SCRIPT.length) {
+          /* loop back after pause */
+          sched(runScript, 1200);
+          return;
+        }
+        const seg = TERM_SCRIPT[segIdx++];
+        setActiveSeg(seg);
+        setActiveText("");
+
+        if (seg.kind === "out") {
+          /* output lines appear all-at-once then pause */
+          setActiveText(seg.text);
+          sched(() => {
+            setDoneLines(prev => [...prev, { seg, text: seg.text }]);
+            setActiveText("");
+            setActiveSeg(null);
+            sched(nextSeg, seg.pauseAfter ?? 100);
+          }, 80);
+        } else {
+          /* command lines type char-by-char at ~38 ms/char */
+          let c = 0;
+          const full = seg.text;
+          const typeChar = () => {
+            if (!active) return;
+            c++;
+            setActiveText(full.slice(0, c));
+            if (c < full.length) {
+              sched(typeChar, 36 + Math.random() * 24);
+            } else {
+              /* finished typing — commit, then move on */
+              sched(() => {
+                setDoneLines(prev => [...prev, { seg, text: full }]);
+                setActiveText("");
+                setActiveSeg(null);
+                sched(nextSeg, seg.pauseAfter ?? 120);
+              }, 160);
+            }
+          };
+          sched(typeChar, 36);
+        }
+      };
+
+      nextSeg();
+    };
+
+    sched(runScript, 300);
+    return () => { active = false; T.forEach(clearTimeout); };
   }, [mounted]);
 
   /* ── Cursor blink ── */
@@ -407,26 +465,58 @@ export default function HeroScene() {
             </div>
 
             {/* Terminal lines */}
-            <div style={{ padding: "10px 14px", minHeight: 92 }}>
-              {TERM_LINES.slice(0, termCount).map((line, i) => (
+            <div style={{ padding: "10px 14px", minHeight: 112, overflow: "hidden" }}>
+
+              {/* Completed lines */}
+              {doneLines.map(({ seg, text }, i) => (
                 <motion.div key={i}
-                  initial={{ opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ fontFamily: "monospace", fontSize: 11.5, lineHeight: 1.9, display: "flex", alignItems: "center", gap: 6 }}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.14 }}
+                  style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", gap: 0, flexWrap: "nowrap" }}
                 >
-                  <span style={{ color: "#3B82F6", fontWeight: 700, flexShrink: 0 }}>❯</span>
-                  <span style={{ color: line.color, fontWeight: line.color === "#4ADE80" ? 700 : 400 }}>{line.text}</span>
-                  {/* cursor only on last visible line, only while still typing */}
-                  {i === termCount - 1 && termCount < TERM_LINES.length && (
-                    <motion.span
-                      animate={{ opacity: blink ? 1 : 0 }}
-                      transition={{ duration: 0 }}
-                      style={{ color: "#3B82F6", fontWeight: 900, fontSize: 13 }}
-                    >▋</motion.span>
+                  {seg.kind === "cmd" ? (
+                    <>
+                      <span style={{ color: "#22C55E", fontWeight: 700, flexShrink: 0, marginRight: 4 }}>{seg.prompt}</span>
+                      <span style={{ color: seg.color }}>{text}</span>
+                    </>
+                  ) : (
+                    <span style={{ color: seg.color, fontWeight: seg.bold ? 700 : 400, paddingLeft: 4 }}>{text}</span>
                   )}
                 </motion.div>
               ))}
+
+              {/* Currently typing line */}
+              {activeSeg && (
+                <div style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", flexWrap: "nowrap" }}>
+                  {activeSeg.kind === "cmd" ? (
+                    <>
+                      <span style={{ color: "#22C55E", fontWeight: 700, flexShrink: 0, marginRight: 4 }}>{activeSeg.prompt}</span>
+                      <span style={{ color: activeSeg.color }}>{activeText}</span>
+                    </>
+                  ) : (
+                    <span style={{ color: activeSeg.color, paddingLeft: 4 }}>{activeText}</span>
+                  )}
+                  {/* blinking cursor */}
+                  <motion.span
+                    animate={{ opacity: blink ? 1 : 0 }}
+                    transition={{ duration: 0 }}
+                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12, marginLeft: 1 }}
+                  >▋</motion.span>
+                </div>
+              )}
+
+              {/* Idle cursor when nothing is typing */}
+              {!activeSeg && doneLines.length === 0 && (
+                <div style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", gap: 4 }}>
+                  <span style={{ color: "#22C55E", fontWeight: 700 }}>root@kali:~$</span>
+                  <motion.span
+                    animate={{ opacity: blink ? 1 : 0 }}
+                    transition={{ duration: 0 }}
+                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12 }}
+                  >▋</motion.span>
+                </div>
+              )}
             </div>
           </div>
         </Float>
