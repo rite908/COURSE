@@ -255,6 +255,13 @@ export default function LandingPage() {
   return (
     <main style={{ background: T.heroBg, minHeight: "100vh", overflowX: "hidden" }}>
 
+      {/* Full-page dot grid — fixed so it covers every section while scrolling */}
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+        backgroundImage: `radial-gradient(circle, ${T.dot} 1.5px, transparent 1.5px)`,
+        backgroundSize: "30px 30px",
+      }} />
+
       {/* ══════════════════════════
           HERO
       ══════════════════════════ */}
@@ -266,12 +273,6 @@ export default function LandingPage() {
         overflow: "hidden",
         display: "flex", flexDirection: "column",
       }}>
-        {/* Dot grid */}
-        <div className="hero-dot-grid" style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          backgroundImage: `radial-gradient(circle, ${T.dot} 1.5px, transparent 1.5px)`,
-          backgroundSize: "30px 30px",
-        }} />
         {/* Glow blobs */}
         <div style={{ position: "absolute", left: "-5%",  top: "5%",   width: "45%", height: "70%", background: "radial-gradient(ellipse,rgba(37,99,235,0.07) 0%,transparent 70%)",  pointerEvents: "none" }} />
         <div style={{ position: "absolute", right: "-5%", top: "-5%",  width: "45%", height: "70%", background: "radial-gradient(ellipse,rgba(124,58,237,0.06) 0%,transparent 70%)", pointerEvents: "none" }} />
