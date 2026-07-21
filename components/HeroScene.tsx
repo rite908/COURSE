@@ -548,7 +548,7 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 5 — ACCESS GRANTED (bottom-center) ── */}
-      <div style={{ position: "absolute", top: "78%", left: "50%", transform: "translateX(-50%)", zIndex: 30, whiteSpace: "nowrap" }}>
+      <div style={{ position: "absolute", top: "78%", left: "62%", transform: "translateX(-50%)", zIndex: 30, whiteSpace: "nowrap" }}>
         <Enter from="bottom" delay={0.7}>
           <Float dy={5} dur={3.9} delay={1.5}>
             <div style={{ position: "relative", display: "inline-flex" }}>
