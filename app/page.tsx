@@ -385,33 +385,27 @@ export default function LandingPage() {
                         padding: "14px 28px", borderRadius: 14,
                         fontSize: "15px", fontWeight: 700, color: "white",
                         border: "none", cursor: "pointer",
-                        background: btnHovered
-                          ? "linear-gradient(135deg,#1a56db 0%,#6d28d9 100%)"
-                          : "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
+                        background: "transparent",
                         boxShadow: btnHovered
                           ? "0 0 32px rgba(124,58,237,0.70), 0 0 64px rgba(37,99,235,0.25), 0 10px 32px rgba(37,99,235,0.35)"
                           : "0 8px 28px rgba(37,99,235,0.40)",
                         overflow: "hidden",
-                        transition: "background 0.4s ease, box-shadow 0.35s ease",
+                        transition: "box-shadow 0.35s ease",
                         zIndex: 1,
                       }}
                     >
-                      {/* Animated shifting gradient — always running, opacity fades in/out smoothly */}
+                      {/* Gradient always flowing — never fades in/out, so no abrupt start */}
                       <motion.span
-                        animate={{ opacity: btnHovered ? 1 : 0 }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                        style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}
-                      >
-                        <motion.span
-                          animate={{ backgroundPosition: ["100% 50%", "0% 50%"] }}
-                          transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
-                          style={{
-                            position: "absolute", inset: 0,
-                            background: "linear-gradient(270deg,#1D4ED8,#7C3AED,#0EA5E9,#6D28D9,#2563EB)",
-                            backgroundSize: "300% 300%",
-                          }}
-                        />
-                      </motion.span>
+                        animate={{ backgroundPosition: ["100% 50%", "0% 50%"] }}
+                        transition={{ duration: 3.2, repeat: Infinity, ease: "linear" }}
+                        style={{
+                          position: "absolute", inset: 0,
+                          background: "linear-gradient(270deg,#1D4ED8,#7C3AED,#0EA5E9,#6D28D9,#2563EB)",
+                          backgroundSize: "300% 300%",
+                          zIndex: 0,
+                          pointerEvents: "none",
+                        }}
+                      />
 
                       {/* Label */}
                       <span style={{ position: "relative", zIndex: 1 }}>
