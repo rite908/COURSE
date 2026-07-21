@@ -101,9 +101,9 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 11, flexShrink: 0, textDecoration: "none" }}>
           <img src="/twh-logo.png" alt="TWH Academy" style={{
-            width: 38, height: 38, borderRadius: 11, flexShrink: 0,
+            width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
             objectFit: "cover",
-            boxShadow: "0 2px 10px rgba(37,99,235,0.32)",
+            boxShadow: "0 0 0 2px rgba(37,99,235,0.35), 0 2px 10px rgba(37,99,235,0.25)",
           }} />
           <div>
             <div style={{ fontWeight: 700, fontSize: "15px", color: txtPri, lineHeight: 1.25 }}>TWH Academy</div>

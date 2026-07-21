@@ -32,7 +32,7 @@ export default function PrivacyPage() {
         </Link>
 
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 32 }}>
-          <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 44, height: 44, borderRadius: 14, objectFit: "cover", flexShrink: 0 }} />
+          <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 0 0 2px rgba(37,99,235,0.35)" }} />
           <h1 style={{ fontSize: "1.8rem", fontWeight: 900, color: T.text, letterSpacing: "-0.025em" }}>Privacy Policy</h1>
         </div>
 

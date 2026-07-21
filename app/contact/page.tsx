@@ -164,7 +164,7 @@ export default function ContactPage() {
           style={{ maxWidth: 680, margin: "0 auto", borderRadius: 24, background: "linear-gradient(135deg,#1D4ED8,#7C3AED)", padding: isMd ? "60px 10%" : "44px 28px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 24px 64px rgba(37,99,235,0.30)" }}>
           <div style={{ position: "absolute", top: "-50px", right: "-50px", width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
           <div style={{ position: "relative", zIndex: 1 }}>
-            <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 52, height: 52, borderRadius: 16, objectFit: "cover", margin: "0 auto 20px", display: "block" }} />
+            <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", margin: "0 auto 20px", display: "block", boxShadow: "0 0 0 3px rgba(255,255,255,0.35), 0 8px 24px rgba(0,0,0,0.3)" }} />
             <h2 style={{ fontWeight: 900, color: "white", fontSize: isMd ? "1.9rem" : "1.55rem", letterSpacing: "-0.025em", marginBottom: 12 }}>Baat ho gayi?<br />Ab padhai shuru karo.</h2>
             <p style={{ color: "#BFDBFE", fontSize: "14px", lineHeight: 1.75, marginBottom: 32 }}>TWH Academy mein hamesha swagat hai — aaj bhi, kal bhi.</p>
             <Link href="/login">

@@ -978,7 +978,7 @@ export default function LandingPage() {
             <div style={{ position: "absolute", top: "-80px", right: "-80px", width: 280, height: 280, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
             <div style={{ position: "absolute", bottom: "-60px", left: "-60px",  width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
             <div style={{ position: "relative", zIndex: 1 }}>
-              <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 60, height: 60, borderRadius: 18, objectFit: "cover", margin: "0 auto 24px", display: "block" }} />
+              <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", margin: "0 auto 24px", display: "block", boxShadow: "0 0 0 3px rgba(255,255,255,0.35), 0 8px 28px rgba(0,0,0,0.3)" }} />
               <h2 style={{
                 fontWeight: 900, color: "white",
                 fontSize: isLg ? "2.6rem" : isMd ? "2rem" : "1.6rem",
@@ -1024,7 +1024,7 @@ export default function LandingPage() {
           }}>
             {/* Brand */}
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-              <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 40, height: 40, borderRadius: 12, objectFit: "cover" }} />
+              <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", boxShadow: "0 0 0 2px rgba(37,99,235,0.35)" }} />
               <div>
                 <div style={{ fontWeight: 700, fontSize: "15px", color: T.text, lineHeight: 1.3 }}>TWH Academy</div>
                 <div style={{ fontSize: "11px", color: T.muted, lineHeight: 1.3 }}>by Technical White Hat</div>
