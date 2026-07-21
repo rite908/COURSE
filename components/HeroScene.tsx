@@ -346,7 +346,7 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 2 — ENCRYPTION (left-center) ── */}
-      <div style={{ position: "absolute", top: "30%", left: "-1%", zIndex: 30 }}>
+      <div style={{ position: "absolute", top: "28%", left: "5%", zIndex: 30 }}>
         <Enter from="left" delay={0.5}>
           <Float dy={7} dur={3.9} delay={1.2}>
             <div style={{ ...glass("139,92,246"), minWidth: 152 }}>
@@ -403,7 +403,7 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 3 — PACKETS (right-center) ── */}
-      <div style={{ position: "absolute", top: "46%", right: "1%", zIndex: 30, transform: "translateY(-50%)" }}>
+      <div style={{ position: "absolute", top: "55%", right: "1%", zIndex: 30, transform: "translateY(-50%)" }}>
         <Enter from="right" delay={0.6}>
           <Float dy={8} dur={3.5} delay={0.8}>
             <div style={{ ...glass("6,182,212"), minWidth: 148 }}>
@@ -445,7 +445,7 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 4 — TERMINAL (bottom-left) ── */}
-      <div style={{ position: "absolute", top: "63%", left: "-1%", zIndex: 30 }}>
+      <div style={{ position: "absolute", top: "63%", left: "1%", zIndex: 30 }}>
         <Enter from="left" delay={0.4}>
           <Float dy={5} dur={4.9} delay={0.3}>
             <div style={{ position: "relative" }}>
