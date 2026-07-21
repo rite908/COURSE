@@ -100,14 +100,11 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 11, flexShrink: 0, textDecoration: "none" }}>
-          <div style={{
+          <img src="/twh-logo.png" alt="TWH Academy" style={{
             width: 38, height: 38, borderRadius: 11, flexShrink: 0,
-            background: "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
+            objectFit: "cover",
             boxShadow: "0 2px 10px rgba(37,99,235,0.32)",
-          }}>
-            <Shield size={16} color="white" />
-          </div>
+          }} />
           <div>
             <div style={{ fontWeight: 700, fontSize: "15px", color: txtPri, lineHeight: 1.25 }}>TWH Academy</div>
             <div style={{ fontSize: "10px", color: txtSec, lineHeight: 1.25 }}>Ethical Hacking Academy</div>

@@ -90,9 +90,7 @@ export default function LoginPage() {
         >
           {/* Logo */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 28 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg,#2563EB,#7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 16px rgba(37,99,235,0.35)" }}>
-              <Shield size={20} color="white" />
-            </div>
+            <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 44, height: 44, borderRadius: 14, objectFit: "cover", boxShadow: "0 4px 16px rgba(37,99,235,0.35)" }} />
             <span style={{ fontWeight: 700, fontSize: "18px", color: T.text }}>
               TWH <span style={{ color: "#2563EB" }}>Academy</span>
             </span>

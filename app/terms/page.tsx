@@ -52,9 +52,7 @@ export default function TermsPage() {
         </Link>
 
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 32 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#2563EB,#7C3AED)" }}>
-            <Shield size={18} color="white" />
-          </div>
+          <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 44, height: 44, borderRadius: 14, objectFit: "cover", flexShrink: 0 }} />
           <h1 style={{ fontSize: "1.8rem", fontWeight: 900, color: T.text, letterSpacing: "-0.025em" }}>Terms of Use</h1>
         </div>
 
