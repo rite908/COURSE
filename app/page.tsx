@@ -267,7 +267,7 @@ export default function LandingPage() {
         display: "flex", flexDirection: "column",
       }}>
         {/* Dot grid */}
-        <div style={{
+        <div className="hero-dot-grid" style={{
           position: "absolute", inset: 0, pointerEvents: "none",
           backgroundImage: `radial-gradient(circle, ${T.dot} 1.5px, transparent 1.5px)`,
           backgroundSize: "30px 30px",
