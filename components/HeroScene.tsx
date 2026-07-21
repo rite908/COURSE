@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useTheme } from "@/lib/theme";
 
 /* ─────────────────────────────────────────
    GLASS CARD — dark frosted glass
@@ -110,6 +111,7 @@ const TERM_SCRIPT: TermSegment[] = [
 /* ══════════════════════════════════════════════════════ */
 
 export default function HeroScene() {
+  const { isDark } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   const [ipIdx,    setIpIdx]    = useState(0);
@@ -258,8 +260,10 @@ export default function HeroScene() {
           <div style={{
             position: "absolute", inset: "-8%",
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(120,60,255,0.45) 0%, rgba(80,40,220,0.25) 35%, rgba(37,99,235,0.12) 60%, transparent 75%)",
-            filter: "blur(28px)",
+            background: isDark
+              ? "radial-gradient(circle, rgba(120,60,255,0.45) 0%, rgba(80,40,220,0.25) 35%, rgba(37,99,235,0.12) 60%, transparent 75%)"
+              : "radial-gradient(circle, rgba(120,60,255,0.75) 0%, rgba(80,40,220,0.50) 35%, rgba(37,99,235,0.25) 60%, transparent 75%)",
+            filter: isDark ? "blur(28px)" : "blur(22px)",
             zIndex: 0,
             pointerEvents: "none",
           }} />
