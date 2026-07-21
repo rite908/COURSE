@@ -223,7 +223,7 @@ export default function LandingPage() {
               flexDirection: isLg ? "row" : "column",
               alignItems: isLg ? "center" : "flex-start",
               justifyContent: isLg ? "space-between" : "flex-start",
-              gap: isLg ? 48 : 36,
+              gap: isLg ? 56 : 36,
             }}>
               {/* LEFT */}
               <motion.div style={{
@@ -231,6 +231,7 @@ export default function LandingPage() {
                 flex: isLg ? "0 0 44%" : "unset",
                 width: isLg ? "44%" : "100%",
               }}>
+
                 {/* Badge */}
                 <motion.div {...fade(0)} style={{ marginBottom: 20 }}>
                   <div style={{
@@ -250,16 +251,17 @@ export default function LandingPage() {
 
                 {/* Headline */}
                 <motion.h1 {...fade(0.07)} style={{
-                  fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.03em",
-                  marginBottom: 20,
-                  fontSize: isLg ? "clamp(3.4rem,3.6vw,4.6rem)" : isMd ? "2.8rem" : "2.2rem",
+                  fontWeight: 900, lineHeight: 1.1, letterSpacing: "-0.03em",
+                  marginBottom: 20, margin: 0, marginBottom: 20,
+                  fontSize: isLg ? "clamp(2.9rem,3.2vw,4rem)" : isMd ? "2.6rem" : "2rem",
                 }}>
-                  <span style={{ color: T.text, display: "block" }}>Master Computers.</span>
+                  <span style={{ color: T.text, display: "block", whiteSpace: "nowrap" }}>MCH —</span>
+                  <span style={{ color: T.text, display: "block", whiteSpace: "nowrap" }}>Mastering Computer</span>
                   <span style={{
-                    display: "block",
+                    display: "block", whiteSpace: "nowrap",
                     background: "linear-gradient(130deg,#2563EB 0%,#7C3AED 100%)",
                     WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                  }}>Hack The World.</span>
+                  }}>Hacking.</span>
                 </motion.h1>
 
                 {/* Sub */}
@@ -351,7 +353,8 @@ export default function LandingPage() {
                   <HeroScene />
                 </div>
               </motion.div>
-            </div>
+            </div>,
+            { maxWidth: 1500, padding: `0 ${isLg ? 60 : sp}px` }
           )}
         </div>
 
