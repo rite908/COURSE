@@ -39,9 +39,19 @@
 @keyframes fadeIn    { from { opacity:0 } to { opacity:1 } }
 @keyframes slideUp   { from { opacity:0; transform:translateY(24px) } to { opacity:1; transform:translateY(0) } }
 @keyframes dotDrift  { from { background-position: 0 0 } to { background-position: 30px 30px } }
+@keyframes marqueeRTL { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 
 .hero-dot-grid {
   animation: dotDrift 4s linear infinite;
+}
+
+.chapter-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeRTL 28s linear infinite;
+}
+.chapter-marquee-track:hover {
+  animation-play-state: paused;
 }
 @keyframes termBlink { 0%,49% { opacity:1 } 50%,100% { opacity:0 } }
 @keyframes termFlicker { 0%,100% { opacity:1 } 92% { opacity:0.96 } 94% { opacity:1 } 96% { opacity:0.94 } }

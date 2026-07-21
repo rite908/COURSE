@@ -488,13 +488,49 @@ export default function LandingPage() {
         {/* Scroll cue */}
         {isLg && mounted && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "20px 0 28px" }}>
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "20px 0 16px" }}>
             <span style={{ fontSize: "10px", fontWeight: 600, color: T.muted, textTransform: "uppercase", letterSpacing: "0.14em" }}>Scroll</span>
             <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
               <ChevronDown size={14} color={T.muted} />
             </motion.div>
           </motion.div>
         )}
+
+        {/* Chapter marquee strip */}
+        <div style={{
+          position: "relative", overflow: "hidden",
+          borderTop: `1px solid ${T.border}`,
+          borderBottom: `1px solid ${T.border}`,
+          padding: "12px 0",
+          marginTop: 8,
+        }}>
+          {/* Fade edges */}
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 80, zIndex: 2, background: `linear-gradient(to right, ${T.heroBg.includes("#0") ? "#060912" : "#F8FAFF"}, transparent)`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 80, zIndex: 2, background: `linear-gradient(to left, ${T.heroBg.includes("#0") ? "#060912" : "#F8FAFF"}, transparent)`, pointerEvents: "none" }} />
+
+          <div className="chapter-marquee-track">
+            {/* Duplicate for seamless loop */}
+            {[...CHAPTERS, ...CHAPTERS].map((ch, i) => (
+              <div key={i} style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                padding: "0 32px", flexShrink: 0,
+              }}>
+                <span style={{
+                  width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: isDark ? ch.darkBg : ch.lightBg,
+                  color: ch.color,
+                }}>
+                  {ch.icon}
+                </span>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: T.text, whiteSpace: "nowrap" }}>
+                  Ch {ch.num} · {ch.title}
+                </span>
+                <span style={{ width: 4, height: 4, borderRadius: "50%", background: T.muted, flexShrink: 0, marginLeft: 8 }} />
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ══════════════════════════
