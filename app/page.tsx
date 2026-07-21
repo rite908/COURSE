@@ -365,25 +365,32 @@ export default function LandingPage() {
                         zIndex: 1,
                       }}
                     >
-                      {/* Animated gradient overlay on hover */}
+                      {/* Spinning gradient overlay on hover */}
                       <AnimatePresence>
                         {btnHovered && (
                           <motion.span
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.25 }}
+                            transition={{ duration: 0.2 }}
                             style={{ position: "absolute", inset: 0, borderRadius: 14, overflow: "hidden", zIndex: 0 }}
                           >
+                            {/* Spinning colour wheel — larger than button so edges don't show gaps */}
                             <motion.span
-                              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                              transition={{ duration: 2.2, repeat: Infinity, ease: "linear" }}
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
                               style={{
-                                position: "absolute", inset: 0,
-                                background: "linear-gradient(270deg,#1D4ED8,#7C3AED,#0EA5E9,#6D28D9,#2563EB)",
-                                backgroundSize: "300% 300%",
+                                position: "absolute",
+                                width: "220%", height: "220%",
+                                top: "-60%", left: "-60%",
+                                background: "conic-gradient(from 0deg, #2563EB, #7C3AED, #0EA5E9, #6D28D9, #3B82F6, #A78BFA, #2563EB)",
                               }}
                             />
+                            {/* Darken centre so text stays readable */}
+                            <span style={{
+                              position: "absolute", inset: 0,
+                              background: "radial-gradient(ellipse at center, rgba(15,15,40,0.38) 0%, transparent 75%)",
+                            }} />
                           </motion.span>
                         )}
                       </AnimatePresence>
