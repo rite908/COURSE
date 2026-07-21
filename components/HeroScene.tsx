@@ -346,7 +346,7 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 2 — ENCRYPTION (left-center) ── */}
-      <div style={{ position: "absolute", top: "28%", left: "5%", zIndex: 30 }}>
+      <div style={{ position: "absolute", top: "28%", left: "18%", zIndex: 30 }}>
         <Enter from="left" delay={0.5}>
           <Float dy={7} dur={3.9} delay={1.2}>
             <div style={{ ...glass("139,92,246"), minWidth: 152 }}>
