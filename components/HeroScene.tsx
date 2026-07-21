@@ -245,12 +245,13 @@ export default function HeroScene() {
         }} />
       </div>
 
+
       {/* Hacker circle */}
       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1, pointerEvents: "none" }}>
         <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: "relative", width: "min(100%,720px)", aspectRatio: "1" }}
+          style={{ position: "relative", width: "min(55%,380px)", aspectRatio: "1" }}
         >
           <motion.div
             animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.03, 0.35] }}
@@ -264,7 +265,7 @@ export default function HeroScene() {
           />
           <div style={{ position: "absolute", inset: 0, borderRadius: "50%", overflow: "hidden", zIndex: 1 }}>
             <Image src="/hacker.png" alt="TWH Hacker" fill
-              sizes="(max-width:768px) 360px,(max-width:1024px) 500px,750px"
+              sizes="(max-width:768px) 200px,(max-width:1024px) 300px,380px"
               style={{ objectFit: "cover", objectPosition: "center 20%" }} priority />
           </div>
         </motion.div>
