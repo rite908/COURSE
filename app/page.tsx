@@ -407,8 +407,8 @@ export default function LandingPage() {
                             style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}
                           >
                             <motion.span
-                              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                              transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
+                              animate={{ backgroundPosition: ["100% 50%", "0% 50%"] }}
+                              transition={{ duration: 2.8, repeat: Infinity, ease: "linear", repeatType: "loop" }}
                               style={{
                                 position: "absolute", inset: 0,
                                 background: "linear-gradient(270deg,#1D4ED8,#7C3AED,#0EA5E9,#6D28D9,#2563EB)",
