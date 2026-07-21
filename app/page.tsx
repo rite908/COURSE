@@ -253,14 +253,14 @@ export default function LandingPage() {
   );
 
   return (
-    <main style={{ background: T.bg, minHeight: "100vh", overflowX: "hidden" }}>
+    <main style={{ background: T.heroBg, minHeight: "100vh", overflowX: "hidden" }}>
 
       {/* ══════════════════════════
           HERO
       ══════════════════════════ */}
       <section style={{
         position: "relative",
-        background: T.heroBg,
+        background: "transparent",
         paddingTop: `calc(72px + ${isLg ? 20 : 14}px)`,
         paddingBottom: isLg ? 32 : 36,
         overflow: "hidden",
@@ -582,9 +582,7 @@ export default function LandingPage() {
           STATS STRIP
       ══════════════════════════ */}
       <div style={{
-        background: isDark
-          ? "#0A0E1A"
-          : "linear-gradient(180deg,#E8EFFF 0%,#FFFFFF 100%)",
+        background: "transparent",
         padding: `${vp * 0.6}px 0`,
       }}>
         {W(
@@ -640,7 +638,7 @@ export default function LandingPage() {
       {/* ══════════════════════════
           CHAPTERS ACCORDION
       ══════════════════════════ */}
-      <section style={{ background: T.bg2, padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
         {W(
           <>
             <motion.div {...inView()} style={{ textAlign: "center", marginBottom: 48 }}>
@@ -774,7 +772,7 @@ export default function LandingPage() {
       {/* ══════════════════════════
           ROADMAP
       ══════════════════════════ */}
-      <section style={{ background: T.altBg, padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
         {W(
           <>
             <motion.div {...inView()} style={{ textAlign: "center", marginBottom: 52 }}>
@@ -857,7 +855,7 @@ export default function LandingPage() {
       {/* ══════════════════════════
           WHO IS THIS FOR
       ══════════════════════════ */}
-      <section style={{ background: T.bg2, padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
         {W(
           <>
             <motion.div {...inView()} style={{ textAlign: "center", marginBottom: 48 }}>
@@ -904,7 +902,7 @@ export default function LandingPage() {
       {/* ══════════════════════════
           ABOUT AFSAR
       ══════════════════════════ */}
-      <section style={{ background: T.altBg, padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
         {W(
           <div style={{
             display: "flex", flexDirection: isLg ? "row" : "column",
@@ -991,7 +989,7 @@ export default function LandingPage() {
       {/* ══════════════════════════
           FEATURES
       ══════════════════════════ */}
-      <section style={{ background: T.bg2, padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
         {W(
           <>
             <motion.div {...inView()} style={{ textAlign: "center", marginBottom: 48 }}>
@@ -1045,7 +1043,7 @@ export default function LandingPage() {
       {/* ══════════════════════════
           CTA BANNER
       ══════════════════════════ */}
-      <section style={{ background: T.altBg, padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
         {W(
           <motion.div {...inView()}
             style={{
@@ -1095,7 +1093,7 @@ export default function LandingPage() {
       {/* ══════════════════════════
           FOOTER
       ══════════════════════════ */}
-      <footer style={{ background: T.bg2, borderTop: `1px solid ${T.border}` }}>
+      <footer style={{ background: "transparent", borderTop: `1px solid ${T.border}` }}>
         {W(
           <div style={{
             padding: `${isLg ? 36 : 28}px 0`,
