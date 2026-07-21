@@ -156,7 +156,7 @@ export default function LandingPage() {
 
   /* ─── Responsive padding ─── */
   const sp  = vw < 640 ? 16 : vw < 768 ? 24 : vw < 1024 ? 32 : 40;
-  const vp  = vw < 768 ? 56 : vw < 1024 ? 72 : 96;
+  const vp  = vw < 768 ? 40 : vw < 1024 ? 56 : 70;
 
   /* ─── Centered content wrapper ─── */
   const W = (children: React.ReactNode, extraStyle: React.CSSProperties = {}) => (
@@ -345,7 +345,7 @@ export default function LandingPage() {
                 <div style={{
                   width: "100%",
                   maxWidth: isLg ? "none" : 480,
-                  height: isLg ? "clamp(520px,55vw,680px)" : isMd ? 420 : 320,
+                  height: isLg ? "clamp(460px,48vw,600px)" : isMd ? 380 : 300,
                 }}>
                   <HeroScene />
                 </div>
