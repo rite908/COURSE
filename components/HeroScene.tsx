@@ -247,7 +247,7 @@ export default function HeroScene() {
 
 
       {/* Hacker circle */}
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: "3%", zIndex: 1, pointerEvents: "none" }}>
         <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
@@ -346,7 +346,7 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 2 — ENCRYPTION (left-center) ── */}
-      <div style={{ position: "absolute", top: "30%", left: "1%", zIndex: 30 }}>
+      <div style={{ position: "absolute", top: "30%", left: "-1%", zIndex: 30 }}>
         <Enter from="left" delay={0.5}>
           <Float dy={7} dur={3.9} delay={1.2}>
             <div style={{ ...glass("139,92,246"), minWidth: 152 }}>
@@ -445,7 +445,7 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 4 — TERMINAL (bottom-left) ── */}
-      <div style={{ position: "absolute", top: "63%", left: "1%", zIndex: 30 }}>
+      <div style={{ position: "absolute", top: "63%", left: "-1%", zIndex: 30 }}>
         <Enter from="left" delay={0.4}>
           <Float dy={5} dur={4.9} delay={0.3}>
             <div style={{ position: "relative" }}>
