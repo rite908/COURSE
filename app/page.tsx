@@ -485,98 +485,98 @@ export default function LandingPage() {
           )}
         </div>
 
-        {/* Scroll cue — centered above marquee */}
+        {/* Scroll cue */}
         {isLg && mounted && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "12px 0 72px" }}>
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "12px 0 24px" }}>
             <span style={{ fontSize: "10px", fontWeight: 600, color: T.muted, textTransform: "uppercase", letterSpacing: "0.14em" }}>Scroll</span>
             <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
               <ChevronDown size={14} color={T.muted} />
             </motion.div>
           </motion.div>
         )}
-
-        {/* Chapter marquee strip — pinned to bottom edge of hero */}
-        <div style={{
-          position: "absolute", bottom: 0, left: 0, right: 0,
-          /* clip only horizontal overflow; vertical padding lets box-shadows breathe */
-          overflowX: "hidden", overflowY: "visible",
-          padding: "20px 0 20px",
-          zIndex: 20,
-        }}>
-          {/* Fade edges */}
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to right,#060912,transparent)" : "linear-gradient(to right,#F8FAFF,transparent)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to left,#060912,transparent)" : "linear-gradient(to left,#F8FAFF,transparent)", pointerEvents: "none" }} />
-
-          <div className="chapter-marquee-track">
-            {[...CHAPTERS, ...CHAPTERS].map((ch, i) => (
-              <div key={i} style={{
-                display: "inline-flex", alignItems: "center", gap: 14,
-                padding: "10px 20px",
-                marginRight: 12,
-                flexShrink: 0,
-                borderRadius: 16,
-                background: isDark ? "#0D1117" : "#FFFFFF",
-                boxShadow: `0 0 70px ${ch.color}40`,
-                cursor: "default",
-              }}>
-                {/* Icon bubble */}
-                <div style={{
-                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  background: isDark ? ch.darkBg : ch.lightBg,
-                  color: ch.color,
-                  boxShadow: `0 0 16px ${ch.color}40`,
-                  border: `1px solid ${ch.color}30`,
-                }}>
-                  {ch.icon}
-                </div>
-
-                {/* Text block */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  {/* Chapter number badge + title */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{
-                      fontSize: "10px", fontWeight: 800, letterSpacing: "0.1em",
-                      padding: "2px 7px", borderRadius: 6,
-                      background: ch.color, color: "#fff",
-                      lineHeight: 1.5, flexShrink: 0,
-                    }}>
-                      {String(ch.num).padStart(2, "0")}
-                    </span>
-                    <span style={{
-                      fontSize: "14px", fontWeight: 700, color: T.text,
-                      whiteSpace: "nowrap", lineHeight: 1,
-                    }}>
-                      {ch.title}
-                    </span>
-                  </div>
-                  {/* Subtitle */}
-                  <span style={{
-                    fontSize: "11px", fontWeight: 500, color: ch.color,
-                    whiteSpace: "nowrap", letterSpacing: "0.01em", opacity: 0.85,
-                  }}>
-                    {ch.subtitle}
-                  </span>
-                </div>
-
-                {/* MCQ count chip */}
-                <div style={{
-                  display: "flex", alignItems: "center", gap: 4,
-                  padding: "4px 10px", borderRadius: 20,
-                  background: isDark ? "rgba(255,255,255,0.06)" : `${ch.color}12`,
-                  border: `1px solid ${ch.color}25`,
-                  marginLeft: 4,
-                }}>
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: ch.color, whiteSpace: "nowrap" }}>
-                    {ch.mcqs} MCQs
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
+
+      {/* Chapter marquee strip — outside hero so overflow:hidden doesn't clip it */}
+      <div style={{
+        position: "relative",
+        overflowX: "hidden",
+        padding: "24px 0",
+        background: T.bg,
+      }}>
+        {/* Fade edges */}
+        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to right,#0A0E1A,transparent)" : "linear-gradient(to right,#F8FAFF,transparent)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to left,#0A0E1A,transparent)" : "linear-gradient(to left,#F8FAFF,transparent)", pointerEvents: "none" }} />
+
+        <div className="chapter-marquee-track">
+          {[...CHAPTERS, ...CHAPTERS].map((ch, i) => (
+            <div key={i} style={{
+              display: "inline-flex", alignItems: "center", gap: 14,
+              padding: "10px 20px",
+              marginRight: 12,
+              flexShrink: 0,
+              borderRadius: 16,
+              background: isDark ? "#0D1117" : "#FFFFFF",
+              border: `1px solid ${isDark ? "#1E2433" : "#E5E7EB"}`,
+              boxShadow: isDark ? `0 4px 24px ${ch.color}30` : `0 2px 16px rgba(0,0,0,0.07)`,
+              cursor: "default",
+            }}>
+              {/* Icon bubble */}
+              <div style={{
+                width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: isDark ? ch.darkBg : ch.lightBg,
+                color: ch.color,
+                boxShadow: `0 0 16px ${ch.color}40`,
+                border: `1px solid ${ch.color}30`,
+              }}>
+                {ch.icon}
+              </div>
+
+              {/* Text block */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {/* Chapter number badge + title */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{
+                    fontSize: "10px", fontWeight: 800, letterSpacing: "0.1em",
+                    padding: "2px 7px", borderRadius: 6,
+                    background: ch.color, color: "#fff",
+                    lineHeight: 1.5, flexShrink: 0,
+                  }}>
+                    {String(ch.num).padStart(2, "0")}
+                  </span>
+                  <span style={{
+                    fontSize: "14px", fontWeight: 700, color: T.text,
+                    whiteSpace: "nowrap", lineHeight: 1,
+                  }}>
+                    {ch.title}
+                  </span>
+                </div>
+                {/* Subtitle */}
+                <span style={{
+                  fontSize: "11px", fontWeight: 500, color: ch.color,
+                  whiteSpace: "nowrap", letterSpacing: "0.01em", opacity: 0.85,
+                }}>
+                  {ch.subtitle}
+                </span>
+              </div>
+
+              {/* MCQ count chip */}
+              <div style={{
+                display: "flex", alignItems: "center", gap: 4,
+                padding: "4px 10px", borderRadius: 20,
+                background: isDark ? "rgba(255,255,255,0.06)" : `${ch.color}12`,
+                border: `1px solid ${ch.color}25`,
+                marginLeft: 4,
+              }}>
+                <span style={{ fontSize: "10px", fontWeight: 700, color: ch.color, whiteSpace: "nowrap" }}>
+                  {ch.mcqs} MCQs
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ══════════════════════════
           STATS STRIP
