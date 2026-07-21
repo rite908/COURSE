@@ -403,7 +403,7 @@ export default function HeroScene() {
       </div>
 
       {/* ── CARD 3 — PACKETS (right-center) ── */}
-      <div style={{ position: "absolute", top: "55%", right: "1%", zIndex: 30, transform: "translateY(-50%)" }}>
+      <div style={{ position: "absolute", top: "65%", right: "1%", zIndex: 30, transform: "translateY(-50%)" }}>
         <Enter from="right" delay={0.6}>
           <Float dy={8} dur={3.5} delay={0.8}>
             <div style={{ ...glass("6,182,212"), minWidth: 148 }}>
