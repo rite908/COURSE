@@ -94,6 +94,41 @@ const ROADMAP = [
 /* ─── Max-width content container ─── */
 const MAX = 1180;
 
+/* ─── Button particle configs (static, defined once outside component) ─── */
+const BTN_PARTICLES = [
+  // angle, radius, size, color, delay, duration
+  ...([
+    [0,   60, 4, "#7C3AED", 0.0,  1.1],
+    [30,  68, 3, "#2563EB", 0.15, 1.0],
+    [60,  55, 5, "#0EA5E9", 0.3,  1.2],
+    [90,  72, 3, "#7C3AED", 0.05, 0.9],
+    [120, 58, 4, "#2563EB", 0.4,  1.3],
+    [150, 65, 3, "#A78BFA", 0.2,  1.0],
+    [180, 60, 4, "#2563EB", 0.1,  1.1],
+    [210, 70, 3, "#7C3AED", 0.35, 1.2],
+    [240, 55, 5, "#0EA5E9", 0.0,  1.0],
+    [270, 68, 3, "#A78BFA", 0.25, 1.1],
+    [300, 62, 4, "#2563EB", 0.45, 0.9],
+    [330, 58, 3, "#7C3AED", 0.1,  1.3],
+    [15,  45, 2, "#0EA5E9", 0.5,  1.0],
+    [75,  48, 2, "#A78BFA", 0.3,  1.1],
+    [195, 50, 2, "#2563EB", 0.15, 1.2],
+    [285, 46, 2, "#7C3AED", 0.4,  0.9],
+  ] as [number, number, number, string, number, number][]).map(([deg, r, sz, col, delay, dur]) => {
+    const rad = (deg * Math.PI) / 180;
+    return {
+      tx: Math.cos(rad) * r,
+      ty: Math.sin(rad) * r,
+      ox: "50%",
+      oy: "50%",
+      size: sz,
+      color: col,
+      delay,
+      dur,
+    };
+  }),
+];
+
 export default function LandingPage() {
   const router = useRouter();
   const { isDark } = useTheme();
@@ -119,17 +154,9 @@ export default function LandingPage() {
   const leftY  = useTransform(scrollY, [0, 500], [0, 28]);
   const rightY = useTransform(scrollY, [0, 500], [0, -18]);
 
-  /* Magnetic CTA */
+  /* CTA hover state */
   const btnRef = useRef<HTMLButtonElement>(null);
-  const bx = useMotionValue(0); const by = useMotionValue(0);
-  const sx = useSpring(bx, { stiffness: 300, damping: 30 });
-  const sy = useSpring(by, { stiffness: 300, damping: 30 });
-  const onMag = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!btnRef.current) return;
-    const r = btnRef.current.getBoundingClientRect();
-    bx.set((e.clientX - (r.left + r.width / 2)) * 0.25);
-    by.set((e.clientY - (r.top + r.height / 2)) * 0.25);
-  };
+  const [btnHovered, setBtnHovered] = useState(false);
 
   useEffect(() => { setUser(getCurrentUser()); setMounted(true); }, []);
   const goStart = () => router.push(user ? "/chapters" : "/login");
@@ -275,34 +302,100 @@ export default function LandingPage() {
 
                 {/* CTAs */}
                 <motion.div {...fade(0.22)} style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 32 }}>
-                  <motion.button
-                    ref={btnRef}
-                    onMouseMove={onMag}
-                    onMouseLeave={() => { bx.set(0); by.set(0); }}
-                    whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-                    onClick={goStart}
-                    style={{
-                      x: sx, y: sy, position: "relative",
-                      display: "inline-flex", alignItems: "center", gap: 12,
-                      padding: "14px 28px", borderRadius: 14,
-                      fontSize: "15px", fontWeight: 700, color: "white",
-                      border: "none", cursor: "pointer",
-                      background: "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
-                      boxShadow: "0 8px 28px rgba(37,99,235,0.40)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <motion.span style={{ position: "absolute", inset: 0, background: "linear-gradient(105deg,transparent 35%,rgba(255,255,255,0.18) 50%,transparent 65%)" }}
-                      animate={{ x: ["-120%", "220%"] }} transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.8 }} />
-                    <span style={{ position: "relative", zIndex: 1 }}>
-                      {user ? "Continue Learning" : "Start Free — No Signup"}
-                    </span>
-                    <motion.span
-                      style={{ position: "relative", zIndex: 1, width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center" }}
-                      animate={{ x: [0, 4, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-                      <ArrowRight size={14} />
-                    </motion.span>
-                  </motion.button>
+                  {/* Wrapper for overflow-visible particles */}
+                  <div style={{ position: "relative", display: "inline-flex" }}>
+                    {/* Particles — rendered outside button so they overflow */}
+                    <AnimatePresence>
+                      {btnHovered && BTN_PARTICLES.map((p, i) => (
+                        <motion.span
+                          key={i}
+                          initial={{ opacity: 0, x: 0, y: 0, scale: 0 }}
+                          animate={{ opacity: [0, 1, 0], x: p.tx, y: p.ty, scale: [0, 1, 0] }}
+                          transition={{ duration: p.dur, repeat: Infinity, delay: p.delay, ease: "easeOut" }}
+                          style={{
+                            position: "absolute",
+                            left: p.ox, top: p.oy,
+                            width: p.size, height: p.size,
+                            borderRadius: "50%",
+                            background: p.color,
+                            pointerEvents: "none",
+                            zIndex: 10,
+                          }}
+                        />
+                      ))}
+                    </AnimatePresence>
+
+                    {/* Outer glow ring on hover */}
+                    <AnimatePresence>
+                      {btnHovered && (
+                        <motion.span
+                          initial={{ opacity: 0, scale: 0.85 }}
+                          animate={{ opacity: [0.5, 0.8, 0.5], scale: [1, 1.08, 1] }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                          style={{
+                            position: "absolute", inset: -10, borderRadius: 22,
+                            background: "radial-gradient(ellipse, rgba(124,58,237,0.35) 0%, rgba(37,99,235,0.20) 50%, transparent 75%)",
+                            filter: "blur(10px)",
+                            pointerEvents: "none",
+                            zIndex: 0,
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
+
+                    <motion.button
+                      ref={btnRef}
+                      onMouseEnter={() => setBtnHovered(true)}
+                      onMouseLeave={() => setBtnHovered(false)}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={goStart}
+                      style={{
+                        position: "relative",
+                        display: "inline-flex", alignItems: "center", gap: 12,
+                        padding: "14px 28px", borderRadius: 14,
+                        fontSize: "15px", fontWeight: 700, color: "white",
+                        border: "none", cursor: "pointer",
+                        background: "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
+                        boxShadow: btnHovered
+                          ? "0 0 24px rgba(124,58,237,0.65), 0 0 52px rgba(37,99,235,0.35), 0 8px 28px rgba(37,99,235,0.30)"
+                          : "0 8px 28px rgba(37,99,235,0.40)",
+                        overflow: "hidden",
+                        transition: "box-shadow 0.3s ease",
+                        zIndex: 1,
+                      }}
+                    >
+                      {/* Animated gradient overlay on hover */}
+                      <AnimatePresence>
+                        {btnHovered && (
+                          <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.25 }}
+                            style={{ position: "absolute", inset: 0, borderRadius: 14, overflow: "hidden", zIndex: 0 }}
+                          >
+                            <motion.span
+                              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                              transition={{ duration: 2.2, repeat: Infinity, ease: "linear" }}
+                              style={{
+                                position: "absolute", inset: 0,
+                                background: "linear-gradient(270deg,#1D4ED8,#7C3AED,#0EA5E9,#6D28D9,#2563EB)",
+                                backgroundSize: "300% 300%",
+                              }}
+                            />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+
+                      <span style={{ position: "relative", zIndex: 1 }}>
+                        {user ? "Continue Learning" : "Start Free — No Signup"}
+                      </span>
+                      <span style={{ position: "relative", zIndex: 1, width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <ArrowRight size={14} />
+                      </span>
+                    </motion.button>
+                  </div>
 
                   <Link href="/chapters">
                     <motion.div whileHover={{ scale: 1.02 }} style={{
