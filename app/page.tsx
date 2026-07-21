@@ -500,13 +500,14 @@ export default function LandingPage() {
         {/* Chapter marquee strip — pinned to bottom edge of hero */}
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
-          overflow: "hidden",
-          padding: "16px 0 18px",
+          /* clip only horizontal overflow; vertical padding lets box-shadows breathe */
+          overflowX: "hidden", overflowY: "visible",
+          padding: "20px 0 20px",
           zIndex: 20,
         }}>
-          {/* Fade edges */}
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 140, zIndex: 2, background: isDark ? "linear-gradient(to right,#060912 20%,transparent)" : "linear-gradient(to right,#F5F8FF 20%,transparent)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 140, zIndex: 2, background: isDark ? "linear-gradient(to left,#060912 20%,transparent)" : "linear-gradient(to left,#F5F8FF 20%,transparent)", pointerEvents: "none" }} />
+          {/* Fade edges — deep multi-stop so glow blends into hero naturally */}
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 200, zIndex: 2, background: isDark ? "linear-gradient(to right,#060912 30%,rgba(6,9,18,0.7) 60%,transparent)" : "linear-gradient(to right,#F8FAFF 30%,rgba(248,250,255,0.7) 60%,transparent)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 200, zIndex: 2, background: isDark ? "linear-gradient(to left,#060912 30%,rgba(6,9,18,0.7) 60%,transparent)" : "linear-gradient(to left,#F8FAFF 30%,rgba(248,250,255,0.7) 60%,transparent)", pointerEvents: "none" }} />
 
           <div className="chapter-marquee-track">
             {[...CHAPTERS, ...CHAPTERS].map((ch, i) => (
@@ -517,8 +518,7 @@ export default function LandingPage() {
                 flexShrink: 0,
                 borderRadius: 16,
                 background: isDark ? "#0D1117" : "#FFFFFF",
-                border: `1px solid ${ch.color}35`,
-                boxShadow: `0 0 18px ${ch.color}45, 0 0 40px ${ch.color}18`,
+                boxShadow: `0 0 20px ${ch.color}55, 0 0 48px ${ch.color}22`,
                 cursor: "default",
               }}>
                 {/* Icon bubble */}
