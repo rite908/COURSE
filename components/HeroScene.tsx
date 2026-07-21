@@ -94,7 +94,7 @@ export default function HeroScene() {
   const [doneLines,  setDoneLines]  = useState<DoneLine[]>([]);
   const [activeText, setActiveText] = useState("");   // chars revealed so far on current seg
   const [activeSeg,  setActiveSeg]  = useState<TermSegment | null>(null);
-  const [blink,      setBlink]      = useState(true);
+  
 
   /* ── Mount ── */
   useEffect(() => { setMounted(true); }, []);
@@ -210,11 +210,7 @@ export default function HeroScene() {
     return () => { active = false; T.forEach(clearTimeout); };
   }, [mounted]);
 
-  /* ── Cursor blink ── */
-  useEffect(() => {
-    const id = setInterval(() => setBlink(b => !b), 520);
-    return () => clearInterval(id);
-  }, []);
+  
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 520 }}>
@@ -499,23 +495,32 @@ export default function HeroScene() {
                   )}
                   {/* blinking cursor */}
                   <motion.span
-                    animate={{ opacity: blink ? 1 : 0 }}
-                    transition={{ duration: 0 }}
-                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12, marginLeft: 1 }}
+                    animate={{ opacity: [1, 1, 0, 0] }}
+                    transition={{ duration: 1.04, repeat: Infinity, ease: "linear", times: [0, 0.48, 0.5, 0.98] }}
+                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12, marginLeft: 1, filter: "drop-shadow(0 0 5px #3B82F6)" }}
                   >▋</motion.span>
                 </div>
               )}
 
               {/* Idle cursor when nothing is typing */}
               {!activeSeg && doneLines.length === 0 && (
-                <div style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", gap: 4 }}>
-                  <span style={{ color: "#22C55E", fontWeight: 700 }}>root@kali:~$</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", gap: 4, alignItems: "center" }}
+                >
                   <motion.span
-                    animate={{ opacity: blink ? 1 : 0 }}
-                    transition={{ duration: 0 }}
-                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12 }}
+                    animate={{ textShadow: ["0 0 0px #22C55E", "0 0 8px #22C55E, 0 0 18px rgba(34,197,94,0.45)", "0 0 0px #22C55E"] }}
+                    transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ color: "#22C55E", fontWeight: 700 }}
+                  >root@kali:~$</motion.span>
+                  <motion.span
+                    animate={{ opacity: [1, 1, 0, 0] }}
+                    transition={{ duration: 1.04, repeat: Infinity, ease: "linear", times: [0, 0.48, 0.5, 0.98] }}
+                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12, filter: "drop-shadow(0 0 6px #3B82F6) drop-shadow(0 0 12px rgba(59,130,246,0.5))" }}
                   >▋</motion.span>
-                </div>
+                </motion.div>
               )}
             </div>
           </div>
