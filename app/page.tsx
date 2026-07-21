@@ -627,9 +627,9 @@ export default function LandingPage() {
                 <div style={{ position: "relative", width: 52, height: 52, borderRadius: 16, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: isDark ? s.darkBg : s.lightBg, color: s.color }}>
                   {s.icon}
                 </div>
-                <div style={{ position: "relative" }}>
-                  <div style={{ fontWeight: 900, fontSize: "clamp(1.4rem, 1.6vw, 1.9rem)", color: T.text, lineHeight: 1.15, whiteSpace: "nowrap" }}>{s.value}</div>
-                  <div style={{ fontSize: "11px", color: T.muted, fontWeight: 700, marginTop: 6, textTransform: "uppercase", letterSpacing: "0.09em" }}>{s.label}</div>
+                <div style={{ position: "relative", minWidth: 0, flex: 1 }}>
+                  <div style={{ fontWeight: 900, fontSize: "clamp(1.1rem, 1.3vw, 1.6rem)", color: T.text, lineHeight: 1.15 }}>{s.value}</div>
+                  <div style={{ fontSize: "10px", color: T.muted, fontWeight: 700, marginTop: 5, textTransform: "uppercase", letterSpacing: "0.08em", lineHeight: 1.4 }}>{s.label}</div>
                 </div>
               </motion.div>
             ))}
