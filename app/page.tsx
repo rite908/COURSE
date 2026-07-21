@@ -516,7 +516,7 @@ export default function LandingPage() {
               <motion.div key={s.label}
                 initial={mounted ? { opacity: 0, y: 16 } : false} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08, duration: 0.45 }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                whileHover={{ y: -4, boxShadow: isDark ? `0 8px 32px rgba(0,0,0,0.38), 0 0 0 1px ${s.color}55` : `0 8px 28px rgba(0,0,0,0.10), 0 0 0 1px ${s.color}40`, transition: { duration: 0.2 } }}
                 style={{
                   position: "relative",
                   display: "flex", flexDirection: isMd ? "row" : "column",
@@ -526,14 +526,27 @@ export default function LandingPage() {
                   borderRadius: 20, background: T.card,
                   border: `1px solid ${T.border}`,
                   boxShadow: `0 2px 16px rgba(0,0,0,${isDark ? 0.28 : 0.05})`,
-                  overflow: "visible",
+                  overflow: "hidden",
                 }}
               >
-                <span style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${s.color},transparent)` }} />
-                <div style={{ width: 52, height: 52, borderRadius: 16, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: isDark ? s.darkBg : s.lightBg, color: s.color }}>
+                {/* Full-width accent line — solid colour + glow in dark mode */}
+                <span style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: 3,
+                  background: s.color,
+                  boxShadow: isDark ? `0 0 12px ${s.color}CC, 0 0 28px ${s.color}66` : "none",
+                }} />
+
+                {/* Subtle top colour wash for depth */}
+                <span style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: 72,
+                  background: `linear-gradient(180deg,${s.color}18 0%,transparent 100%)`,
+                  pointerEvents: "none",
+                }} />
+
+                <div style={{ position: "relative", width: 52, height: 52, borderRadius: 16, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: isDark ? s.darkBg : s.lightBg, color: s.color }}>
                   {s.icon}
                 </div>
-                <div>
+                <div style={{ position: "relative" }}>
                   <div style={{ fontWeight: 900, fontSize: "1.9rem", color: T.text, lineHeight: 1 }}>{s.value}</div>
                   <div style={{ fontSize: "11px", color: T.muted, fontWeight: 700, marginTop: 6, textTransform: "uppercase", letterSpacing: "0.09em" }}>{s.label}</div>
                 </div>
