@@ -505,9 +505,9 @@ export default function LandingPage() {
           padding: "20px 0 20px",
           zIndex: 20,
         }}>
-          {/* Fade edges — deep multi-stop so glow blends into hero naturally */}
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 200, zIndex: 2, background: isDark ? "linear-gradient(to right,#060912 30%,rgba(6,9,18,0.7) 60%,transparent)" : "linear-gradient(to right,#F8FAFF 30%,rgba(248,250,255,0.7) 60%,transparent)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 200, zIndex: 2, background: isDark ? "linear-gradient(to left,#060912 30%,rgba(6,9,18,0.7) 60%,transparent)" : "linear-gradient(to left,#F8FAFF 30%,rgba(248,250,255,0.7) 60%,transparent)", pointerEvents: "none" }} />
+          {/* Fade edges */}
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to right,#060912,transparent)" : "linear-gradient(to right,#F8FAFF,transparent)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to left,#060912,transparent)" : "linear-gradient(to left,#F8FAFF,transparent)", pointerEvents: "none" }} />
 
           <div className="chapter-marquee-track">
             {[...CHAPTERS, ...CHAPTERS].map((ch, i) => (
@@ -518,7 +518,7 @@ export default function LandingPage() {
                 flexShrink: 0,
                 borderRadius: 16,
                 background: isDark ? "#0D1117" : "#FFFFFF",
-                boxShadow: `0 0 20px ${ch.color}55, 0 0 48px ${ch.color}22`,
+                boxShadow: `0 0 70px ${ch.color}40`,
                 cursor: "default",
               }}>
                 {/* Icon bubble */}
