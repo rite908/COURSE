@@ -222,14 +222,14 @@ export default function LandingPage() {
               display: "flex",
               flexDirection: isLg ? "row" : "column",
               alignItems: isLg ? "center" : "flex-start",
+              justifyContent: isLg ? "space-between" : "flex-start",
               gap: isLg ? 0 : 36,
             }}>
               {/* LEFT */}
               <motion.div style={{
                 y: leftY,
-                flex: isLg ? "0 0 52%" : "unset",
-                width: isLg ? "52%" : "100%",
-                paddingRight: isLg ? 40 : 0,
+                flex: isLg ? "0 0 44%" : "unset",
+                width: isLg ? "44%" : "100%",
               }}>
                 {/* Badge */}
                 <motion.div {...fade(0)} style={{ marginBottom: 20 }}>
@@ -338,14 +338,14 @@ export default function LandingPage() {
               {/* RIGHT — scene */}
               <motion.div style={{
                 y: rightY,
-                flex: isLg ? "0 0 48%" : "unset",
-                width: isLg ? "48%" : "100%",
-                display: "flex", alignItems: "center", justifyContent: "center",
+                flex: isLg ? "0 0 53%" : "unset",
+                width: isLg ? "53%" : "100%",
+                display: "flex", alignItems: "center", justifyContent: "flex-end",
               }}>
                 <div style={{
                   width: "100%",
                   maxWidth: isLg ? "none" : 480,
-                  height: isLg ? "clamp(460px,48vw,600px)" : isMd ? 380 : 300,
+                  height: isLg ? "clamp(460px,48vw,580px)" : isMd ? 380 : 300,
                 }}>
                   <HeroScene />
                 </div>
