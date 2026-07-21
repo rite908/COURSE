@@ -264,9 +264,9 @@ export default function HeroScene() {
             style={{ position: "absolute", inset: -24, borderRadius: "50%", border: "1px solid rgba(99,102,241,0.28)" }}
           />
           <div style={{ position: "absolute", inset: 0, borderRadius: "50%", overflow: "hidden", zIndex: 1 }}>
-            <Image src="/hacker-hq.png" alt="TWH Hacker" fill
-              sizes="(max-width:768px) 400px,(max-width:1024px) 600px,1024px"
-              style={{ objectFit: "cover", objectPosition: "center 15%" }} priority />
+            <Image src="/hacker.png" alt="TWH Hacker" fill
+              sizes="(max-width:768px) 200px,(max-width:1024px) 300px,380px"
+              style={{ objectFit: "cover", objectPosition: "center 20%" }} priority />
           </div>
         </motion.div>
       </div>
