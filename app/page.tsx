@@ -196,8 +196,8 @@ export default function LandingPage() {
 
   /* ─── Theme tokens ─── */
   const T = {
-    bg:      isDark ? "#060912"  : "#F8FAFF",
-    bg2:     isDark ? "#0D1117"  : "#FFFFFF",
+    bg:      isDark ? "#0A0E1A"  : "#F8FAFF",
+    bg2:     isDark ? "#0A0E1A"  : "#FFFFFF",
     bg3:     isDark ? "#0A0E1A"  : "#F4F8FF",
     text:    isDark ? "#F1F5F9"  : "#111827",
     text2:   isDark ? "#94A3B8"  : "#6B7280",
@@ -502,7 +502,7 @@ export default function LandingPage() {
       ══════════════════════════ */}
       <div style={{
         background: isDark
-          ? "linear-gradient(180deg,#0A0E1A 0%,#0D1117 100%)"
+          ? "#0A0E1A"
           : "linear-gradient(180deg,#E8EFFF 0%,#FFFFFF 100%)",
         padding: `${vp * 0.6}px 0`,
       }}>
