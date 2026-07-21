@@ -255,12 +255,21 @@ export default function LandingPage() {
   return (
     <main style={{ background: T.heroBg, minHeight: "100vh", overflowX: "hidden" }}>
 
-      {/* Full-page dot grid — fixed so it covers every section while scrolling */}
-      <div style={{
-        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-        backgroundImage: `radial-gradient(circle, ${T.dot} 1.5px, transparent 1.5px)`,
-        backgroundSize: "30px 30px",
-      }} />
+      {/* Full-page animated dot grid */}
+      <div
+        className="dot-grid-bg"
+        style={{ backgroundImage: `radial-gradient(circle, ${T.dot} 1.5px, transparent 1.5px)` }}
+      />
+      {/* Vertical scan line */}
+      <div
+        className="dot-scan-v"
+        style={{ background: `linear-gradient(90deg, transparent, ${isDark ? "rgba(37,99,235,0.55)" : "rgba(99,102,241,0.35)"}, transparent)` }}
+      />
+      {/* Horizontal scan line */}
+      <div
+        className="dot-scan-h"
+        style={{ background: `linear-gradient(180deg, transparent, ${isDark ? "rgba(124,58,237,0.40)" : "rgba(99,102,241,0.25)"}, transparent)` }}
+      />
 
       {/* ══════════════════════════
           HERO

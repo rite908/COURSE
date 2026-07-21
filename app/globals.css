@@ -657,3 +657,66 @@ html, body {
 /* ── Subtitle badge hidden on mobile ── */
 .subtitle-badge { display:none }
 @media(min-width:768px){ .subtitle-badge { display:inline } }
+
+/* ══════════════════════════════════════════
+   FULL-PAGE DOT GRID ANIMATION
+   ══════════════════════════════════════════ */
+
+/* 1. Seamless diagonal drift — repeats every 30px (= grid cell size) */
+@keyframes dot-drift {
+  0%   { background-position: 0px 0px }
+  100% { background-position: 30px 30px }
+}
+
+/* 2. Pulse ripple that fades in/out from centre */
+@keyframes dot-pulse {
+  0%   { opacity: 0.55 }
+  50%  { opacity: 1    }
+  100% { opacity: 0.55 }
+}
+
+/* 3. Horizontal scan line sweeping top → bottom */
+@keyframes scan-sweep {
+  0%   { top: -6px;   opacity: 0   }
+  5%   { opacity: 0.7 }
+  95%  { opacity: 0.4 }
+  100% { top: 100vh;  opacity: 0   }
+}
+
+/* 4. Vertical scan line sweeping left → right */
+@keyframes scan-sweep-h {
+  0%   { left: -6px;   opacity: 0   }
+  5%   { opacity: 0.35 }
+  95%  { opacity: 0.2  }
+  100% { left: 100vw;  opacity: 0   }
+}
+
+.dot-grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: 30px 30px;
+  animation: dot-drift 6s linear infinite, dot-pulse 4s ease-in-out infinite;
+}
+
+/* Vertical scan line */
+.dot-scan-v {
+  position: fixed;
+  left: 0; right: 0;
+  height: 2px;
+  z-index: 1;
+  pointer-events: none;
+  animation: scan-sweep 7s ease-in-out infinite;
+}
+
+/* Horizontal scan line */
+.dot-scan-h {
+  position: fixed;
+  top: 0; bottom: 0;
+  width: 2px;
+  z-index: 1;
+  pointer-events: none;
+  animation: scan-sweep-h 11s ease-in-out infinite;
+  animation-delay: 3s;
+}
