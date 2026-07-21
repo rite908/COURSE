@@ -171,9 +171,8 @@ export default function HeroScene() {
     return () => clearInterval(id);
   }, [spinnerOn]);
 
-  /* ── Terminal — char-by-char typewriter, StrictMode-safe ── */
+  /* ── Terminal — starts immediately on client mount ── */
   useEffect(() => {
-    if (!mounted) return;
     let active = true;
     const T: ReturnType<typeof setTimeout>[] = [];
 
@@ -254,9 +253,9 @@ export default function HeroScene() {
       nextSeg();
     };
 
-    sched(runScript, 300);
+    sched(runScript, 100);
     return () => { active = false; T.forEach(clearTimeout); };
-  }, [mounted]);
+  }, []);
 
   
 
