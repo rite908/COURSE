@@ -519,11 +519,7 @@ export default function HeroScene() {
                         <>
                           <span style={{ color: "#00ff41", fontWeight: 700, flexShrink: 0, marginRight: 4, textShadow: "0 0 6px rgba(0,255,65,0.6)" }}>{activeSeg.prompt}</span>
                           <span style={{ color: "#c9d1d9" }}>{activeText}</span>
-                          <motion.span
-                            animate={{ opacity: [1, 0, 1] }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "steps(1)" }}
-                            style={{ display: "inline-block", width: 6, height: 11, background: "#00ff41", marginLeft: 1, verticalAlign: "middle", boxShadow: "0 0 5px rgba(0,255,65,0.8)" }}
-                          />
+                          <span style={{ display: "inline-block", width: 6, height: 11, background: "#00ff41", marginLeft: 1, verticalAlign: "middle", boxShadow: "0 0 5px rgba(0,255,65,0.8)", animation: "termBlink 1s step-end infinite" }} />
                         </>
                       ) : activeSeg.kind === "spin" ? (
                         <>
@@ -540,11 +536,7 @@ export default function HeroScene() {
                   {!activeSeg && doneLines.length === 0 && (
                     <div style={{ fontFamily: "'Courier New',monospace", fontSize: 9.5, lineHeight: 1.7, display: "flex", alignItems: "center", whiteSpace: "nowrap" }}>
                       <span style={{ color: "#00ff41", fontWeight: 700, textShadow: "0 0 7px rgba(0,255,65,0.7)" }}>root@kali:~$</span>
-                      <motion.span
-                        animate={{ opacity: [1, 0, 1] }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "steps(1)" }}
-                        style={{ display: "inline-block", width: 6, height: 11, background: "#00ff41", marginLeft: 5, verticalAlign: "middle", boxShadow: "0 0 6px rgba(0,255,65,0.9)" }}
-                      />
+                      <span style={{ display: "inline-block", width: 6, height: 11, background: "#00ff41", marginLeft: 5, verticalAlign: "middle", boxShadow: "0 0 6px rgba(0,255,65,0.9)", animation: "termBlink 1s step-end infinite" }} />
                     </div>
                   )}
                 </div>
