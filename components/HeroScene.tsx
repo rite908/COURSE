@@ -556,59 +556,138 @@ export default function HeroScene() {
         </Enter>
       </div>
 
-      {/* ── CARD 5 — ACCESS GRANTED (bottom-center) ── */}
-      <div style={{ position: "absolute", top: "78%", left: "62%", transform: "translateX(-50%)", zIndex: 30, whiteSpace: "nowrap" }}>
+      {/* ── CARD 5 — ACCESS GRANTED ── */}
+      <div style={{ position: "absolute", top: "72%", left: "58%", transform: "translateX(-50%)", zIndex: 30, whiteSpace: "nowrap" }}>
         <Enter from="bottom" delay={0.7}>
           <Float dy={5} dur={3.9} delay={1.5}>
             <div style={{ position: "relative", display: "inline-flex" }}>
-              {/* Ripple rings */}
-              {[0, 1].map(i => (
+
+              {/* Layered ripple rings */}
+              {[0, 1, 2].map(i => (
                 <motion.div key={i}
-                  animate={{ scale: [1, 1.5 + i * 0.25, 1], opacity: [0.35 - i * 0.1, 0, 0.35 - i * 0.1] }}
-                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: i * 0.45 }}
+                  animate={{ scale: [1, 1.6 + i * 0.2, 1], opacity: [0.4 - i * 0.1, 0, 0.4 - i * 0.1] }}
+                  transition={{ duration: 2.8, repeat: Infinity, ease: "easeOut", delay: i * 0.6 }}
                   style={{
-                    position: "absolute", inset: -(6 + i * 9),
+                    position: "absolute", inset: -(8 + i * 10),
                     borderRadius: 999,
-                    border: `1px solid rgba(16,185,129,${0.4 - i * 0.12})`,
+                    border: `1px solid rgba(16,185,129,${0.45 - i * 0.1})`,
                     pointerEvents: "none",
                   }}
                 />
               ))}
 
-              {/* Badge */}
+              {/* Outer ambient glow */}
               <motion.div
-                animate={{ boxShadow: [
-                  "0 4px 20px rgba(16,185,129,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
-                  "0 4px 32px rgba(16,185,129,0.42), inset 0 1px 0 rgba(255,255,255,0.07)",
-                  "0 4px 20px rgba(16,185,129,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
-                ]}}
+                animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
                 style={{
-                  display: "flex", alignItems: "center", gap: 9,
-                  padding: "9px 18px", borderRadius: 999,
-                  background: "rgba(6, 12, 24, 0.60)",
-                  backdropFilter: "blur(20px)",
-                  WebkitBackdropFilter: "blur(20px)",
+                  position: "absolute", inset: -18, borderRadius: 999,
+                  background: "radial-gradient(ellipse, rgba(16,185,129,0.18) 0%, transparent 70%)",
+                  filter: "blur(10px)",
+                  pointerEvents: "none",
+                }}
+              />
+
+              {/* Badge */}
+              <motion.div
+                animate={{
+                  boxShadow: [
+                    "0 0 0px rgba(16,185,129,0), 0 4px 24px rgba(16,185,129,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
+                    "0 0 22px rgba(16,185,129,0.35), 0 4px 36px rgba(16,185,129,0.45), inset 0 1px 0 rgba(255,255,255,0.10)",
+                    "0 0 0px rgba(16,185,129,0), 0 4px 24px rgba(16,185,129,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
+                  ],
+                  borderColor: [
+                    "rgba(16,185,129,0.25)",
+                    "rgba(16,185,129,0.65)",
+                    "rgba(16,185,129,0.25)",
+                  ],
+                }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 11,
+                  padding: "10px 20px 10px 12px",
+                  borderRadius: 999,
+                  background: "rgba(4, 14, 22, 0.72)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
                   border: "1px solid rgba(16,185,129,0.25)",
+                  overflow: "hidden",
+                  position: "relative",
                 }}
               >
+                {/* Scan line sweep */}
                 <motion.div
-                  animate={{ scale: [1, 1.18, 1] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(16,185,129,0.2)", border: "1.5px solid rgba(16,185,129,0.6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-                >
-                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                    <path d="M1 4L3.8 7L9 1" stroke="#34D399" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </motion.div>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 800, color: "#34D399", textTransform: "uppercase", letterSpacing: "0.14em", lineHeight: 1 }}>
+                  animate={{ x: ["-110%", "210%"] }}
+                  transition={{ duration: 2.0, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.2 }}
+                  style={{
+                    position: "absolute", inset: 0,
+                    background: "linear-gradient(90deg, transparent 0%, rgba(52,211,153,0.13) 40%, rgba(52,211,153,0.22) 50%, rgba(52,211,153,0.13) 60%, transparent 100%)",
+                    pointerEvents: "none",
+                    zIndex: 0,
+                  }}
+                />
+
+                {/* Checkmark icon with draw + pulse */}
+                <div style={{ position: "relative", flexShrink: 0, zIndex: 1 }}>
+                  {/* Glow ring behind icon */}
+                  <motion.div
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+                    style={{
+                      position: "absolute", inset: -4, borderRadius: "50%",
+                      background: "rgba(16,185,129,0.25)",
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <motion.div
+                    animate={{ scale: [1, 1.12, 1], boxShadow: ["0 0 0px rgba(52,211,153,0)", "0 0 12px rgba(52,211,153,0.7)", "0 0 0px rgba(52,211,153,0)"] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                    style={{
+                      width: 26, height: 26, borderRadius: "50%",
+                      background: "linear-gradient(135deg, rgba(16,185,129,0.3), rgba(5,150,105,0.15))",
+                      border: "1.5px solid rgba(52,211,153,0.8)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >
+                    {/* Animated checkmark path draw */}
+                    <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+                      <motion.path
+                        d="M1 4.5L4.2 7.5L11 1"
+                        stroke="#34D399"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: [0, 1, 1, 0] }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", times: [0, 0.35, 0.75, 1], repeatDelay: 0.5 }}
+                      />
+                    </svg>
+                  </motion.div>
+                </div>
+
+                {/* Text */}
+                <div style={{ zIndex: 1 }}>
+                  <motion.div
+                    animate={{ opacity: [0.85, 1, 0.85] }}
+                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                    style={{
+                      fontSize: 11, fontWeight: 800, color: "#34D399",
+                      textTransform: "uppercase", letterSpacing: "0.16em",
+                      lineHeight: 1,
+                      textShadow: "0 0 12px rgba(52,211,153,0.6)",
+                    }}
+                  >
                     Access Granted
-                  </div>
-                  <div style={{ fontSize: 8, color: "rgba(52,211,153,0.5)", fontWeight: 500, marginTop: 2.5, letterSpacing: "0.04em" }}>
-                    Authentication complete
+                  </motion.div>
+                  <div style={{
+                    fontSize: 8.5, color: "rgba(52,211,153,0.55)",
+                    fontWeight: 500, marginTop: 3.5, letterSpacing: "0.06em",
+                    fontFamily: "monospace",
+                  }}>
+                    ✓ Authentication complete
                   </div>
                 </div>
+
               </motion.div>
             </div>
           </Float>

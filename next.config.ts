@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["*"],
   images: {
     qualities: [75, 95, 100],
+
   },
   async headers() {
     return [
