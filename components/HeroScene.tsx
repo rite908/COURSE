@@ -1,104 +1,138 @@
 "use client";
 
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
-const GLASS_LIGHT = {
-  background: "rgba(255,255,255,0.96)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
-  border: "1px solid rgba(255,255,255,1)",
-  boxShadow: "0 8px 32px rgba(37,99,235,0.13), 0 2px 8px rgba(0,0,0,0.08)",
-  borderRadius: 14,
-};
+/* ─── Shared glass style ─── */
+const glass = (accent: string) => ({
+  background: "rgba(255,255,255,0.94)",
+  backdropFilter: "blur(24px)",
+  WebkitBackdropFilter: "blur(24px)",
+  borderRadius: 18,
+  border: `1px solid rgba(255,255,255,0.9)`,
+  boxShadow: `0 12px 40px rgba(0,0,0,0.10), 0 0 0 1px ${accent}22, inset 0 1px 0 rgba(255,255,255,1)`,
+  overflow: "hidden" as const,
+  position: "relative" as const,
+});
 
-const TERMINAL_LINES = [
-  { text: "whoami",       color: "#94A3B8" },
-  { text: "scanning...", color: "#94A3B8" },
-  { text: "192.168.1.1", color: "#94A3B8" },
-  { text: "accessing...", color: "#94A3B8" },
-  { text: "target_found", color: "#4ADE80", bold: true },
+/* Accent top bar */
+const AccentBar = ({ color }: { color: string }) => (
+  <div style={{
+    position: "absolute", top: 0, left: 0, right: 0, height: 3,
+    background: `linear-gradient(90deg, ${color}, ${color}88, transparent)`,
+    borderRadius: "18px 18px 0 0",
+  }} />
+);
+
+/* Pulsing status dot */
+const LiveDot = ({ color = "#22C55E", delay = 0 }: { color?: string; delay?: number }) => (
+  <span style={{ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14 }}>
+    <motion.span
+      animate={{ scale: [1, 2.4, 1], opacity: [0.6, 0, 0.6] }}
+      transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay }}
+      style={{ position: "absolute", inset: 0, borderRadius: "50%", background: color }}
+    />
+    <span style={{ width: 7, height: 7, borderRadius: "50%", background: color, display: "block", position: "relative" }} />
+  </span>
+);
+
+/* ── Data ── */
+const IPS       = ["192.168.1.1", "10.0.0.254", "172.16.4.8", "192.168.0.1"];
+const BAR_BASE  = [3, 5, 4, 7, 6, 8, 5, 9, 7, 8];
+const PKT_VALS  = ["724K", "731K", "718K", "745K"];
+const TERM_LINES = [
+  { cmd: "whoami",         out: null,              outColor: "" },
+  { cmd: "nmap -sV target",out: "Scanning ports…", outColor: "#94A3B8" },
+  { cmd: "192.168.1.1",    out: "HOST UP",         outColor: "#4ADE80" },
+  { cmd: "exploit --run",  out: "Connecting…",     outColor: "#F59E0B" },
+  { cmd: "target_found",   out: "ACCESS GRANTED",  outColor: "#4ADE80" },
 ];
-
-const IP_SEQUENCE = ["192.168.1.1", "10.0.0.254", "172.16.0.1", "192.168.1.1"];
-
-const BASE_BARS   = [3, 5, 4, 7, 6, 8, 5, 9, 7, 8];
-const PACKET_VALS = [724, 731, 718, 745, 724];
-
-/* ── Typewriter hook ── */
-function useTypewriter(lines: typeof TERMINAL_LINES, active: boolean) {
-  const [visibleCount, setVisibleCount] = useState(0);
-  const [cursor, setCursor] = useState(true);
-
-  useEffect(() => {
-    if (!active) return;
-    setVisibleCount(0);
-    let i = 0;
-    const reveal = () => {
-      i++;
-      setVisibleCount(i);
-      if (i < lines.length) {
-        setTimeout(reveal, 480 + Math.random() * 240);
-      }
-    };
-    const t = setTimeout(reveal, 400);
-    return () => clearTimeout(t);
-  }, [active, lines.length]);
-
-  useEffect(() => {
-    const t = setInterval(() => setCursor(c => !c), 530);
-    return () => clearInterval(t);
-  }, []);
-
-  return { visibleCount, cursor };
-}
 
 export default function HeroScene() {
   const [mounted, setMounted] = useState(false);
 
-  /* IP cycling */
-  const [ipIdx, setIpIdx]       = useState(0);
-  const [ipKey, setIpKey]       = useState(0);
-  const [scanning, setScanning] = useState(false);
+  /* IP cycle */
+  const [ipIdx,     setIpIdx]     = useState(0);
+  const [ipPhase,   setIpPhase]   = useState<"idle"|"scan">("idle");
+  const [scanPct,   setScanPct]   = useState(0);
 
-  /* Packet bars */
-  const [bars, setBars]       = useState(BASE_BARS);
-  const [packetIdx, setPacketIdx] = useState(0);
+  /* Packets */
+  const [bars,      setBars]      = useState(BAR_BASE);
+  const [pktIdx,    setPktIdx]    = useState(0);
+  const [pktFlash,  setPktFlash]  = useState(false);
 
   /* Terminal */
-  const { visibleCount, cursor } = useTypewriter(TERMINAL_LINES, mounted);
+  const [termLines, setTermLines] = useState(0);
+  const [blink,     setBlink]     = useState(true);
 
+  useEffect(() => { setMounted(true); }, []);
+
+  /* ── IP scanner: scan bar → flip IP ── */
   useEffect(() => {
-    setMounted(true);
+    if (!mounted) return;
+    const loop = () => {
+      setIpPhase("scan");
+      setScanPct(0);
+      let p = 0;
+      const step = setInterval(() => {
+        p += 4 + Math.random() * 6;
+        setScanPct(Math.min(p, 100));
+        if (p >= 100) {
+          clearInterval(step);
+          setIpIdx(i => (i + 1) % IPS.length);
+          setTimeout(() => { setIpPhase("idle"); setScanPct(0); }, 400);
+        }
+      }, 60);
+    };
+    const t = setInterval(loop, 3800);
+    return () => clearInterval(t);
+  }, [mounted]);
+
+  /* ── Packet bars jitter ── */
+  useEffect(() => {
+    if (!mounted) return;
+    const t = setInterval(() => {
+      setBars(BAR_BASE.map(h => Math.max(2, h + Math.floor(Math.random() * 5) - 2)));
+      setPktIdx(i => (i + 1) % PKT_VALS.length);
+      setPktFlash(true);
+      setTimeout(() => setPktFlash(false), 300);
+    }, 2000);
+    return () => clearInterval(t);
+  }, [mounted]);
+
+  /* ── Terminal typewriter ── */
+  useEffect(() => {
+    if (!mounted) return;
+    setTermLines(0);
+    let i = 0;
+    const next = () => {
+      i++;
+      setTermLines(i);
+      if (i < TERM_LINES.length) setTimeout(next, 600 + Math.random() * 300);
+      else setTimeout(() => { setTermLines(0); i = 0; setTimeout(next, 1200); }, 4000);
+    };
+    const t = setTimeout(next, 600);
+    return () => clearTimeout(t);
+  }, [mounted]);
+
+  /* ── Cursor blink ── */
+  useEffect(() => {
+    const t = setInterval(() => setBlink(b => !b), 520);
+    return () => clearInterval(t);
   }, []);
 
-  /* IP scanner cycle every 3.5 s */
-  useEffect(() => {
-    if (!mounted) return;
-    const t = setInterval(() => {
-      setScanning(true);
-      setTimeout(() => {
-        setIpIdx(i => {
-          const next = (i + 1) % IP_SEQUENCE.length;
-          setIpKey(k => k + 1);
-          return next;
-        });
-        setScanning(false);
-      }, 700);
-    }, 3500);
-    return () => clearInterval(t);
-  }, [mounted]);
+  /* ── Card float variants ── */
+  const float = (dy: number, dur: number, delay: number) => ({
+    animate: { y: [0, -dy, 0] },
+    transition: { duration: dur, repeat: Infinity, ease: "easeInOut" as const, delay },
+  });
 
-  /* Packet bars jitter every 1.8 s */
-  useEffect(() => {
-    if (!mounted) return;
-    const t = setInterval(() => {
-      setBars(BASE_BARS.map(h => Math.max(2, h + Math.floor(Math.random() * 5) - 2)));
-      setPacketIdx(i => (i + 1) % PACKET_VALS.length);
-    }, 1800);
-    return () => clearInterval(t);
-  }, [mounted]);
+  /* ── Entry animation ── */
+  const entry = (x: number, delay: number) =>
+    mounted
+      ? { initial: { opacity: 0, x, scale: 0.88 }, animate: { opacity: 1, x: 0, scale: 1 }, transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] } }
+      : {};
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 520 }}>
@@ -107,7 +141,7 @@ export default function HeroScene() {
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 0 }}>
         <div style={{
           width: "85%", height: "85%", borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(99,60,220,0.28) 0%, rgba(37,99,235,0.14) 45%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(99,60,220,0.26) 0%, rgba(37,99,235,0.12) 45%, transparent 70%)",
           filter: "blur(50px)",
         }} />
       </div>
@@ -120,14 +154,14 @@ export default function HeroScene() {
           style={{ position: "relative", width: "min(100%, 720px)", aspectRatio: "1" }}
         >
           <motion.div
-            animate={{ scale: [1, 1.07, 1], opacity: [0.45, 0.05, 0.45] }}
+            animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.04, 0.4] }}
             transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-            style={{ position: "absolute", inset: -10, borderRadius: "50%", border: "1.5px solid rgba(124,58,237,0.60)", pointerEvents: "none" }}
+            style={{ position: "absolute", inset: -10, borderRadius: "50%", border: "1.5px solid rgba(124,58,237,0.55)" }}
           />
           <motion.div
-            animate={{ scale: [1, 1.13, 1], opacity: [0.22, 0.02, 0.22] }}
-            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
-            style={{ position: "absolute", inset: -22, borderRadius: "50%", border: "1px solid rgba(99,102,241,0.35)", pointerEvents: "none" }}
+            animate={{ scale: [1, 1.14, 1], opacity: [0.18, 0.02, 0.18] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            style={{ position: "absolute", inset: -24, borderRadius: "50%", border: "1px solid rgba(99,102,241,0.30)" }}
           />
           <div style={{ position: "absolute", inset: 0, borderRadius: "50%", overflow: "hidden", zIndex: 1 }}>
             <Image
@@ -140,269 +174,296 @@ export default function HeroScene() {
         </motion.div>
       </div>
 
-      {/* ── Floating particles ── */}
+      {/* ── Particles ── */}
       {Array.from({ length: 10 }).map((_, i) => (
         <motion.div key={`p${i}`}
           style={{
             position: "absolute",
             width: i % 3 === 0 ? 3 : 2, height: i % 3 === 0 ? 3 : 2,
             borderRadius: "50%",
-            left: `${8 + (i * 77) % 80}%`,
-            top: `${5 + (i * 51) % 86}%`,
+            left: `${8 + (i * 77) % 80}%`, top: `${5 + (i * 51) % 86}%`,
             background: i % 2 === 0 ? "rgba(96,165,250,0.75)" : "rgba(192,132,252,0.60)",
             pointerEvents: "none", zIndex: 1,
           }}
-          animate={{ opacity: [0.2, 0.95, 0.2], scale: [1, 1.7, 1] }}
+          animate={{ opacity: [0.2, 0.9, 0.2], scale: [1, 1.7, 1] }}
           transition={{ duration: 2.0 + (i % 5) * 0.45, repeat: Infinity, delay: (i * 0.17) % 3 }}
         />
       ))}
 
-      {/* ══════════ FLOATING CARDS ══════════ */}
-
-      {/* IP SCANNING — top right */}
-      <motion.div
-        animate={{ y: [0, -7, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        style={{ position: "absolute", top: "5%", right: "0%", zIndex: 20 }}
+      {/* ════════════════════════════════════
+          CARD 1 — IP SCANNING  (top-right)
+      ════════════════════════════════════ */}
+      <motion.div {...entry(40, 0.2)} {...float(8, 4.2, 0.5)}
+        style={{ position: "absolute", top: "4%", right: "0%", zIndex: 30 }}
       >
-        <div style={GLASS_LIGHT}>
-          <div style={{ padding: "11px 16px", minWidth: 148 }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>
-              IP Scanning
+        <div style={glass("#2563EB")}>
+          <AccentBar color="#2563EB" />
+          <div style={{ padding: "14px 18px", minWidth: 168 }}>
+
+            {/* Header row */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {/* Radar icon */}
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(37,99,235,0.10)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                    <circle cx="7" cy="7" r="6" stroke="#2563EB" strokeWidth="1.2"/>
+                    <circle cx="7" cy="7" r="3.5" stroke="#2563EB" strokeWidth="1.2" strokeDasharray="2 2"/>
+                    <circle cx="7" cy="7" r="1.2" fill="#2563EB"/>
+                    <motion.line
+                      x1="7" y1="7" x2="7" y2="1"
+                      stroke="#2563EB" strokeWidth="1.4" strokeLinecap="round"
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
+                      style={{ transformOrigin: "7px 7px" }}
+                    />
+                  </svg>
+                </div>
+                <span style={{ fontSize: 9.5, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: "0.11em" }}>IP Scanning</span>
+              </div>
+              <LiveDot color="#22C55E" />
             </div>
 
-            {/* Animated IP address */}
-            <div style={{ fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#111827", marginBottom: 5, height: 20, overflow: "hidden" }}>
+            {/* IP address */}
+            <div style={{ fontFamily: "monospace", fontSize: 15, fontWeight: 800, color: "#0F172A", marginBottom: 8, letterSpacing: "0.02em" }}>
               <AnimatePresence mode="wait">
                 <motion.span
-                  key={ipKey}
-                  initial={{ opacity: 0, y: 6 }}
+                  key={ipIdx}
+                  initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
+                  exit={{ opacity: 0, y: -5 }}
                   transition={{ duration: 0.3 }}
                   style={{ display: "block" }}
                 >
-                  {scanning ? (
-                    <span style={{ color: "#F59E0B" }}>scanning…</span>
-                  ) : (
-                    IP_SEQUENCE[ipIdx]
-                  )}
+                  {IPS[ipIdx]}
                 </motion.span>
               </AnimatePresence>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              {/* Pulsing green dot */}
-              <span style={{ position: "relative", display: "inline-flex", width: 10, height: 10 }}>
-                <motion.span
-                  animate={{ scale: [1, 2.2, 1], opacity: [0.7, 0, 0.7] }}
-                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
-                  style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#22C55E" }}
-                />
-                <span style={{ position: "relative", width: 6, height: 6, margin: 2, borderRadius: "50%", background: "#22C55E", display: "inline-block" }} />
-              </span>
-              <span style={{ fontSize: 9, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Active</span>
+            {/* Scan progress bar */}
+            <div style={{ height: 4, borderRadius: 99, background: "rgba(37,99,235,0.10)", overflow: "hidden", marginBottom: 8 }}>
+              <motion.div
+                animate={{ width: ipPhase === "scan" ? `${scanPct}%` : "100%" }}
+                transition={{ duration: 0.1 }}
+                style={{ height: "100%", borderRadius: 99, background: "linear-gradient(90deg, #2563EB, #60A5FA)" }}
+              />
             </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <span style={{ fontSize: 9, color: ipPhase === "scan" ? "#F59E0B" : "#6B7280", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                {ipPhase === "scan" ? "● Scanning…" : "● Active"}
+              </span>
+            </div>
+
           </div>
         </div>
       </motion.div>
 
-      {/* ENCRYPTION — left center */}
-      <motion.div
-        animate={{ y: [0, -6, 0] }}
-        transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
-        style={{ position: "absolute", top: "35%", left: "0%", zIndex: 20 }}
+      {/* ════════════════════════════════════
+          CARD 2 — ENCRYPTION  (left-center)
+      ════════════════════════════════════ */}
+      <motion.div {...entry(-40, 0.35)} {...float(7, 3.8, 1.2)}
+        style={{ position: "absolute", top: "33%", left: "0%", zIndex: 30 }}
       >
-        <div style={GLASS_LIGHT}>
-          <div style={{ padding: "11px 16px", minWidth: 136 }}>
-            <div style={{ fontSize: 9, fontWeight: 800, color: "#2563EB", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>
-              Encryption
+        <div style={glass("#7C3AED")}>
+          <AccentBar color="#7C3AED" />
+          <div style={{ padding: "14px 18px", minWidth: 152 }}>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <span style={{ fontSize: 9.5, fontWeight: 800, color: "#7C3AED", textTransform: "uppercase", letterSpacing: "0.11em" }}>Encryption</span>
+              <LiveDot color="#22C55E" delay={0.5} />
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
-              {/* Lock icon with shimmer */}
+
+            {/* Lock + label */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
               <motion.div
-                animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
-                style={{ width: 24, height: 24, borderRadius: 7, background: "rgba(37,99,235,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                animate={{ boxShadow: ["0 0 0px rgba(124,58,237,0)", "0 0 12px rgba(124,58,237,0.6)", "0 0 0px rgba(124,58,237,0)"] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                style={{ width: 32, height: 32, borderRadius: 10, background: "rgba(124,58,237,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
               >
-                <svg width="11" height="13" viewBox="0 0 11 13" fill="none">
-                  <rect x="1.5" y="5.5" width="8" height="7" rx="1.5" stroke="#2563EB" strokeWidth="1.4"/>
-                  <path d="M3.5 5.5V3.5a2 2 0 0 1 4 0v2" stroke="#2563EB" strokeWidth="1.4" strokeLinecap="round"/>
+                <svg width="13" height="15" viewBox="0 0 13 15" fill="none">
+                  <rect x="1.5" y="6.5" width="10" height="8" rx="2" stroke="#7C3AED" strokeWidth="1.4"/>
+                  <path d="M4 6.5V4.5a2.5 2.5 0 0 1 5 0v2" stroke="#7C3AED" strokeWidth="1.4" strokeLinecap="round"/>
+                  <circle cx="6.5" cy="10.5" r="1" fill="#7C3AED"/>
                 </svg>
               </motion.div>
-              <span style={{ fontFamily: "monospace", fontSize: 14, fontWeight: 800, color: "#111827" }}>AES-256</span>
+              <div>
+                <div style={{ fontFamily: "monospace", fontSize: 15, fontWeight: 900, color: "#0F172A", lineHeight: 1 }}>AES-256</div>
+                <div style={{ fontSize: 9, color: "#9CA3AF", fontWeight: 600, marginTop: 2 }}>256-bit key</div>
+              </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <span style={{ position: "relative", display: "inline-flex", width: 10, height: 10 }}>
-                <motion.span
-                  animate={{ scale: [1, 2.2, 1], opacity: [0.7, 0, 0.7] }}
-                  transition={{ duration: 2.1, repeat: Infinity, ease: "easeOut", delay: 0.4 }}
-                  style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#22C55E" }}
+
+            {/* Strength bar */}
+            <div style={{ marginBottom: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ fontSize: 8.5, color: "#9CA3AF", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em" }}>Strength</span>
+                <span style={{ fontSize: 8.5, color: "#7C3AED", fontWeight: 700 }}>100%</span>
+              </div>
+              <div style={{ height: 4, borderRadius: 99, background: "rgba(124,58,237,0.10)", overflow: "hidden" }}>
+                <motion.div
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1.4, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ height: "100%", borderRadius: 99, background: "linear-gradient(90deg,#7C3AED,#A78BFA)" }}
                 />
-                <span style={{ position: "relative", width: 6, height: 6, margin: 2, borderRadius: "50%", background: "#22C55E", display: "inline-block" }} />
-              </span>
-              <span style={{ fontSize: 9, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>Secure</span>
+              </div>
             </div>
+
           </div>
         </div>
       </motion.div>
 
-      {/* PACKETS — right center */}
-      <motion.div
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-        style={{ position: "absolute", top: "48%", right: "0%", zIndex: 20, transform: "translateY(-50%)" }}
+      {/* ════════════════════════════════════
+          CARD 3 — PACKETS  (right-center)
+      ════════════════════════════════════ */}
+      <motion.div {...entry(40, 0.25)} {...float(9, 3.4, 0.8)}
+        style={{ position: "absolute", top: "46%", right: "0%", zIndex: 30, transform: "translateY(-50%)" }}
       >
-        <div style={GLASS_LIGHT}>
-          <div style={{ padding: "11px 16px", minWidth: 128 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 5 }}>
-              Packets
+        <div style={glass("#0EA5E9")}>
+          <AccentBar color="#0EA5E9" />
+          <div style={{ padding: "14px 18px", minWidth: 148 }}>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <span style={{ fontSize: 9.5, fontWeight: 800, color: "#0EA5E9", textTransform: "uppercase", letterSpacing: "0.11em" }}>Packets</span>
+              {/* Trend arrow */}
+              <span style={{ fontSize: 10, fontWeight: 700, color: "#22C55E", display: "flex", alignItems: "center", gap: 2 }}>
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 6L4 2L7 6" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                12.5%
+              </span>
             </div>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 7, marginBottom: 7 }}>
-              {/* Animated counter */}
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={packetIdx}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.25 }}
-                  style={{ fontSize: 22, fontWeight: 900, color: "#111827", lineHeight: 1 }}
-                >
-                  {PACKET_VALS[packetIdx]}K
-                </motion.span>
-              </AnimatePresence>
-              <span style={{ fontSize: 11, color: "#22C55E", fontWeight: 700, marginBottom: 2 }}>+12.5%</span>
-            </div>
+
+            {/* Counter — always visible, flashes on update */}
+            <motion.div
+              animate={{ color: pktFlash ? "#0EA5E9" : "#0F172A" }}
+              transition={{ duration: 0.2 }}
+              style={{ fontSize: 26, fontWeight: 900, lineHeight: 1, marginBottom: 10, fontVariantNumeric: "tabular-nums" }}
+            >
+              {PKT_VALS[pktIdx]}
+            </motion.div>
+
             {/* Animated bars */}
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 2 }}>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 32 }}>
               {bars.map((h, i) => (
                 <motion.div
                   key={i}
-                  animate={{ height: h * 3.4 }}
-                  transition={{ duration: 0.6, ease: "easeInOut", delay: i * 0.04 }}
+                  animate={{ height: h * 3.5 }}
+                  transition={{ duration: 0.5, ease: "easeInOut", delay: i * 0.03 }}
                   style={{
-                    width: 9, borderRadius: 2,
-                    background: `rgba(37,99,235,${0.30 + h * 0.07})`,
+                    flex: 1, borderRadius: 3,
+                    background: `linear-gradient(180deg, #0EA5E9, rgba(14,165,233,${0.25 + h * 0.07}))`,
                   }}
                 />
               ))}
             </div>
+
           </div>
         </div>
       </motion.div>
 
-      {/* Terminal — bottom left */}
-      <motion.div
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-        style={{ position: "absolute", top: "60%", left: "0%", zIndex: 20 }}
+      {/* ════════════════════════════════════
+          CARD 4 — TERMINAL  (bottom-left)
+      ════════════════════════════════════ */}
+      <motion.div {...entry(-40, 0.45)} {...float(6, 4.8, 0.3)}
+        style={{ position: "absolute", top: "62%", left: "0%", zIndex: 30 }}
       >
         <div style={{
-          background: "rgba(8,12,24,0.94)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(37,99,235,0.28)",
-          borderRadius: 12,
-          padding: "11px 16px",
-          minWidth: 168,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
+          background: "rgba(8,12,24,0.96)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: "1px solid rgba(37,99,235,0.22)",
+          borderRadius: 16,
+          overflow: "hidden",
+          boxShadow: "0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(37,99,235,0.15), 0 0 24px rgba(37,99,235,0.08)",
+          minWidth: 196,
         }}>
-          {TERMINAL_LINES.map((line, i) => (
-            <AnimatePresence key={i}>
-              {i < visibleCount && (
-                <motion.div
-                  initial={{ opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.22 }}
-                  style={{
-                    fontFamily: "monospace", fontSize: 11.5,
-                    color: line.color,
-                    fontWeight: line.bold ? 700 : 400,
-                    lineHeight: 1.8,
-                    display: "flex", gap: 6,
-                  }}
-                >
-                  <span style={{ color: "#3B82F6" }}>&gt;</span>
-                  <span>{line.text}</span>
-                  {/* Blinking cursor on last visible line */}
-                  {i === visibleCount - 1 && visibleCount < TERMINAL_LINES.length && (
-                    <motion.span
-                      animate={{ opacity: cursor ? 1 : 0 }}
-                      transition={{ duration: 0 }}
-                      style={{ color: "#3B82F6", fontWeight: 900 }}
-                    >▋</motion.span>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          ))}
+          {/* macOS-style titlebar */}
+          <div style={{ padding: "8px 12px", background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#FF5F57", display: "block" }} />
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#FEBC2E", display: "block" }} />
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#28C840", display: "block" }} />
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.25)", fontFamily: "monospace", marginLeft: 4 }}>twh@kali — bash</span>
+          </div>
+
+          {/* Lines */}
+          <div style={{ padding: "10px 14px", minHeight: 80 }}>
+            {TERM_LINES.slice(0, termLines).map((line, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -4 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.18 }}
+                style={{ fontFamily: "monospace", fontSize: 11, lineHeight: 1.85, display: "flex", alignItems: "baseline", gap: 5 }}
+              >
+                <span style={{ color: "#3B82F6", fontWeight: 700, flexShrink: 0 }}>❯</span>
+                <span style={{ color: line.cmd === "target_found" ? "#4ADE80" : "#CBD5E1", fontWeight: line.cmd === "target_found" ? 700 : 400 }}>{line.cmd}</span>
+                {/* Blinking cursor on last unfinished line */}
+                {i === termLines - 1 && termLines < TERM_LINES.length && (
+                  <motion.span
+                    animate={{ opacity: blink ? 1 : 0 }}
+                    transition={{ duration: 0 }}
+                    style={{ color: "#3B82F6", fontWeight: 900, fontSize: 12 }}
+                  >▋</motion.span>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </motion.div>
 
-      {/* ACCESS GRANTED — bottom center */}
+      {/* ════════════════════════════════════
+          CARD 5 — ACCESS GRANTED  (bottom)
+      ════════════════════════════════════ */}
       <motion.div
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-        style={{
-          position: "absolute", top: "72%", left: "52%",
-          transform: "translateX(-50%)",
-          zIndex: 20, whiteSpace: "nowrap",
-        }}
+        {...(mounted ? { initial: { opacity: 0, y: 16, scale: 0.9 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { duration: 0.6, delay: 0.6, ease: [0.22, 1, 0.36, 1] } } : {})}
+        {...float(6, 3.8, 1.5)}
+        style={{ position: "absolute", top: "76%", left: "50%", transform: "translateX(-50%)", zIndex: 30, whiteSpace: "nowrap" }}
       >
-        {/* Outer glow pulse ring */}
         <div style={{ position: "relative", display: "inline-block" }}>
-          <motion.div
-            animate={{ scale: [1, 1.18, 1], opacity: [0.5, 0, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-            style={{
-              position: "absolute", inset: -6, borderRadius: 999,
-              border: "1.5px solid rgba(22,163,74,0.55)",
-              pointerEvents: "none",
-            }}
-          />
-          <motion.div
-            animate={{ scale: [1, 1.32, 1], opacity: [0.25, 0, 0.25] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
-            style={{
-              position: "absolute", inset: -12, borderRadius: 999,
-              border: "1px solid rgba(22,163,74,0.30)",
-              pointerEvents: "none",
-            }}
-          />
+          {/* Ripple rings */}
+          {[0, 1, 2].map(i => (
+            <motion.div
+              key={i}
+              animate={{ scale: [1, 1.5 + i * 0.25, 1], opacity: [0.45 - i * 0.1, 0, 0.45 - i * 0.1] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut", delay: i * 0.35 }}
+              style={{
+                position: "absolute",
+                inset: -(6 + i * 7),
+                borderRadius: 999,
+                border: `1.5px solid rgba(22,163,74,${0.5 - i * 0.12})`,
+                pointerEvents: "none",
+              }}
+            />
+          ))}
+
+          {/* Badge */}
           <motion.div
             animate={{ boxShadow: [
-              "0 4px 20px rgba(22,163,74,0.20)",
-              "0 4px 32px rgba(22,163,74,0.55)",
-              "0 4px 20px rgba(22,163,74,0.20)",
+              "0 4px 20px rgba(22,163,74,0.18), 0 0 0 1px rgba(22,163,74,0.25)",
+              "0 4px 32px rgba(22,163,74,0.55), 0 0 0 1px rgba(22,163,74,0.5)",
+              "0 4px 20px rgba(22,163,74,0.18), 0 0 0 1px rgba(22,163,74,0.25)",
             ]}}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             style={{
-              display: "flex", alignItems: "center", gap: 8,
-              padding: "9px 18px", borderRadius: 999,
-              background: "rgba(22,163,74,0.14)",
-              border: "1px solid rgba(22,163,74,0.45)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
+              display: "flex", alignItems: "center", gap: 10,
+              padding: "10px 20px", borderRadius: 999,
+              background: "rgba(255,255,255,0.96)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              border: "1px solid rgba(22,163,74,0.35)",
             }}
           >
             <motion.div
-              animate={{ scale: [1, 1.15, 1] }}
-              transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-              style={{
-                width: 20, height: 20, borderRadius: "50%",
-                background: "#16A34A",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
-              }}
+              animate={{ scale: [1, 1.18, 1], background: ["#16A34A", "#22C55E", "#16A34A"] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              style={{ width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
             >
-              <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                <path d="M1 4.5L4 7.5L10 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </motion.div>
-            <span style={{ fontSize: 11.5, fontWeight: 800, color: "#16A34A", textTransform: "uppercase", letterSpacing: "0.10em" }}>
-              Access Granted
-            </span>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 900, color: "#15803D", textTransform: "uppercase", letterSpacing: "0.12em", lineHeight: 1 }}>Access Granted</div>
+              <div style={{ fontSize: 8.5, color: "#86EFAC", fontWeight: 600, marginTop: 2, letterSpacing: "0.06em" }}>Authentication complete</div>
+            </div>
           </motion.div>
         </div>
       </motion.div>
