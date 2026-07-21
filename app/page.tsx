@@ -396,7 +396,7 @@ export default function LandingPage() {
                   borderRadius: 20, background: T.card,
                   border: `1px solid ${T.border}`,
                   boxShadow: `0 2px 16px rgba(0,0,0,${isDark ? 0.28 : 0.05})`,
-                  overflow: "hidden",
+                  overflow: "visible",
                 }}
               >
                 <span style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${s.color},transparent)` }} />
