@@ -500,33 +500,81 @@ export default function LandingPage() {
         <div style={{
           position: "relative", overflow: "hidden",
           borderTop: `1px solid ${T.border}`,
-          borderBottom: `1px solid ${T.border}`,
-          padding: "12px 0",
+          padding: "18px 0 20px",
           marginTop: 8,
         }}>
           {/* Fade edges */}
-          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 80, zIndex: 2, background: `linear-gradient(to right, ${T.heroBg.includes("#0") ? "#060912" : "#F8FAFF"}, transparent)`, pointerEvents: "none" }} />
-          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 80, zIndex: 2, background: `linear-gradient(to left, ${T.heroBg.includes("#0") ? "#060912" : "#F8FAFF"}, transparent)`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to right,#060912,transparent)" : "linear-gradient(to right,#F8FAFF,transparent)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to left,#060912,transparent)" : "linear-gradient(to left,#F8FAFF,transparent)", pointerEvents: "none" }} />
 
           <div className="chapter-marquee-track">
-            {/* Duplicate for seamless loop */}
             {[...CHAPTERS, ...CHAPTERS].map((ch, i) => (
               <div key={i} style={{
-                display: "inline-flex", alignItems: "center", gap: 10,
-                padding: "0 32px", flexShrink: 0,
+                display: "inline-flex", alignItems: "center", gap: 14,
+                padding: "10px 20px",
+                marginRight: 12,
+                flexShrink: 0,
+                borderRadius: 16,
+                background: isDark ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.85)",
+                border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)"}`,
+                boxShadow: isDark
+                  ? `0 0 0 0 transparent, inset 0 1px 0 rgba(255,255,255,0.06)`
+                  : `0 2px 12px rgba(0,0,0,0.06)`,
+                backdropFilter: "blur(10px)",
+                cursor: "default",
               }}>
-                <span style={{
-                  width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                {/* Icon bubble */}
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   background: isDark ? ch.darkBg : ch.lightBg,
                   color: ch.color,
+                  boxShadow: `0 0 16px ${ch.color}40`,
+                  border: `1px solid ${ch.color}30`,
                 }}>
                   {ch.icon}
-                </span>
-                <span style={{ fontSize: "13px", fontWeight: 700, color: T.text, whiteSpace: "nowrap" }}>
-                  Ch {ch.num} · {ch.title}
-                </span>
-                <span style={{ width: 4, height: 4, borderRadius: "50%", background: T.muted, flexShrink: 0, marginLeft: 8 }} />
+                </div>
+
+                {/* Text block */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  {/* Chapter number badge + title */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{
+                      fontSize: "10px", fontWeight: 800, letterSpacing: "0.1em",
+                      padding: "2px 7px", borderRadius: 6,
+                      background: ch.color, color: "#fff",
+                      lineHeight: 1.5, flexShrink: 0,
+                    }}>
+                      {String(ch.num).padStart(2, "0")}
+                    </span>
+                    <span style={{
+                      fontSize: "14px", fontWeight: 700, color: T.text,
+                      whiteSpace: "nowrap", lineHeight: 1,
+                    }}>
+                      {ch.title}
+                    </span>
+                  </div>
+                  {/* Subtitle */}
+                  <span style={{
+                    fontSize: "11px", fontWeight: 500, color: ch.color,
+                    whiteSpace: "nowrap", letterSpacing: "0.01em", opacity: 0.85,
+                  }}>
+                    {ch.subtitle}
+                  </span>
+                </div>
+
+                {/* MCQ count chip */}
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 4,
+                  padding: "4px 10px", borderRadius: 20,
+                  background: isDark ? "rgba(255,255,255,0.06)" : `${ch.color}12`,
+                  border: `1px solid ${ch.color}25`,
+                  marginLeft: 4,
+                }}>
+                  <span style={{ fontSize: "10px", fontWeight: 700, color: ch.color, whiteSpace: "nowrap" }}>
+                    {ch.mcqs} MCQs
+                  </span>
+                </div>
               </div>
             ))}
           </div>
