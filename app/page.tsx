@@ -225,11 +225,30 @@ export default function LandingPage() {
               justifyContent: isLg ? "space-between" : "flex-start",
               gap: isLg ? 56 : 36,
             }}>
-              {/* LEFT */}
+              {/* LEFT — scene (smaller) */}
+              <motion.div style={{
+                y: rightY,
+                flex: isLg ? "0 0 42%" : "unset",
+                width: isLg ? "42%" : "100%",
+                display: "flex", alignItems: "center", justifyContent: "flex-start",
+                order: isLg ? 0 : 1,
+              }}>
+                <div style={{
+                  width: "100%",
+                  maxWidth: isLg ? "none" : 420,
+                  height: isLg ? "clamp(380px,38vw,480px)" : isMd ? 320 : 260,
+                }}>
+                  <HeroScene />
+                </div>
+              </motion.div>
+
+              {/* RIGHT — text */}
               <motion.div style={{
                 y: leftY,
-                flex: isLg ? "0 0 44%" : "unset",
-                width: isLg ? "44%" : "100%",
+                flex: isLg ? "1 1 0" : "unset",
+                width: isLg ? "auto" : "100%",
+                minWidth: 0,
+                order: isLg ? 1 : 0,
               }}>
 
                 {/* Badge */}
@@ -252,7 +271,7 @@ export default function LandingPage() {
                 {/* Headline */}
                 <motion.h1 {...fade(0.07)} style={{
                   fontWeight: 900, lineHeight: 1.1, letterSpacing: "-0.03em",
-                  marginBottom: 20, margin: 0, marginBottom: 20,
+                  marginBottom: 20,
                   fontSize: isLg ? "clamp(2.9rem,3.2vw,4rem)" : isMd ? "2.6rem" : "2rem",
                 }}>
                   <span style={{ color: T.text, display: "block", whiteSpace: "nowrap" }}>MCH —</span>
@@ -335,23 +354,6 @@ export default function LandingPage() {
                     <strong style={{ color: T.text }}>10,000+</strong> students enrolled · <strong style={{ color: T.text }}>100%</strong> free
                   </span>
                 </motion.div>
-              </motion.div>
-
-              {/* RIGHT — scene */}
-              <motion.div style={{
-                y: rightY,
-                flex: isLg ? "1 1 0" : "unset",
-                width: isLg ? "auto" : "100%",
-                minWidth: isLg ? 0 : undefined,
-                display: "flex", alignItems: "center", justifyContent: "flex-end",
-              }}>
-                <div style={{
-                  width: "100%",
-                  maxWidth: isLg ? "none" : 480,
-                  height: isLg ? "clamp(460px,48vw,580px)" : isMd ? 380 : 300,
-                }}>
-                  <HeroScene />
-                </div>
               </motion.div>
             </div>,
             { maxWidth: 1500, padding: `0 ${isLg ? 60 : sp}px` }
