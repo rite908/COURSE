@@ -261,8 +261,8 @@ export default function LandingPage() {
       <section style={{
         position: "relative",
         background: T.heroBg,
-        paddingTop: `calc(72px + ${isLg ? 14 : 12}px)`,
-        paddingBottom: isLg ? 28 : 32,
+        paddingTop: `calc(72px + ${isLg ? 20 : 14}px)`,
+        paddingBottom: isLg ? 32 : 36,
         overflow: "hidden",
         display: "flex", flexDirection: "column",
       }}>
@@ -475,7 +475,7 @@ export default function LandingPage() {
                 <div style={{
                   width: "100%",
                   maxWidth: isLg ? "none" : 480,
-                  height: isLg ? "clamp(360px,38vw,460px)" : isMd ? 320 : 260,
+                  height: isLg ? "clamp(420px,44vw,520px)" : isMd ? 350 : 280,
                 }}>
                   <HeroScene />
                 </div>
