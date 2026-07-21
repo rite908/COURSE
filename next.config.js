@@ -9,6 +9,9 @@ const nextConfig = {
     "*.repl.co",
     "127.0.0.1",
   ],
+  images: {
+    qualities: [75, 95, 100],
+  },
 };
 
 module.exports = nextConfig;
