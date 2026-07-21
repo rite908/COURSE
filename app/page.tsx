@@ -501,15 +501,6 @@ export default function LandingPage() {
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
           overflow: "hidden",
-          /* Glowing top border */
-          borderTop: `1px solid ${isDark ? "rgba(37,99,235,0.35)" : "rgba(37,99,235,0.18)"}`,
-          boxShadow: isDark
-            ? "0 -1px 0 rgba(124,58,237,0.2), 0 -12px 40px rgba(37,99,235,0.12), inset 0 1px 0 rgba(37,99,235,0.25)"
-            : "0 -6px 24px rgba(37,99,235,0.08)",
-          background: isDark
-            ? "linear-gradient(to bottom, rgba(6,9,18,0.0), rgba(6,9,18,0.55))"
-            : "linear-gradient(to bottom, rgba(248,250,255,0.0), rgba(248,250,255,0.7))",
-          backdropFilter: "blur(6px)",
           padding: "16px 0 18px",
           zIndex: 20,
         }}>
@@ -526,11 +517,8 @@ export default function LandingPage() {
                 flexShrink: 0,
                 borderRadius: 16,
                 background: isDark ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.85)",
-                border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)"}`,
-                boxShadow: isDark
-                  ? `0 0 0 0 transparent, inset 0 1px 0 rgba(255,255,255,0.06)`
-                  : `0 2px 12px rgba(0,0,0,0.06)`,
-                backdropFilter: "blur(10px)",
+                border: `1px solid ${ch.color}35`,
+                boxShadow: `0 0 18px ${ch.color}45, 0 0 40px ${ch.color}18`,
                 cursor: "default",
               }}>
                 {/* Icon bubble */}
