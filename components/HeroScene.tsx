@@ -540,7 +540,7 @@ export default function HeroScene() {
                   <div key={i} style={{
                     fontFamily: "'Courier New', Courier, monospace",
                     fontSize: 11, lineHeight: 1.8,
-                    display: "flex", flexWrap: "nowrap", whiteSpace: "nowrap",
+                    display: "flex", flexWrap: "wrap", whiteSpace: "pre-wrap", wordBreak: "break-all",
                     animation: "fadeIn 0.12s ease-out",
                   }}>
                     {seg.kind === "cmd" ? (
@@ -566,7 +566,7 @@ export default function HeroScene() {
                   <div style={{
                     fontFamily: "'Courier New', Courier, monospace",
                     fontSize: 11, lineHeight: 1.8,
-                    display: "flex", flexWrap: "nowrap", whiteSpace: "nowrap",
+                    display: "flex", flexWrap: "wrap", whiteSpace: "pre-wrap", wordBreak: "break-all",
                     alignItems: "center",
                   }}>
                     {activeSeg.kind === "cmd" ? (
