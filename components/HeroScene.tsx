@@ -254,94 +254,17 @@ export default function HeroScene() {
           style={{ position: "relative", width: "min(80%,580px)", aspectRatio: "1" }}
         >
 
-          {/* ── SVG layer: pulsing rings + crisp gradient border ── */}
-          <svg
-            viewBox="0 0 200 200"
-            style={{ position: "absolute", inset: "-14%", width: "128%", height: "128%", overflow: "visible", zIndex: 0, pointerEvents: "none" }}
-          >
-            <defs>
-              {/* Gradient for main ring */}
-              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%"   stopColor="#9333EA" stopOpacity="1" />
-                <stop offset="35%"  stopColor="#6D28D9" stopOpacity="0.9" />
-                <stop offset="65%"  stopColor="#4F46E5" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#2563EB" stopOpacity="0.7" />
-              </linearGradient>
-              {/* Glow filter for the ring */}
-              <filter id="ringGlow" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur1" />
-                <feGaussianBlur in="SourceGraphic" stdDeviation="5"   result="blur2" />
-                <feMerge>
-                  <feMergeNode in="blur2" />
-                  <feMergeNode in="blur1" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              {/* Outer soft pulse ring filter */}
-              <filter id="pulseGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
-              </filter>
-            </defs>
-
-            {/* Pulse ring 1 — outer soft (scale instead of r) */}
-            <motion.g
-              style={{ transformOrigin: "100px 100px" }}
-              animate={{ scale: [1, 1.09, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 3.4, repeat: Infinity, ease: "easeOut" }}
-            >
-              <circle cx="100" cy="100" r="96" fill="none" stroke="rgba(124,58,237,0.55)" strokeWidth="1.5" filter="url(#pulseGlow)" />
-            </motion.g>
-            {/* Pulse ring 2 — inner soft, offset phase */}
-            <motion.g
-              style={{ transformOrigin: "100px 100px" }}
-              animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0, 0.4] }}
-              transition={{ duration: 3.4, repeat: Infinity, ease: "easeOut", delay: 1.2 }}
-            >
-              <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(99,60,220,0.45)" strokeWidth="1" filter="url(#pulseGlow)" />
-            </motion.g>
-
-            {/* Main crisp gradient ring */}
-            <circle
-              cx="100" cy="100" r="81"
-              fill="none"
-              stroke="url(#ringGrad)"
-              strokeWidth="2.5"
-              filter="url(#ringGlow)"
-            />
-            {/* Inner subtle accent ring */}
-            <circle
-              cx="100" cy="100" r="78"
-              fill="none"
-              stroke="rgba(139,92,246,0.18)"
-              strokeWidth="1"
-            />
-          </svg>
-
-          {/* ── Image with crisp clip-path circle ── */}
+          {/* ── Image as-is (circle + border already baked into PNG) ── */}
           <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-            {/* clip-path gives anti-aliased vector edge vs overflow:hidden */}
-            <div style={{
-              position: "absolute", inset: 0,
-              clipPath: "circle(49.5% at 50% 50%)",
-              WebkitClipPath: "circle(49.5% at 50% 50%)",
-            }}>
-              <Image
-                src="/hacker.png"
-                alt="TWH Hacker"
-                fill
-                sizes="(max-width:768px) 90vw,(max-width:1024px) 65vw,620px"
-                quality={100}
-                style={{ objectFit: "cover", objectPosition: "center 18%" }}
-                priority
-                unoptimized={false}
-              />
-              {/* Bottom edge fade so image blends into background */}
-              <div style={{
-                position: "absolute", inset: 0,
-                background: "radial-gradient(ellipse 90% 55% at 50% 105%, rgba(6,9,22,0.72) 0%, transparent 60%)",
-                pointerEvents: "none",
-              }} />
-            </div>
+            <Image
+              src="/hacker.png"
+              alt="TWH Hacker"
+              fill
+              sizes="(max-width:768px) 90vw,(max-width:1024px) 65vw,620px"
+              quality={100}
+              style={{ objectFit: "contain" }}
+              priority
+            />
           </div>
 
         </motion.div>
