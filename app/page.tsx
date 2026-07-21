@@ -261,11 +261,10 @@ export default function LandingPage() {
       <section style={{
         position: "relative",
         background: T.heroBg,
-        paddingTop: `calc(72px + ${isLg ? 28 : 20}px)`,
-        paddingBottom: isLg ? 36 : 40,
+        paddingTop: `calc(72px + ${isLg ? 14 : 12}px)`,
+        paddingBottom: isLg ? 28 : 32,
         overflow: "hidden",
         display: "flex", flexDirection: "column",
-        minHeight: isLg ? "calc(100vh - 72px)" : "auto",
       }}>
         {/* Dot grid */}
         <div className="hero-dot-grid" style={{
@@ -476,7 +475,7 @@ export default function LandingPage() {
                 <div style={{
                   width: "100%",
                   maxWidth: isLg ? "none" : 480,
-                  height: isLg ? "clamp(460px,48vw,580px)" : isMd ? 380 : 300,
+                  height: isLg ? "clamp(360px,38vw,460px)" : isMd ? 320 : 260,
                 }}>
                   <HeroScene />
                 </div>
@@ -489,7 +488,7 @@ export default function LandingPage() {
         {/* Scroll cue — centered above marquee */}
         {isLg && mounted && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "12px 0 100px" }}>
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "12px 0 72px" }}>
             <span style={{ fontSize: "10px", fontWeight: 600, color: T.muted, textTransform: "uppercase", letterSpacing: "0.14em" }}>Scroll</span>
             <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
               <ChevronDown size={14} color={T.muted} />
