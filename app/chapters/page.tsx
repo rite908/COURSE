@@ -429,9 +429,6 @@ export default function ChaptersPage() {
   const statCardBg  = isDark ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.85)";
   const statCardBdr = isDark ? "rgba(255,255,255,0.08)" : "rgba(37,99,235,0.14)";
 
-  const dotEmpty  = isDark ? "#1A2338" : "#DDE4EF";
-  const dotBorder = isDark ? "#2A3650" : "#C8D3E8";
-
   const chapterData = CHAPTERS.map((ch) => {
     const vis   = VISUALS[ch.id as keyof typeof VISUALS];
     const stats = mounted && user
@@ -801,110 +798,10 @@ export default function ChaptersPage() {
         </motion.div>
       </div>
 
-      {/* ── Chapter Journey strip ── */}
-      <div style={{
-        background: isDark ? "rgba(255,255,255,0.025)" : "rgba(255,255,255,0.7)",
-        borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(37,99,235,0.10)"}`,
-        borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(37,99,235,0.10)"}`,
-        backdropFilter: "blur(12px)",
-        padding: "22px 24px",
-        overflowX: "auto",
-      }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 0 }}>
-          {([
-            { num: "01", label: "Startup",      accent: "#3B82F6", rgb: "59,130,246",   Icon: Shield   },
-            { num: "02", label: "How PC Works", accent: "#06B6D4", rgb: "6,182,212",    Icon: Cpu      },
-            { num: "03", label: "Networking",   accent: "#8B5CF6", rgb: "139,92,246",   Icon: Wifi     },
-            { num: "04", label: "Linux CLI",    accent: "#10B981", rgb: "16,185,129",   Icon: Terminal },
-            { num: "05", label: "Kali Linux",   accent: "#F43F5E", rgb: "244,63,94",    Icon: Code2    },
-          ] as { num: string; label: string; accent: string; rgb: string; Icon: React.ElementType }[]).map((c, i) => (
-            <div key={c.num} style={{ display: "flex", alignItems: "center" }}>
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.1, type: "spring", stiffness: 300, damping: 22 }}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, minWidth: 80 }}
-              >
-                <motion.div
-                  whileHover={{ scale: 1.15, boxShadow: `0 0 22px rgba(${c.rgb},0.55)` }}
-                  transition={{ type: "spring", stiffness: 360, damping: 18 }}
-                  style={{
-                    width: 46, height: 46, borderRadius: 14,
-                    background: `linear-gradient(135deg, ${c.accent}, ${c.accent}bb)`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    boxShadow: `0 4px 16px rgba(${c.rgb},0.32)`,
-                    cursor: "default",
-                  }}
-                >
-                  <c.Icon size={20} color="#fff" strokeWidth={1.75} />
-                </motion.div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "9.5px", fontWeight: 800, letterSpacing: "0.10em", color: c.accent, textTransform: "uppercase" }}>
-                    CH {c.num}
-                  </div>
-                  <div style={{ fontSize: "11px", fontWeight: 600, color: textMuted, marginTop: 1, whiteSpace: "nowrap" }}>
-                    {c.label}
-                  </div>
-                </div>
-              </motion.div>
-              {i < 4 && (
-                <div style={{ width: 48, height: 2, margin: "0 4px", marginBottom: 28,
-                  background: `linear-gradient(90deg, ${c.accent}88, ${["#06B6D4","#8B5CF6","#10B981","#F43F5E"][i]}88)`,
-                  flexShrink: 0,
-                }} />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* ── Chapter list ── */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "52px 24px 110px", position: "relative" }}>
-
-        {/* Rainbow timeline line */}
-        <motion.div
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
-          style={{
-            position: "absolute", left: 51, top: 64, bottom: 110, width: 2,
-            background: "linear-gradient(180deg,#3B82F6 0%,#8B5CF6 40%,#EC4899 75%,#F43F5E 100%)",
-            opacity: isDark ? 0.55 : 0.45,
-            transformOrigin: "top",
-          }}
-        />
-
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "52px 24px 110px" }}>
         {chapterData.map(({ ch, vis, stats, topicStatuses }, i) => (
-          <div key={ch.id} style={{ position: "relative", paddingLeft: 76, marginBottom: 22 }}>
-
-            {/* Timeline dot */}
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 380, damping: 18, delay: 0.28 + i * 0.11 }}
-              style={{ position: "absolute", left: 44, top: 40, zIndex: 2 }}
-            >
-              <div style={{
-                width: 16, height: 16, borderRadius: "50%",
-                background: stats.percent === 100
-                  ? "linear-gradient(135deg,#10B981,#059669)"
-                  : stats.percent > 0
-                  ? `linear-gradient(${vis.grad})`
-                  : dotEmpty,
-                border: `2.5px solid ${stats.percent > 0 ? vis.accent : dotBorder}`,
-                boxShadow: stats.percent > 0
-                  ? `0 0 16px ${vis.accent}88, 0 0 0 5px ${vis.accent}18`
-                  : "none",
-              }} />
-              {stats.percent > 0 && stats.percent < 100 && (
-                <motion.div
-                  animate={{ scale: [1, 2.6], opacity: [0.5, 0] }}
-                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut" }}
-                  style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `1.5px solid ${vis.accent}`, pointerEvents: "none" }}
-                />
-              )}
-            </motion.div>
-
+          <div key={ch.id} style={{ marginBottom: 20 }}>
             <ChapterCard
               ch={ch} vis={vis} stats={stats} topicStatuses={topicStatuses}
               isExpanded={expanded === ch.id}
