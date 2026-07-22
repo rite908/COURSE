@@ -1045,22 +1045,57 @@ export default function LandingPage() {
           <div style={{ position:"relative", zIndex:1 }}>
 
             {/* ── Header ── */}
-            <motion.div {...inView()} style={{ textAlign:"center", marginBottom: isLg ? 64 : 44 }}>
-              <Chip icon={<Compass size={12} color="#3B82F6" />} label="Learning Path" />
+            <div style={{ textAlign:"center", marginBottom: isLg ? 64 : 44 }}>
+
+              {/* Chip — scale + fade in */}
+              <motion.div
+                initial={mounted ? { opacity:0, scale:0.8, y:-8 } : false}
+                whileInView={{ opacity:1, scale:1, y:0 }}
+                viewport={{ once:true, margin:"-60px" }}
+                transition={{ duration:0.45, ease:[0.22,1,0.36,1] }}
+                style={{ display:"inline-block" }}
+              >
+                <Chip icon={<Compass size={12} color="#3B82F6" />} label="Learning Path" />
+              </motion.div>
+
+              {/* Heading — words stagger up with blur */}
               <h2 style={{
                 fontWeight:900, color:T.text, margin:"0 0 14px",
                 fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
-                letterSpacing:"-0.025em",
+                letterSpacing:"-0.025em", overflow:"hidden",
               }}>
-                Zero Se{" "}
-                <span style={{ background:"linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>
-                  Ethical Hacker
-                </span>{" "}Tak
+                {(["Zero Se", "Ethical Hacker", "Tak"] as const).map((word, i) => (
+                  <motion.span
+                    key={word}
+                    initial={mounted ? { opacity:0, y:28, filter:"blur(8px)" } : false}
+                    whileInView={{ opacity:1, y:0, filter:"blur(0px)" }}
+                    viewport={{ once:true, margin:"-60px" }}
+                    transition={{ delay: i * 0.12 + 0.1, duration:0.55, ease:[0.22,1,0.36,1] }}
+                    style={{
+                      display:"inline",
+                      ...(word === "Ethical Hacker" ? {
+                        background:"linear-gradient(130deg,#2563EB,#7C3AED)",
+                        WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text",
+                      } : {}),
+                    }}
+                  >
+                    {word}{" "}
+                  </motion.span>
+                ))}
               </h2>
-              <p style={{ color:T.text2, fontSize: isMd ? "16px" : "14px", maxWidth:460, margin:"0 auto", lineHeight:1.75 }}>
+
+              {/* Subtitle — fade up after heading */}
+              <motion.p
+                initial={mounted ? { opacity:0, y:16 } : false}
+                whileInView={{ opacity:1, y:0 }}
+                viewport={{ once:true, margin:"-60px" }}
+                transition={{ delay:0.42, duration:0.5, ease:[0.22,1,0.36,1] }}
+                style={{ color:T.text2, fontSize: isMd ? "16px" : "14px", maxWidth:460, margin:"0 auto", lineHeight:1.75 }}
+              >
                 Ek clear step-by-step path. Koi confusion nahi — bas ek ke baad ek chapter.
-              </p>
-            </motion.div>
+              </motion.p>
+
+            </div>
 
             {/* ── Desktop ── */}
             {isLg ? (
