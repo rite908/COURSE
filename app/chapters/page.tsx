@@ -410,8 +410,16 @@ export default function ChaptersPage() {
   const [user,     setUser]     = useState<UserName | null>(null);
   const [mounted,  setMounted]  = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [vw,       setVw]       = useState(1280);
 
-  useEffect(() => { setUser(getCurrentUser()); setMounted(true); }, []);
+  useEffect(() => {
+    setUser(getCurrentUser());
+    setMounted(true);
+    const upd = () => setVw(window.innerWidth);
+    upd();
+    window.addEventListener("resize", upd, { passive: true });
+    return () => window.removeEventListener("resize", upd);
+  }, []);
 
   const pageBg  = isDark ? "#070B16" : "#EEF3FF";
   const heroBg  = isDark ? "#0C1020" : "#E6EEFF";
@@ -450,6 +458,177 @@ export default function ChaptersPage() {
         <div style={{ position: "absolute", top: "-30%", left: "50%", transform: "translateX(-50%)", width: 700, height: 500, background: "radial-gradient(ellipse,rgba(37,99,235,0.18) 0%,transparent 68%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: "10%", right: "5%", width: 350, height: 350, background: "radial-gradient(ellipse,rgba(124,58,237,0.12) 0%,transparent 68%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: "0%", left: "8%", width: 280, height: 280, background: "radial-gradient(ellipse,rgba(236,72,153,0.09) 0%,transparent 70%)", pointerEvents: "none" }} />
+
+        {/* ── Left floating panel: Terminal ── */}
+        {mounted && vw >= 1160 && (
+          <motion.div
+            initial={{ opacity: 0, x: -28 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.55, delay: 0.5, ease: "easeOut" }}
+            style={{
+              position: "absolute", left: "2%", top: "50%", transform: "translateY(-50%)",
+              width: 218, zIndex: 2, pointerEvents: "none",
+              borderRadius: 14,
+              background: isDark ? "rgba(8,12,26,0.88)" : "rgba(255,255,255,0.92)",
+              border: `1px solid ${isDark ? "rgba(37,99,235,0.22)" : "rgba(37,99,235,0.18)"}`,
+              boxShadow: isDark
+                ? "0 8px 40px rgba(37,99,235,0.18), 0 2px 12px rgba(0,0,0,0.5)"
+                : "0 8px 40px rgba(37,99,235,0.14), 0 2px 12px rgba(0,0,0,0.08)",
+              backdropFilter: "blur(16px)",
+              overflow: "hidden",
+            }}
+          >
+            {/* Terminal titlebar */}
+            <div style={{
+              display: "flex", alignItems: "center", gap: 6, padding: "9px 13px",
+              background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+              borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
+            }}>
+              <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#FF5F57" }} />
+              <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#FFBD2E" }} />
+              <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#28C840" }} />
+              <span style={{ flex: 1, textAlign: "center", fontSize: "10px", fontWeight: 600, fontFamily: "monospace", color: isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.3)", letterSpacing: "0.04em" }}>
+                root@kali — bash
+              </span>
+            </div>
+            {/* Terminal body */}
+            <div style={{ padding: "13px 14px", fontFamily: "monospace", fontSize: "11px", lineHeight: 1.7 }}>
+              <div style={{ color: "#10B981", marginBottom: 4 }}>
+                <span style={{ color: isDark ? "#60A5FA" : "#2563EB" }}>root@kali</span>
+                <span style={{ color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" }}>:</span>
+                <span style={{ color: "#F59E0B" }}>~$</span>
+                <span style={{ color: isDark ? "#F1F5F9" : "#111827" }}> nmap -sV 192.168.1.1</span>
+              </div>
+              <div style={{ color: isDark ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.3)", fontSize: "10px", marginBottom: 6 }}>
+                Starting Nmap scan...
+              </div>
+              {([
+                ["22/tcp",   "open", "ssh",   "#10B981"],
+                ["80/tcp",   "open", "http",  "#3B82F6"],
+                ["443/tcp",  "open", "https", "#8B5CF6"],
+                ["3306/tcp", "open", "mysql", "#F59E0B"],
+              ] as [string, string, string, string][]).map(([port, state, svc, col]) => (
+                <div key={port} style={{ display: "flex", gap: 6, marginBottom: 2 }}>
+                  <span style={{ color: col, minWidth: 58 }}>{port}</span>
+                  <span style={{ color: "#10B981", minWidth: 34 }}>{state}</span>
+                  <span style={{ color: isDark ? "#94A3B8" : "#64748B" }}>{svc}</span>
+                </div>
+              ))}
+              <div style={{
+                marginTop: 9, paddingTop: 8,
+                borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
+                display: "flex", alignItems: "center", gap: 6,
+                fontSize: "10px", color: "#10B981",
+              }}>
+                <motion.span
+                  animate={{ opacity: [1, 0, 1] }}
+                  transition={{ duration: 1.2, repeat: Infinity }}
+                  style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", display: "inline-block", flexShrink: 0 }}
+                />
+                4 ports open — scan complete
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── Right floating panel: Learning Path ── */}
+        {mounted && vw >= 1160 && (
+          <motion.div
+            initial={{ opacity: 0, x: 28 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.55, delay: 0.6, ease: "easeOut" }}
+            style={{
+              position: "absolute", right: "2%", top: "50%", transform: "translateY(-50%)",
+              width: 218, zIndex: 2, pointerEvents: "none",
+              borderRadius: 14,
+              background: isDark ? "rgba(8,12,26,0.88)" : "rgba(255,255,255,0.92)",
+              border: `1px solid ${isDark ? "rgba(124,58,237,0.22)" : "rgba(124,58,237,0.18)"}`,
+              boxShadow: isDark
+                ? "0 8px 40px rgba(124,58,237,0.15), 0 2px 12px rgba(0,0,0,0.5)"
+                : "0 8px 40px rgba(124,58,237,0.12), 0 2px 12px rgba(0,0,0,0.08)",
+              backdropFilter: "blur(16px)",
+              overflow: "hidden",
+            }}
+          >
+            {/* Panel header */}
+            <div style={{
+              padding: "11px 14px 9px",
+              background: isDark ? "rgba(124,58,237,0.10)" : "rgba(124,58,237,0.07)",
+              borderBottom: `1px solid ${isDark ? "rgba(124,58,237,0.18)" : "rgba(124,58,237,0.14)"}`,
+              display: "flex", alignItems: "center", gap: 7,
+            }}>
+              <div style={{ width: 7, height: 7, borderRadius: "50%", background: "linear-gradient(135deg,#7C3AED,#EC4899)" }} />
+              <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase", color: isDark ? "#A78BFA" : "#7C3AED" }}>
+                Learning Path
+              </span>
+            </div>
+            {/* Chapter list */}
+            <div style={{ padding: "11px 12px 13px", display: "flex", flexDirection: "column", gap: 5 }}>
+              {([
+                { num: "01", label: "Startup",      accent: "#3B82F6", done: true  },
+                { num: "02", label: "How PC Works", accent: "#06B6D4", done: false, active: true },
+                { num: "03", label: "Networking",   accent: "#8B5CF6", done: false },
+                { num: "04", label: "Linux CLI",    accent: "#10B981", done: false },
+                { num: "05", label: "Kali Linux",   accent: "#F43F5E", done: false },
+              ]).map((ch) => (
+                <div key={ch.num} style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "6px 8px", borderRadius: 8,
+                  background: ch.active
+                    ? (isDark ? `rgba(6,182,212,0.10)` : `rgba(6,182,212,0.08)`)
+                    : "transparent",
+                  border: ch.active
+                    ? `1px solid ${isDark ? "rgba(6,182,212,0.22)" : "rgba(6,182,212,0.18)"}`
+                    : "1px solid transparent",
+                }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: ch.done ? "#10B98122" : ch.active ? `${ch.accent}22` : (isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"),
+                    border: `1px solid ${ch.done ? "#10B98144" : ch.active ? `${ch.accent}44` : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)")}`,
+                  }}>
+                    {ch.done
+                      ? <span style={{ fontSize: "10px" }}>✓</span>
+                      : <span style={{ fontSize: "9px", fontWeight: 800, fontFamily: "monospace", color: ch.active ? ch.accent : (isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)") }}>{ch.num}</span>
+                    }
+                  </div>
+                  <span style={{
+                    fontSize: "11.5px", fontWeight: ch.active ? 700 : 500,
+                    color: ch.done ? "#10B981" : ch.active ? ch.accent : (isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.35)"),
+                    letterSpacing: "-0.01em",
+                  }}>
+                    {ch.label}
+                  </span>
+                  {ch.active && (
+                    <motion.span
+                      animate={{ opacity: [1, 0.4, 1] }}
+                      transition={{ duration: 1.8, repeat: Infinity }}
+                      style={{
+                        marginLeft: "auto", fontSize: "9px", fontWeight: 700,
+                        color: ch.accent, letterSpacing: "0.05em",
+                      }}
+                    >
+                      NOW
+                    </motion.span>
+                  )}
+                </div>
+              ))}
+              {/* Progress bar */}
+              <div style={{ marginTop: 6, paddingTop: 8, borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontSize: "10px", color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.35)", fontWeight: 600 }}>
+                  <span>Overall</span><span>20%</span>
+                </div>
+                <div style={{ height: 4, borderRadius: 99, background: isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)", overflow: "hidden" }}>
+                  <motion.div
+                    initial={{ width: 0 }} animate={{ width: "20%" }}
+                    transition={{ duration: 1.2, delay: 0.9, ease: "easeOut" }}
+                    style={{ height: "100%", borderRadius: 99, background: "linear-gradient(90deg,#3B82F6,#7C3AED)" }}
+                  />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         <motion.div variants={heroV} initial={mounted ? "hidden" : false} animate="visible">
           {/* Pill badge */}
