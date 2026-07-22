@@ -1311,19 +1311,50 @@ export default function LandingPage() {
       <section style={{ background: "transparent", padding: `${vp}px 0` }}>
         {W(
           <>
-            <motion.div {...inView()} style={{ textAlign: "center", marginBottom: 48 }}>
-              <Chip icon={<User size={12} color="#3B82F6" />} label="Yeh Course Kis Ke Liye Hai?" />
+            <div style={{ textAlign: "center", marginBottom: 48 }}>
+
+              {/* Chip */}
+              <motion.div
+                initial={mounted ? { opacity: 0, scale: 0.8, y: -8 } : false}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                style={{ display: "inline-block" }}
+              >
+                <Chip icon={<User size={12} color="#3B82F6" />} label="Yeh Course Kis Ke Liye Hai?" />
+              </motion.div>
+
+              {/* Heading — two phrases stagger in with blur reveal */}
               <h2 style={{
                 fontWeight: 900, color: T.text,
                 fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
-                letterSpacing: "-0.025em",
+                letterSpacing: "-0.025em", margin: 0,
               }}>
-                Har Koi Shuru Kar Sakta Hai —{" "}
-                <span style={{ background: "linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                <motion.span
+                  initial={mounted ? { opacity: 0, y: 28, filter: "blur(8px)" } : false}
+                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ display: "inline" }}
+                >
+                  Har Koi Shuru Kar Sakta Hai —{" "}
+                </motion.span>
+                <motion.span
+                  initial={mounted ? { opacity: 0, y: 28, filter: "blur(8px)" } : false}
+                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: 0.26, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    display: "inline",
+                    background: "linear-gradient(130deg,#2563EB,#7C3AED)",
+                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                  }}
+                >
                   Bilkul Zero Se
-                </span>
+                </motion.span>
               </h2>
-            </motion.div>
+
+            </div>
             <div style={{
               display: "grid",
               gridTemplateColumns: isLg ? "repeat(4,1fr)" : isMd ? "repeat(2,1fr)" : "repeat(2,1fr)",
