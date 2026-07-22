@@ -669,7 +669,7 @@ export default function ChaptersPage() {
     return () => clearInterval(id);
   }, []);
 
-  const pageBg      = isDark ? "#070B16" : "#EEF3FF";
+  const pageBg      = isDark ? "#0C1020" : "#EEF3FF";
   const heroBg      = isDark ? "#0C1020" : "#E6EEFF";
   const textPrimary = isDark ? "#F1F5F9" : "#0F172A";
   const textMuted   = isDark ? "#475569"  : "#64748B";
@@ -698,7 +698,7 @@ export default function ChaptersPage() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
-      style={{ minHeight: "100vh", background: pageBg, paddingTop: 68 }}
+      style={{ minHeight: "100vh", background: pageBg, paddingTop: 68, position: "relative", overflow: "hidden" }}
     >
       {/* ── Hero ── */}
       <div style={{ position: "relative", background: heroBg, padding: "72px 24px 80px", textAlign: "center", overflow: "hidden", minHeight: 580 }}>
@@ -870,12 +870,52 @@ export default function ChaptersPage() {
           </motion.div>
         </motion.div>
 
-        {/* Bottom blend — fades hero into page background */}
+        {/* Bottom fade — softens edge between hero and chapter list */}
         <div style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
-          height: 100, zIndex: 3, pointerEvents: "none",
-          background: `linear-gradient(to bottom, transparent 0%, ${pageBg} 100%)`,
+          height: 120, zIndex: 3, pointerEvents: "none",
+          background: `linear-gradient(to bottom, transparent 0%, ${heroBg} 100%)`,
         }} />
+      </div>
+
+      {/* ── Ambient atmosphere continuing from hero ── */}
+      <div aria-hidden="true" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", zIndex: 0 }}>
+        {/* Continuing dot grid — same as hero */}
+        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: isDark ? 0.10 : 0.14 }}>
+          <defs>
+            <pattern id="dot-grid-page" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+              <circle cx="1.5" cy="1.5" r="1.5" fill={isDark ? "#3B82F6" : "#2563EB"} />
+            </pattern>
+            <radialGradient id="dot-fade-page" cx="50%" cy="30%" r="70%">
+              <stop offset="0%"   stopColor="white" stopOpacity="0" />
+              <stop offset="75%"  stopColor="white" stopOpacity="0" />
+              <stop offset="100%" stopColor="white" stopOpacity="1" />
+            </radialGradient>
+            <mask id="dot-mask-page">
+              <rect width="100%" height="100%" fill="white" />
+              <rect width="100%" height="100%" fill="url(#dot-fade-page)" />
+            </mask>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dot-grid-page)" mask="url(#dot-mask-page)" />
+        </svg>
+        {/* Left purple glow — mirrors hero's robot side glow */}
+        <motion.div
+          animate={{ opacity: [0.18, 0.30, 0.18], x: [0, 12, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: "absolute", top: "10%", left: "-10%", width: "50%", height: "60%", background: "radial-gradient(ellipse, rgba(139,92,246,0.18) 0%, transparent 70%)", filter: "blur(40px)" }}
+        />
+        {/* Right blue glow */}
+        <motion.div
+          animate={{ opacity: [0.15, 0.28, 0.15], x: [0, -10, 0] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          style={{ position: "absolute", top: "30%", right: "-8%", width: "45%", height: "55%", background: "radial-gradient(ellipse, rgba(37,99,235,0.16) 0%, transparent 70%)", filter: "blur(48px)" }}
+        />
+        {/* Center bottom glow — anchors the section */}
+        <motion.div
+          animate={{ opacity: [0.10, 0.20, 0.10] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          style={{ position: "absolute", bottom: "5%", left: "50%", transform: "translateX(-50%)", width: "60%", height: "40%", background: "radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%)", filter: "blur(60px)" }}
+        />
       </div>
 
       {/* ── Section header ── */}
@@ -884,7 +924,7 @@ export default function ChaptersPage() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        style={{ maxWidth: 860, margin: "0 auto", padding: "52px 24px 0" }}
+        style={{ maxWidth: 860, margin: "0 auto", padding: "52px 24px 0", position: "relative", zIndex: 1 }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
           <motion.div
@@ -916,7 +956,7 @@ export default function ChaptersPage() {
       </motion.div>
 
       {/* ── Chapter list ── */}
-      <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 24px 110px" }}>
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 24px 110px", position: "relative", zIndex: 1 }}>
         {chapterData.map(({ ch, vis, stats, topicStatuses }, i) => (
           <motion.div
             key={ch.id}
