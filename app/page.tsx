@@ -91,7 +91,7 @@ const ROADMAP = [
   { num: 5, label: "Kali Linux",         sub: "Chapter 5", color: "#DC2626", darkBg: "rgba(220,38,38,0.12)",  lightBg: "#FEF2F2", icon: <Code2 size={20}/>,    topics: 12, mcqs: 180 },
 ];
 
-/* ─── Feature card with 3-D tilt + shimmer ─── */
+/* ─── Feature card with 3-D tilt + always-on glow ─── */
 type FeatureItem = { icon: React.ReactNode; color: string; darkBg: string; lightBg: string; title: string; desc: string };
 function FeatureCard({ f, i, T, isDark, mounted }: {
   f: FeatureItem; i: number;
@@ -102,8 +102,8 @@ function FeatureCard({ f, i, T, isDark, mounted }: {
   const [hov, setHov] = useState(false);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [-0.5, 0.5], [7, -7]), { stiffness: 260, damping: 22 });
-  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-7, 7]),  { stiffness: 260, damping: 22 });
+  const rx = useSpring(useTransform(my, [-0.5, 0.5], [7, -7]), { stiffness: 280, damping: 22 });
+  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-7, 7]),  { stiffness: 280, damping: 22 });
 
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = cardRef.current?.getBoundingClientRect();
@@ -113,12 +113,15 @@ function FeatureCard({ f, i, T, isDark, mounted }: {
   };
   const onLeave = () => { mx.set(0); my.set(0); setHov(false); };
 
+  /* Staggered entrance delay */
+  const entryDelay = i * 0.12;
+
   return (
     <motion.div
-      initial={mounted ? { opacity: 0, y: 52, scale: 0.9 } : false}
+      initial={mounted ? { opacity: 0, y: 48, scale: 0.88 } : false}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ delay: i * 0.1, duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: false, amount: 0.15 }}
+      transition={{ delay: entryDelay, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
       style={{ perspective: 900 }}
     >
       <motion.div
@@ -129,28 +132,38 @@ function FeatureCard({ f, i, T, isDark, mounted }: {
         style={{
           rotateX: rx, rotateY: ry,
           position: "relative", borderRadius: 20,
-          background: T.card, padding: "28px",
+          background: isDark
+            ? `linear-gradient(145deg, #0D1117 0%, #111827 100%)`
+            : `linear-gradient(145deg, #FFFFFF 0%, #F8FAFF 100%)`,
+          padding: "28px",
           overflow: "hidden", transformStyle: "preserve-3d",
           cursor: "default",
-        }}
-        animate={{
-          border: hov ? `1px solid ${f.color}55` : `1px solid ${T.border}`,
+          /* Always-on colored shadow — the key visual diff */
           boxShadow: hov
-            ? `0 24px 52px ${f.color}24, 0 0 0 1px ${f.color}28, inset 0 0 28px ${f.color}07`
-            : `0 2px 14px rgba(0,0,0,${isDark ? 0.22 : 0.04})`,
+            ? `0 0 0 1.5px ${f.color}60, 0 20px 48px ${f.color}28, 0 4px 16px rgba(0,0,0,0.14), inset 0 0 32px ${f.color}08`
+            : `0 0 0 1px ${f.color}28, 0 4px 20px ${f.color}10, 0 2px 8px rgba(0,0,0,${isDark ? 0.3 : 0.06})`,
+          transition: "box-shadow 0.3s ease",
         }}
-        transition={{ duration: 0.28 }}
       >
-        {/* Animated top accent bar */}
-        <motion.span
-          initial={mounted ? { scaleX: 0 } : false}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: i * 0.1 + 0.38, duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+        {/* Always-on top accent bar (no entrance animation — immediately visible) */}
+        <span style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: 3,
+          background: `linear-gradient(90deg, ${f.color}, ${f.color}80, transparent)`,
+          display: "block",
+        }} />
+
+        {/* Continuously moving corner glow */}
+        <motion.div
+          animate={{
+            opacity: [0.4, 0.7, 0.4],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            position: "absolute", top: 0, left: 0, right: 0, height: 3,
-            background: `linear-gradient(90deg, ${f.color}, ${f.color}70, transparent)`,
-            transformOrigin: "left", display: "block",
+            position: "absolute", bottom: "-20%", right: "-15%",
+            width: 140, height: 140, borderRadius: "50%",
+            background: `radial-gradient(circle, ${f.color}${isDark ? "30" : "18"}, transparent 70%)`,
+            filter: "blur(20px)", pointerEvents: "none", zIndex: 0,
           }}
         />
 
@@ -162,57 +175,61 @@ function FeatureCard({ f, i, T, isDark, mounted }: {
               initial={{ x: "-80%" }}
               animate={{ x: "180%" }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              transition={{ duration: 0.65, ease: "easeOut" }}
               style={{
                 position: "absolute", top: 0, left: 0, width: "55%", height: "100%",
-                background: `linear-gradient(105deg, transparent, ${f.color}11, transparent)`,
+                background: `linear-gradient(105deg, transparent, ${f.color}18, transparent)`,
                 pointerEvents: "none", zIndex: 2,
               }}
             />
           )}
         </AnimatePresence>
 
-        {/* Hover glow bloom */}
-        <AnimatePresence>
-          {hov && (
-            <motion.div
-              key="bloom"
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-              transition={{ duration: 0.35 }}
-              style={{
-                position: "absolute", bottom: "-30%", right: "-20%",
-                width: 180, height: 180, borderRadius: "50%",
-                background: `radial-gradient(circle, ${f.color}22, transparent 70%)`,
-                filter: "blur(24px)", pointerEvents: "none", zIndex: 0,
-              }}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Icon — spring bounce entrance + glow on hover */}
+        {/* Icon — continuous breathing pulse + spring entrance */}
         <motion.div
-          initial={mounted ? { scale: 0, rotate: -15 } : false}
+          initial={mounted ? { scale: 0, rotate: -20 } : false}
           whileInView={{ scale: 1, rotate: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: i * 0.1 + 0.22, duration: 0.5, type: "spring", stiffness: 240, damping: 14 }}
-          animate={hov
-            ? { boxShadow: `0 0 26px ${f.color}60` }
-            : { boxShadow: isDark ? `0 0 12px ${f.color}30` : "none" }
-          }
-          style={{
-            width: 48, height: 48, borderRadius: 14, marginBottom: 18,
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ delay: entryDelay + 0.18, duration: 0.55, type: "spring", stiffness: 220, damping: 13 }}
+          style={{ position: "relative", zIndex: 3, width: 50, height: 50, marginBottom: 20 }}
+        >
+          {/* Icon glow ring — always pulsing */}
+          <motion.div
+            animate={{ scale: [1, 1.4, 1], opacity: [0.35, 0.6, 0.35] }}
+            transition={{ duration: 2.5 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
+            style={{
+              position: "absolute", inset: -4, borderRadius: 18,
+              background: `radial-gradient(circle, ${f.color}40, transparent 70%)`,
+              filter: "blur(6px)", zIndex: -1,
+            }}
+          />
+          <div style={{
+            width: 50, height: 50, borderRadius: 14,
             display: "flex", alignItems: "center", justifyContent: "center",
             background: isDark ? f.darkBg : f.lightBg,
-            color: f.color, position: "relative", zIndex: 3,
-          }}
-        >
-          {f.icon}
+            color: f.color,
+            boxShadow: `0 0 ${hov ? 22 : 10}px ${f.color}${hov ? "55" : "30"}`,
+            transition: "box-shadow 0.3s",
+          }}>
+            {f.icon}
+          </div>
         </motion.div>
 
-        <h3 style={{ fontWeight: 700, fontSize: "15px", color: T.text, marginBottom: 8, position: "relative", zIndex: 3 }}>{f.title}</h3>
-        <p  style={{ color: T.text2, fontSize: "13.5px", lineHeight: 1.75, position: "relative", zIndex: 3 }}>{f.desc}</p>
+        <motion.h3
+          initial={mounted ? { opacity: 0, x: -10 } : false}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ delay: entryDelay + 0.28, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          style={{ fontWeight: 700, fontSize: "15px", color: T.text, marginBottom: 8, position: "relative", zIndex: 3 }}
+        >{f.title}</motion.h3>
+
+        <motion.p
+          initial={mounted ? { opacity: 0 } : false}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ delay: entryDelay + 0.36, duration: 0.4 }}
+          style={{ color: T.text2, fontSize: "13.5px", lineHeight: 1.75, position: "relative", zIndex: 3 }}
+        >{f.desc}</motion.p>
       </motion.div>
     </motion.div>
   );
@@ -1844,63 +1861,80 @@ export default function LandingPage() {
       {/* ══════════════════════════
           FEATURES
       ══════════════════════════ */}
-      <section style={{ background: "transparent", padding: `${vp}px 0`, position: "relative", overflow: "hidden" }}>
+      <section style={{
+        padding: `${vp}px 0`, position: "relative", overflow: "hidden",
+        background: isDark
+          ? "linear-gradient(180deg, #060912 0%, #0A0F1E 50%, #060912 100%)"
+          : "linear-gradient(180deg, #EEF3FF 0%, #F5F8FF 50%, #EEF3FF 100%)",
+      }}>
 
-        {/* ── Ambient pulsing orbs ── */}
+        {/* ── Large blue orb — always visible ── */}
         <motion.div
           aria-hidden
-          animate={{ scale: [1, 1.18, 1], opacity: isDark ? [0.14, 0.28, 0.14] : [0.06, 0.12, 0.06] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ scale: [1, 1.22, 1], opacity: isDark ? [0.25, 0.45, 0.25] : [0.18, 0.32, 0.18] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            position: "absolute", width: 580, height: 580, borderRadius: "50%",
-            background: "radial-gradient(circle, #2563EB, transparent 68%)",
-            top: "-28%", left: "-10%", filter: "blur(88px)", pointerEvents: "none", zIndex: 0,
+            position: "absolute", width: 640, height: 640, borderRadius: "50%",
+            background: "radial-gradient(circle, #2563EB, transparent 65%)",
+            top: "-30%", left: "-12%", filter: "blur(70px)", pointerEvents: "none", zIndex: 0,
           }}
         />
+        {/* ── Purple orb ── */}
         <motion.div
           aria-hidden
-          animate={{ scale: [1.1, 1, 1.1], opacity: isDark ? [0.10, 0.22, 0.10] : [0.04, 0.09, 0.04] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          animate={{ scale: [1.15, 1, 1.15], opacity: isDark ? [0.18, 0.38, 0.18] : [0.14, 0.28, 0.14] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
           style={{
-            position: "absolute", width: 480, height: 480, borderRadius: "50%",
-            background: "radial-gradient(circle, #7C3AED, transparent 68%)",
-            bottom: "-18%", right: "-8%", filter: "blur(88px)", pointerEvents: "none", zIndex: 0,
+            position: "absolute", width: 520, height: 520, borderRadius: "50%",
+            background: "radial-gradient(circle, #7C3AED, transparent 65%)",
+            bottom: "-20%", right: "-8%", filter: "blur(70px)", pointerEvents: "none", zIndex: 0,
+          }}
+        />
+        {/* ── Cyan accent orb ── */}
+        <motion.div
+          aria-hidden
+          animate={{ scale: [1, 1.3, 1], opacity: isDark ? [0.10, 0.22, 0.10] : [0.08, 0.16, 0.08] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          style={{
+            position: "absolute", width: 300, height: 300, borderRadius: "50%",
+            background: "radial-gradient(circle, #0EA5E9, transparent 65%)",
+            top: "40%", left: "45%", filter: "blur(60px)", pointerEvents: "none", zIndex: 0,
           }}
         />
 
         {W(
           <div style={{ position: "relative", zIndex: 1 }}>
             {/* ── Heading ── */}
-            <div style={{ textAlign: "center", marginBottom: 52 }}>
+            <div style={{ textAlign: "center", marginBottom: 56 }}>
               <motion.div
-                initial={mounted ? { opacity: 0, y: -10, scale: 0.88 } : false}
+                initial={mounted ? { opacity: 0, y: -14, scale: 0.85 } : false}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: false, amount: 0.5 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Chip icon={<Zap size={12} color="#3B82F6" />} label="Why TWH Academy" />
               </motion.div>
 
-              <div style={{ overflow: "hidden", marginBottom: 14 }}>
+              <div style={{ overflow: "hidden", marginBottom: 16 }}>
                 <motion.h2
-                  initial={mounted ? { y: "110%", opacity: 0 } : false}
+                  initial={mounted ? { y: "100%", opacity: 0 } : false}
                   whileInView={{ y: 0, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+                  viewport={{ once: false, amount: 0.5 }}
+                  transition={{ delay: 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                   style={{
                     fontWeight: 900, color: T.text,
-                    fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
+                    fontSize: isLg ? "2.5rem" : isMd ? "2rem" : "1.7rem",
                     letterSpacing: "-0.025em",
                   }}
                 >
                   Sirf Theory Nahi —{" "}
+                  {/* Continuously animated gradient text */}
                   <motion.span
-                    initial={mounted ? { opacity: 0, scale: 0.82, filter: "blur(6px)" } : false}
-                    whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.32, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                     style={{
-                      background: "linear-gradient(130deg,#2563EB,#7C3AED)",
+                      background: "linear-gradient(130deg, #2563EB, #7C3AED, #0EA5E9, #2563EB)",
+                      backgroundSize: "300% auto",
                       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
                       backgroundClip: "text", display: "inline-block",
                     }}
@@ -1911,10 +1945,10 @@ export default function LandingPage() {
               </div>
 
               <motion.p
-                initial={mounted ? { opacity: 0, y: 14 } : false}
+                initial={mounted ? { opacity: 0, y: 12 } : false}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.26, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: false, amount: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 style={{ color: T.text2, fontSize: isMd ? "16px" : "14px", maxWidth: 480, margin: "0 auto", lineHeight: 1.75 }}
               >
                 Jo dusri jagah nahi milega — real understanding, practical labs, aur ek honest creator.
@@ -1925,7 +1959,7 @@ export default function LandingPage() {
             <div style={{
               display: "grid",
               gridTemplateColumns: isLg ? "repeat(3,1fr)" : isMd ? "repeat(2,1fr)" : "1fr",
-              gap: 18,
+              gap: 20,
             }}>
               {FEATURES.map((f, i) => (
                 <FeatureCard key={f.title} f={f} i={i} T={T} isDark={isDark} mounted={mounted} />
