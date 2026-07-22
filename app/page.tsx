@@ -91,6 +91,133 @@ const ROADMAP = [
   { num: 5, label: "Kali Linux",         sub: "Chapter 5", color: "#DC2626", darkBg: "rgba(220,38,38,0.12)",  lightBg: "#FEF2F2", icon: <Code2 size={20}/>,    topics: 12, mcqs: 180 },
 ];
 
+/* ─── Feature card with 3-D tilt + shimmer ─── */
+type FeatureItem = { icon: React.ReactNode; color: string; darkBg: string; lightBg: string; title: string; desc: string };
+function FeatureCard({ f, i, T, isDark, mounted }: {
+  f: FeatureItem; i: number;
+  T: { text: string; text2: string; card: string; border: string };
+  isDark: boolean; mounted: boolean;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [hov, setHov] = useState(false);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const rx = useSpring(useTransform(my, [-0.5, 0.5], [7, -7]), { stiffness: 260, damping: 22 });
+  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-7, 7]),  { stiffness: 260, damping: 22 });
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = cardRef.current?.getBoundingClientRect();
+    if (!r) return;
+    mx.set((e.clientX - r.left) / r.width  - 0.5);
+    my.set((e.clientY - r.top)  / r.height - 0.5);
+  };
+  const onLeave = () => { mx.set(0); my.set(0); setHov(false); };
+
+  return (
+    <motion.div
+      initial={mounted ? { opacity: 0, y: 52, scale: 0.9 } : false}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: i * 0.1, duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+      style={{ perspective: 900 }}
+    >
+      <motion.div
+        ref={cardRef}
+        onMouseMove={onMove}
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={onLeave}
+        style={{
+          rotateX: rx, rotateY: ry,
+          position: "relative", borderRadius: 20,
+          background: T.card, padding: "28px",
+          overflow: "hidden", transformStyle: "preserve-3d",
+          cursor: "default",
+        }}
+        animate={{
+          border: hov ? `1px solid ${f.color}55` : `1px solid ${T.border}`,
+          boxShadow: hov
+            ? `0 24px 52px ${f.color}24, 0 0 0 1px ${f.color}28, inset 0 0 28px ${f.color}07`
+            : `0 2px 14px rgba(0,0,0,${isDark ? 0.22 : 0.04})`,
+        }}
+        transition={{ duration: 0.28 }}
+      >
+        {/* Animated top accent bar */}
+        <motion.span
+          initial={mounted ? { scaleX: 0 } : false}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.1 + 0.38, duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: 3,
+            background: `linear-gradient(90deg, ${f.color}, ${f.color}70, transparent)`,
+            transformOrigin: "left", display: "block",
+          }}
+        />
+
+        {/* Shimmer sweep on hover */}
+        <AnimatePresence>
+          {hov && (
+            <motion.div
+              key="shim"
+              initial={{ x: "-80%" }}
+              animate={{ x: "180%" }}
+              exit={{ opacity: 0, transition: { duration: 0.15 } }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              style={{
+                position: "absolute", top: 0, left: 0, width: "55%", height: "100%",
+                background: `linear-gradient(105deg, transparent, ${f.color}11, transparent)`,
+                pointerEvents: "none", zIndex: 2,
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Hover glow bloom */}
+        <AnimatePresence>
+          {hov && (
+            <motion.div
+              key="bloom"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+              transition={{ duration: 0.35 }}
+              style={{
+                position: "absolute", bottom: "-30%", right: "-20%",
+                width: 180, height: 180, borderRadius: "50%",
+                background: `radial-gradient(circle, ${f.color}22, transparent 70%)`,
+                filter: "blur(24px)", pointerEvents: "none", zIndex: 0,
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Icon — spring bounce entrance + glow on hover */}
+        <motion.div
+          initial={mounted ? { scale: 0, rotate: -15 } : false}
+          whileInView={{ scale: 1, rotate: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.1 + 0.22, duration: 0.5, type: "spring", stiffness: 240, damping: 14 }}
+          animate={hov
+            ? { boxShadow: `0 0 26px ${f.color}60` }
+            : { boxShadow: isDark ? `0 0 12px ${f.color}30` : "none" }
+          }
+          style={{
+            width: 48, height: 48, borderRadius: 14, marginBottom: 18,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: isDark ? f.darkBg : f.lightBg,
+            color: f.color, position: "relative", zIndex: 3,
+          }}
+        >
+          {f.icon}
+        </motion.div>
+
+        <h3 style={{ fontWeight: 700, fontSize: "15px", color: T.text, marginBottom: 8, position: "relative", zIndex: 3 }}>{f.title}</h3>
+        <p  style={{ color: T.text2, fontSize: "13.5px", lineHeight: 1.75, position: "relative", zIndex: 3 }}>{f.desc}</p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 /* ─── Count-up animation component ─── */
 function CountUp({ to, suffix = "", duration = 1.4, delay = 0 }: { to: number; suffix?: string; duration?: number; delay?: number }) {
   const [val, setVal] = useState(0);
@@ -1717,58 +1844,94 @@ export default function LandingPage() {
       {/* ══════════════════════════
           FEATURES
       ══════════════════════════ */}
-      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0`, position: "relative", overflow: "hidden" }}>
+
+        {/* ── Ambient pulsing orbs ── */}
+        <motion.div
+          aria-hidden
+          animate={{ scale: [1, 1.18, 1], opacity: isDark ? [0.14, 0.28, 0.14] : [0.06, 0.12, 0.06] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position: "absolute", width: 580, height: 580, borderRadius: "50%",
+            background: "radial-gradient(circle, #2563EB, transparent 68%)",
+            top: "-28%", left: "-10%", filter: "blur(88px)", pointerEvents: "none", zIndex: 0,
+          }}
+        />
+        <motion.div
+          aria-hidden
+          animate={{ scale: [1.1, 1, 1.1], opacity: isDark ? [0.10, 0.22, 0.10] : [0.04, 0.09, 0.04] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          style={{
+            position: "absolute", width: 480, height: 480, borderRadius: "50%",
+            background: "radial-gradient(circle, #7C3AED, transparent 68%)",
+            bottom: "-18%", right: "-8%", filter: "blur(88px)", pointerEvents: "none", zIndex: 0,
+          }}
+        />
+
         {W(
-          <>
-            <motion.div {...inView()} style={{ textAlign: "center", marginBottom: 48 }}>
-              <Chip icon={<Zap size={12} color="#3B82F6" />} label="Why TWH Academy" />
-              <h2 style={{
-                fontWeight: 900, color: T.text,
-                fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
-                letterSpacing: "-0.025em", marginBottom: 14,
-              }}>
-                Sirf Theory Nahi —{" "}
-                <span style={{ background: "linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                  Asli Samajh
-                </span>
-              </h2>
-              <p style={{ color: T.text2, fontSize: isMd ? "16px" : "14px", maxWidth: 480, margin: "0 auto", lineHeight: 1.75 }}>
+          <div style={{ position: "relative", zIndex: 1 }}>
+            {/* ── Heading ── */}
+            <div style={{ textAlign: "center", marginBottom: 52 }}>
+              <motion.div
+                initial={mounted ? { opacity: 0, y: -10, scale: 0.88 } : false}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Chip icon={<Zap size={12} color="#3B82F6" />} label="Why TWH Academy" />
+              </motion.div>
+
+              <div style={{ overflow: "hidden", marginBottom: 14 }}>
+                <motion.h2
+                  initial={mounted ? { y: "110%", opacity: 0 } : false}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.08, duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    fontWeight: 900, color: T.text,
+                    fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
+                    letterSpacing: "-0.025em",
+                  }}
+                >
+                  Sirf Theory Nahi —{" "}
+                  <motion.span
+                    initial={mounted ? { opacity: 0, scale: 0.82, filter: "blur(6px)" } : false}
+                    whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.32, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      background: "linear-gradient(130deg,#2563EB,#7C3AED)",
+                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                      backgroundClip: "text", display: "inline-block",
+                    }}
+                  >
+                    Asli Samajh
+                  </motion.span>
+                </motion.h2>
+              </div>
+
+              <motion.p
+                initial={mounted ? { opacity: 0, y: 14 } : false}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.26, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                style={{ color: T.text2, fontSize: isMd ? "16px" : "14px", maxWidth: 480, margin: "0 auto", lineHeight: 1.75 }}
+              >
                 Jo dusri jagah nahi milega — real understanding, practical labs, aur ek honest creator.
-              </p>
-            </motion.div>
+              </motion.p>
+            </div>
+
+            {/* ── Cards grid ── */}
             <div style={{
               display: "grid",
               gridTemplateColumns: isLg ? "repeat(3,1fr)" : isMd ? "repeat(2,1fr)" : "1fr",
-              gap: 16,
+              gap: 18,
             }}>
               {FEATURES.map((f, i) => (
-                <motion.div key={f.title}
-                  initial={mounted ? { opacity: 0, y: 22 } : false} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.4 }}
-                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  style={{
-                    position: "relative", borderRadius: 20, background: T.card,
-                    border: `1px solid ${T.border}`, padding: "26px",
-                    boxShadow: `0 2px 14px rgba(0,0,0,${isDark ? 0.22 : 0.04})`,
-                    overflow: "hidden",
-                  }}
-                >
-                  <span style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${f.color},transparent)` }} />
-                  <motion.div
-                    whileHover={{ scale: 1.15, boxShadow: `0 0 28px ${f.color}70` }}
-                    transition={{ duration: 0.22 }}
-                    style={{
-                      width: 48, height: 48, borderRadius: 14, marginBottom: 18,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      background: isDark ? f.darkBg : f.lightBg, color: f.color,
-                      boxShadow: isDark ? `0 0 12px ${f.color}30` : "none",
-                    }}>{f.icon}</motion.div>
-                  <h3 style={{ fontWeight: 700, fontSize: "15px", color: T.text, marginBottom: 8 }}>{f.title}</h3>
-                  <p style={{ color: T.text2, fontSize: "13.5px", lineHeight: 1.75 }}>{f.desc}</p>
-                </motion.div>
+                <FeatureCard key={f.title} f={f} i={i} T={T} isDark={isDark} mounted={mounted} />
               ))}
             </div>
-          </>
+          </div>
         )}
       </section>
 
