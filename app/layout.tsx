@@ -44,7 +44,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${orbitron.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+      {/* Blocking script: apply saved theme BEFORE first paint to avoid flash */}
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem("twh-theme-pref");document.documentElement.dataset.theme=s==="light"?"light":"dark";}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="antialiased min-h-screen" style={{ background: "var(--t-bg)", color: "var(--t-text)" }}>
         <MotionProvider>
           <Navbar />

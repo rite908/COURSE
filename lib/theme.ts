@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 
 // ── Module-level store shared across ALL useTheme() instances ─────────────
-let _isDark = false;
+let _isDark = true;
 const _subscribers = new Set<(v: boolean) => void>();
 
 function applyTheme(dark: boolean) {
@@ -11,14 +11,17 @@ function applyTheme(dark: boolean) {
   if (typeof document !== "undefined") {
     document.documentElement.dataset.theme = dark ? "dark" : "light";
   }
-  try { localStorage.setItem("twh-theme", dark ? "dark" : "light"); } catch {}
-  // Notify every subscribed component → triggers re-render
+  // Only persist "light" — dark is the default, no need to store it
+  try {
+    if (dark) localStorage.removeItem("twh-theme-pref");
+    else localStorage.setItem("twh-theme-pref", "light");
+  } catch {}
   _subscribers.forEach(fn => fn(dark));
 }
 
 // ─────────────────────────────────────────────────────────────────────────
 export function useTheme() {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
     // Subscribe FIRST so applyTheme below updates this instance too
@@ -26,9 +29,9 @@ export function useTheme() {
 
     // Read saved / OS preference and broadcast to everyone
     let saved: string | null = null;
-    try { saved = localStorage.getItem("twh-theme"); } catch {}
-    const sys  = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const init = saved ? saved === "dark" : sys;
+    try { saved = localStorage.getItem("twh-theme-pref"); } catch {}
+    // "twh-theme-pref" only exists when user explicitly chose light; default = dark
+    const init = saved !== "light";
     applyTheme(init);
 
     return () => { _subscribers.delete(setIsDark); };
