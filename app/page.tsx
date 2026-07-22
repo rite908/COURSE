@@ -84,11 +84,11 @@ const FEATURES = [
 ];
 
 const ROADMAP = [
-  { num: 1, label: "Hacker Mindset",     sub: "Chapter 1", color: "#2563EB" },
-  { num: 2, label: "Computer Internals", sub: "Chapter 2", color: "#7C3AED" },
-  { num: 3, label: "Networking",         sub: "Chapter 3", color: "#0EA5E9" },
-  { num: 4, label: "Linux Basics",       sub: "Chapter 4", color: "#059669" },
-  { num: 5, label: "Kali Linux",         sub: "Chapter 5", color: "#DC2626" },
+  { num: 1, label: "Hacker Mindset",     sub: "Chapter 1", color: "#2563EB", darkBg: "rgba(37,99,235,0.12)",  lightBg: "#EEF3FF", icon: <Shield size={20}/>,   topics: 6,  mcqs: 90  },
+  { num: 2, label: "Computer Internals", sub: "Chapter 2", color: "#7C3AED", darkBg: "rgba(124,58,237,0.12)", lightBg: "#F3EEFF", icon: <Cpu size={20}/>,      topics: 10, mcqs: 150 },
+  { num: 3, label: "Networking",         sub: "Chapter 3", color: "#0EA5E9", darkBg: "rgba(14,165,233,0.12)", lightBg: "#F0F9FF", icon: <Wifi size={20}/>,     topics: 10, mcqs: 150 },
+  { num: 4, label: "Linux Basics",       sub: "Chapter 4", color: "#059669", darkBg: "rgba(5,150,105,0.12)",  lightBg: "#ECFDF5", icon: <Terminal size={20}/>, topics: 3,  mcqs: 45  },
+  { num: 5, label: "Kali Linux",         sub: "Chapter 5", color: "#DC2626", darkBg: "rgba(220,38,38,0.12)",  lightBg: "#FEF2F2", icon: <Code2 size={20}/>,    topics: 12, mcqs: 180 },
 ];
 
 /* ─── Count-up animation component ─── */
@@ -1039,94 +1039,245 @@ export default function LandingPage() {
       {/* ══════════════════════════
           ROADMAP
       ══════════════════════════ */}
-      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
+      <section style={{
+        position: "relative", overflow: "hidden",
+        padding: `${vp + 20}px 0`,
+        background: isDark
+          ? "linear-gradient(180deg,#07090F 0%,#0B0F1D 50%,#07090F 100%)"
+          : "linear-gradient(180deg,#EEF3FF 0%,#F5F8FF 50%,#EEF3FF 100%)",
+      }}>
+        {/* Ambient glow orbs */}
+        <div style={{ position:"absolute", left:"-8%",  top:"10%", width:"40%", height:"80%", background:"radial-gradient(ellipse,rgba(37,99,235,0.09) 0%,transparent 70%)",  pointerEvents:"none", zIndex:0 }} />
+        <div style={{ position:"absolute", right:"-8%", top:"10%", width:"40%", height:"80%", background:"radial-gradient(ellipse,rgba(124,58,237,0.08) 0%,transparent 70%)", pointerEvents:"none", zIndex:0 }} />
+        <div style={{ position:"absolute", left:"40%", bottom:"0%", width:"30%", height:"50%", background:"radial-gradient(ellipse,rgba(14,165,233,0.06) 0%,transparent 70%)",  pointerEvents:"none", zIndex:0 }} />
+
+        {/* Subtle grid overlay */}
+        <div style={{
+          position:"absolute", inset:0, zIndex:0, pointerEvents:"none", opacity: isDark ? 0.025 : 0.06,
+          backgroundImage:`linear-gradient(${T.text} 1px,transparent 1px),linear-gradient(90deg,${T.text} 1px,transparent 1px)`,
+          backgroundSize:"60px 60px",
+        }} />
+
         {W(
-          <>
-            <motion.div {...inView()} style={{ textAlign: "center", marginBottom: 52 }}>
+          <div style={{ position:"relative", zIndex:1 }}>
+            {/* ── Header ── */}
+            <motion.div {...inView()} style={{ textAlign:"center", marginBottom: isLg ? 72 : 48 }}>
               <Chip icon={<Compass size={12} color="#3B82F6" />} label="Learning Path" />
               <h2 style={{
-                fontWeight: 900, color: T.text,
-                fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
-                letterSpacing: "-0.025em", marginBottom: 14,
+                fontWeight:900, color:T.text, margin:"0 0 16px",
+                fontSize: isLg ? "2.6rem" : isMd ? "2.1rem" : "1.7rem",
+                letterSpacing:"-0.03em", lineHeight:1.15,
               }}>
                 Zero Se{" "}
-                <span style={{ background: "linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                <span style={{ background:"linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>
                   Ethical Hacker
                 </span>{" "}Tak
               </h2>
-              <p style={{ color: T.text2, fontSize: isMd ? "16px" : "14px", maxWidth: 480, margin: "0 auto", lineHeight: 1.75 }}>
+              <p style={{ color:T.text2, fontSize: isMd ? "16px" : "14px", maxWidth:500, margin:"0 auto", lineHeight:1.8 }}>
                 Ek clear step-by-step path. Koi confusion nahi — bas ek ke baad ek chapter.
               </p>
             </motion.div>
 
-            <div style={{
-              display: "flex", flexDirection: isLg ? "row" : "column",
-              alignItems: isLg ? "flex-start" : "stretch",
-              gap: isLg ? 0 : 8, position: "relative",
-            }}>
-              {ROADMAP.map((step, i) => (
-                <div key={step.num} style={{
-                  flex: isLg ? 1 : "unset", position: "relative",
-                  display: "flex", flexDirection: isLg ? "column" : "row",
-                  alignItems: "center",
-                }}>
-                  {i < ROADMAP.length - 1 && isLg && (
-                    <motion.div
-                      initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.18 + 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            {/* ── Desktop cards ── */}
+            {isLg ? (
+              <div style={{ position:"relative" }}>
+                {/* Base connector track */}
+                <div style={{
+                  position:"absolute", top:52, left:"10%", width:"80%", height:2,
+                  background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)",
+                  borderRadius:2,
+                }} />
+                {/* Animated fill line */}
+                <motion.div
+                  initial={{ scaleX:0 }} whileInView={{ scaleX:1 }} viewport={{ once:true }}
+                  transition={{ duration:1.4, ease:[0.22,1,0.36,1], delay:0.2 }}
+                  style={{
+                    position:"absolute", top:52, left:"10%", width:"80%", height:2,
+                    background:"linear-gradient(90deg,#2563EB,#7C3AED,#0EA5E9,#059669,#DC2626)",
+                    borderRadius:2, transformOrigin:"left",
+                    boxShadow:"0 0 12px rgba(99,102,241,0.5)",
+                  }}
+                />
+                {/* Scanner pulse */}
+                <motion.div
+                  initial={{ x:"-100%" }} animate={{ x:"200%" }}
+                  transition={{ repeat:Infinity, duration:3, ease:"linear", repeatDelay:2 }}
+                  style={{
+                    position:"absolute", top:46, left:"10%", width:"80%", height:14,
+                    overflow:"hidden", borderRadius:8, pointerEvents:"none",
+                  }}
+                >
+                  <div style={{
+                    position:"absolute", top:0, left:0, width:"25%", height:"100%",
+                    background:"linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)",
+                  }} />
+                </motion.div>
+
+                {/* Cards row */}
+                <div style={{ display:"flex", gap:16 }}>
+                  {ROADMAP.map((step, i) => (
+                    <motion.div key={step.num}
+                      initial={mounted ? { opacity:0, y:32 } : false}
+                      whileInView={{ opacity:1, y:0 }}
+                      viewport={{ once:true }}
+                      transition={{ delay: i * 0.12 + 0.1, duration:0.55, ease:[0.22,1,0.36,1] }}
+                      whileHover={{ y:-8, transition:{ duration:0.22 } }}
                       style={{
-                        position: "absolute", top: 26, left: "55%", width: "90%", height: 3,
-                        background: `linear-gradient(90deg,${step.color},${ROADMAP[i + 1].color})`,
-                        borderRadius: 2, zIndex: 0, transformOrigin: "left",
-                        boxShadow: `0 0 8px ${step.color}60`,
+                        flex:1, position:"relative", overflow:"hidden",
+                        borderRadius:20, cursor:"pointer",
+                        background: isDark ? step.darkBg : step.lightBg,
+                        border:`1px solid ${isDark ? step.color+"30" : step.color+"40"}`,
+                        padding:"28px 20px 24px",
+                        display:"flex", flexDirection:"column", alignItems:"center", gap:14,
+                        textAlign:"center",
+                        boxShadow: isDark
+                          ? `0 4px 24px ${step.color}18, inset 0 1px 0 ${step.color}25`
+                          : `0 4px 24px ${step.color}22, inset 0 1px 0 ${step.color}30`,
+                        transition:"box-shadow 0.22s",
                       }}
-                    />
-                  )}
-                  {i < ROADMAP.length - 1 && !isLg && (
-                    <motion.div
-                      initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.15 + 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      style={{
-                        width: 3, height: 28, margin: "0 0 0 24px",
-                        background: `linear-gradient(180deg,${step.color},${ROADMAP[i + 1].color})`,
-                        borderRadius: 2, alignSelf: "flex-start", transformOrigin: "top",
-                      }}
-                    />
-                  )}
-                  <motion.div
-                    initial={mounted ? { opacity: 0, y: 20 } : false} whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.45 }}
-                    whileHover={{ y: isLg ? -6 : 0, transition: { duration: 0.2 } }}
-                    style={{
-                      zIndex: 1,
-                      display: "flex", flexDirection: isLg ? "column" : "row",
-                      alignItems: "center", gap: isLg ? 14 : 16,
-                      textAlign: isLg ? "center" : "left",
-                      padding: isLg ? "0 12px" : "14px 20px",
-                      borderRadius: isLg ? 0 : 16,
-                      background: !isLg ? T.card : "transparent",
-                      border: !isLg ? `1px solid ${T.border}` : "none",
-                      width: !isLg ? "100%" : "auto",
-                    }}
-                  >
-                    <div style={{
-                      width: 52, height: 52, borderRadius: "50%", flexShrink: 0,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      background: `linear-gradient(135deg,${step.color},${step.color}bb)`,
-                      boxShadow: `0 4px 18px ${step.color}50`,
-                      color: "white", fontWeight: 900, fontSize: "18px",
-                    }}>{step.num}</div>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: "14px", color: T.text }}>{step.label}</div>
-                      <div style={{ fontSize: "12px", color: T.muted, marginTop: 3 }}>{step.sub}</div>
-                    </div>
-                  </motion.div>
+                    >
+                      {/* Colored top accent bar */}
+                      <div style={{
+                        position:"absolute", top:0, left:0, right:0, height:3,
+                        background:`linear-gradient(90deg,${step.color},${step.color}88)`,
+                        borderRadius:"20px 20px 0 0",
+                      }} />
+
+                      {/* Watermark number */}
+                      <div style={{
+                        position:"absolute", bottom:-10, right:4,
+                        fontSize:"7rem", fontWeight:900, lineHeight:1,
+                        color: step.color, opacity: isDark ? 0.07 : 0.06,
+                        pointerEvents:"none", userSelect:"none",
+                        fontVariantNumeric:"tabular-nums",
+                      }}>{step.num}</div>
+
+                      {/* Icon badge */}
+                      <motion.div
+                        whileInView={{ scale:[0.6,1.15,1] }}
+                        viewport={{ once:true }}
+                        transition={{ delay: i * 0.12 + 0.35, duration:0.5, ease:[0.22,1,0.36,1] }}
+                        style={{
+                          width:52, height:52, borderRadius:"50%", flexShrink:0,
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          background:`linear-gradient(135deg,${step.color},${step.color}cc)`,
+                          boxShadow:`0 6px 22px ${step.color}55`,
+                          color:"white", zIndex:1,
+                        }}
+                      >
+                        {step.icon}
+                      </motion.div>
+
+                      {/* Text */}
+                      <div style={{ zIndex:1 }}>
+                        <div style={{ fontWeight:800, fontSize:"15px", color:T.text, lineHeight:1.3, marginBottom:4 }}>
+                          {step.label}
+                        </div>
+                        <div style={{ fontSize:"12px", color:T.muted, marginBottom:12 }}>
+                          {step.sub}
+                        </div>
+                        {/* Stats pill */}
+                        <div style={{
+                          display:"inline-flex", alignItems:"center", gap:6,
+                          padding:"4px 12px", borderRadius:999,
+                          background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+                          border:`1px solid ${step.color}30`,
+                        }}>
+                          <div style={{ width:6, height:6, borderRadius:"50%", background:step.color, boxShadow:`0 0 6px ${step.color}` }} />
+                          <span style={{ fontSize:"11px", fontWeight:600, color:T.text2 }}>
+                            {step.topics} topics · {step.mcqs} MCQs
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </>
+              </div>
+            ) : (
+              /* ── Mobile vertical stack ── */
+              <div style={{ position:"relative", paddingLeft:28 }}>
+                {/* Vertical track */}
+                <div style={{
+                  position:"absolute", left:11, top:8, bottom:8, width:2,
+                  background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)",
+                  borderRadius:2,
+                }} />
+                <motion.div
+                  initial={{ scaleY:0 }} whileInView={{ scaleY:1 }} viewport={{ once:true }}
+                  transition={{ duration:1.4, ease:[0.22,1,0.36,1] }}
+                  style={{
+                    position:"absolute", left:11, top:8, bottom:8, width:2,
+                    background:"linear-gradient(180deg,#2563EB,#7C3AED,#0EA5E9,#059669,#DC2626)",
+                    borderRadius:2, transformOrigin:"top",
+                  }}
+                />
+
+                <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+                  {ROADMAP.map((step, i) => (
+                    <motion.div key={step.num}
+                      initial={mounted ? { opacity:0, x:20 } : false}
+                      whileInView={{ opacity:1, x:0 }}
+                      viewport={{ once:true }}
+                      transition={{ delay: i * 0.1, duration:0.45, ease:[0.22,1,0.36,1] }}
+                      style={{
+                        position:"relative", overflow:"hidden",
+                        borderRadius:16,
+                        background: isDark ? step.darkBg : step.lightBg,
+                        border:`1px solid ${isDark ? step.color+"30" : step.color+"40"}`,
+                        padding:"16px 18px",
+                        display:"flex", alignItems:"center", gap:14,
+                        boxShadow:`0 2px 16px ${step.color}15`,
+                      }}
+                    >
+                      {/* Left accent */}
+                      <div style={{
+                        position:"absolute", top:0, left:0, bottom:0, width:3,
+                        background:`linear-gradient(180deg,${step.color},${step.color}88)`,
+                        borderRadius:"16px 0 0 16px",
+                      }} />
+                      {/* Node dot on the line */}
+                      <div style={{
+                        position:"absolute", left:-34, top:"50%", transform:"translateY(-50%)",
+                        width:14, height:14, borderRadius:"50%",
+                        background:step.color, boxShadow:`0 0 10px ${step.color}`,
+                        border:`2px solid ${isDark ? "#07090F" : "#EEF3FF"}`,
+                        zIndex:2,
+                      }} />
+
+                      {/* Icon */}
+                      <div style={{
+                        width:44, height:44, borderRadius:"50%", flexShrink:0,
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        background:`linear-gradient(135deg,${step.color},${step.color}cc)`,
+                        boxShadow:`0 4px 14px ${step.color}50`,
+                        color:"white",
+                      }}>
+                        {step.icon}
+                      </div>
+
+                      {/* Text */}
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ fontWeight:800, fontSize:"14px", color:T.text }}>{step.label}</div>
+                        <div style={{ fontSize:"12px", color:T.muted, marginTop:2 }}>{step.sub}</div>
+                        <div style={{ fontSize:"11px", color:T.text2, marginTop:5, fontWeight:600 }}>
+                          {step.topics} topics · {step.mcqs} MCQs
+                        </div>
+                      </div>
+
+                      {/* Step number badge */}
+                      <div style={{
+                        width:28, height:28, borderRadius:"50%", flexShrink:0,
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+                        border:`1px solid ${step.color}40`,
+                        fontSize:"12px", fontWeight:900, color:step.color,
+                      }}>{step.num}</div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </section>
 
