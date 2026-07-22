@@ -204,7 +204,7 @@ export default function ChapterViewer({ chapter, user }: Props) {
           </div>
 
           {/* Content area */}
-          <div style={{ maxWidth: 760, margin: "0 auto", padding: "40px 24px 60px" }}>
+          <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 32px 60px" }}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentId}
@@ -342,7 +342,7 @@ function ChapterSkeleton({ isDark }: { isDark: boolean }) {
           <div key={i} style={{ height: 48, background: skelBg, borderRadius: 12, marginBottom: 8, animation: "pulse 1.5s infinite" }} />
         ))}
       </div>
-      <div style={{ flex: 1, padding: "40px 24px", maxWidth: 760, margin: "0 auto" }}>
+      <div style={{ flex: 1, padding: "40px 32px", maxWidth: 900, margin: "0 auto" }}>
         <div style={{ height: 32, width: "55%", background: skelBg, borderRadius: 10, marginBottom: 16, animation: "pulse 1.5s infinite" }} />
         <div style={{ height: 16, background: skelBg, borderRadius: 8, marginBottom: 12, animation: "pulse 1.5s infinite" }} />
         <div style={{ height: 16, width: "85%", background: skelBg, borderRadius: 8, marginBottom: 12, animation: "pulse 1.5s infinite" }} />

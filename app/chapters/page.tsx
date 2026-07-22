@@ -570,7 +570,7 @@ export default function ChaptersPage() {
         padding: "22px 24px",
         overflowX: "auto",
       }}>
-        <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 0 }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 0 }}>
           {([
             { num: "01", label: "Startup",      accent: "#3B82F6", rgb: "59,130,246",   Icon: Shield   },
             { num: "02", label: "How PC Works", accent: "#06B6D4", rgb: "6,182,212",    Icon: Cpu      },
@@ -619,7 +619,7 @@ export default function ChaptersPage() {
       </div>
 
       {/* ── Chapter list ── */}
-      <div style={{ maxWidth: 920, margin: "0 auto", padding: "52px 24px 110px", position: "relative" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "52px 24px 110px", position: "relative" }}>
 
         {/* Rainbow timeline line */}
         <motion.div
