@@ -244,8 +244,8 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
   const durations = TOPIC_DURATIONS[ch.id] ?? Array(ch.totalTopics).fill(20);
   const [hovered, setHovered] = useState(false);
 
-  const cardBg     = isDark ? "rgba(10,14,28,0.88)" : "rgba(255,255,255,0.94)";
-  const cardBorder = isDark ? `rgba(${glow},0.20)` : `rgba(${glow},0.16)`;
+  const cardBg     = isDark ? "rgba(255,255,255,0.055)" : "rgba(255,255,255,0.94)";
+  const cardBorder = isDark ? `rgba(${glow},0.30)` : `rgba(${glow},0.16)`;
   const titleColor = isDark ? "#F1F5F9" : "#0F172A";
   const descColor  = isDark ? "#64748B"  : "#64748B";
 
@@ -270,7 +270,7 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         boxShadow: isDark
-          ? `inset 4px 0 0 ${accent}, 0 4px 28px rgba(${glow},0.12), inset 0 1px 0 rgba(255,255,255,0.05)`
+          ? `inset 4px 0 0 ${accent}, 0 8px 40px rgba(${glow},0.22), 0 2px 8px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)`
           : `inset 4px 0 0 ${accent}, 0 4px 28px rgba(${glow},0.10), inset 0 1px 0 rgba(255,255,255,0.9)`,
       }}
     >
@@ -881,7 +881,7 @@ export default function ChaptersPage() {
       {/* ── Ambient atmosphere continuing from hero ── */}
       <div aria-hidden="true" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", zIndex: 0 }}>
         {/* Continuing dot grid — same as hero */}
-        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: isDark ? 0.10 : 0.14 }}>
+        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: isDark ? 0.14 : 0.14 }}>
           <defs>
             <pattern id="dot-grid-page" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
               <circle cx="1.5" cy="1.5" r="1.5" fill={isDark ? "#3B82F6" : "#2563EB"} />
@@ -900,22 +900,30 @@ export default function ChaptersPage() {
         </svg>
         {/* Left purple glow — mirrors hero's robot side glow */}
         <motion.div
-          animate={{ opacity: [0.18, 0.30, 0.18], x: [0, 12, 0] }}
+          animate={{ opacity: isDark ? [0.30, 0.50, 0.30] : [0.10, 0.18, 0.10], x: [0, 12, 0] }}
           transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: "absolute", top: "10%", left: "-10%", width: "50%", height: "60%", background: "radial-gradient(ellipse, rgba(139,92,246,0.18) 0%, transparent 70%)", filter: "blur(40px)" }}
+          style={{ position: "absolute", top: "10%", left: "-10%", width: "55%", height: "65%", background: "radial-gradient(ellipse, rgba(139,92,246,0.28) 0%, transparent 70%)", filter: "blur(40px)" }}
         />
         {/* Right blue glow */}
         <motion.div
-          animate={{ opacity: [0.15, 0.28, 0.15], x: [0, -10, 0] }}
+          animate={{ opacity: isDark ? [0.25, 0.42, 0.25] : [0.08, 0.15, 0.08], x: [0, -10, 0] }}
           transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          style={{ position: "absolute", top: "30%", right: "-8%", width: "45%", height: "55%", background: "radial-gradient(ellipse, rgba(37,99,235,0.16) 0%, transparent 70%)", filter: "blur(48px)" }}
+          style={{ position: "absolute", top: "25%", right: "-8%", width: "50%", height: "60%", background: "radial-gradient(ellipse, rgba(37,99,235,0.24) 0%, transparent 70%)", filter: "blur(48px)" }}
         />
         {/* Center bottom glow — anchors the section */}
         <motion.div
-          animate={{ opacity: [0.10, 0.20, 0.10] }}
+          animate={{ opacity: isDark ? [0.18, 0.32, 0.18] : [0.06, 0.12, 0.06] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          style={{ position: "absolute", bottom: "5%", left: "50%", transform: "translateX(-50%)", width: "60%", height: "40%", background: "radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%)", filter: "blur(60px)" }}
+          style={{ position: "absolute", bottom: "5%", left: "50%", transform: "translateX(-50%)", width: "70%", height: "45%", background: "radial-gradient(ellipse, rgba(124,58,237,0.20) 0%, transparent 70%)", filter: "blur(60px)" }}
         />
+        {/* Top-of-section cyan accent streak */}
+        {isDark && (
+          <motion.div
+            animate={{ opacity: [0.12, 0.22, 0.12] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+            style={{ position: "absolute", top: "0%", right: "20%", width: "30%", height: "35%", background: "radial-gradient(ellipse, rgba(6,182,212,0.18) 0%, transparent 70%)", filter: "blur(50px)" }}
+          />
+        )}
       </div>
 
       {/* ── Section header ── */}
@@ -924,7 +932,7 @@ export default function ChaptersPage() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        style={{ maxWidth: 860, margin: "0 auto", padding: "52px 24px 0", position: "relative", zIndex: 1 }}
+        style={{ maxWidth: 1140, margin: "0 auto", padding: "52px 32px 0", position: "relative", zIndex: 1 }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
           <motion.div
@@ -938,7 +946,7 @@ export default function ChaptersPage() {
               transition={{ duration: 2, repeat: Infinity }}
               style={{ width: 6, height: 6, borderRadius: "50%", background: "linear-gradient(135deg,#2563EB,#7C3AED)" }}
             />
-            <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase", color: isDark ? "rgba(255,255,255,0.35)" : "rgba(37,99,235,0.55)", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase", color: isDark ? "rgba(139,92,246,0.85)" : "rgba(37,99,235,0.55)", whiteSpace: "nowrap" }}>
               Choose Your Chapter
             </span>
             <motion.div
@@ -956,7 +964,7 @@ export default function ChaptersPage() {
       </motion.div>
 
       {/* ── Chapter list ── */}
-      <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 24px 110px", position: "relative", zIndex: 1 }}>
+      <div style={{ maxWidth: 1140, margin: "0 auto", padding: "0 32px 110px", position: "relative", zIndex: 1 }}>
         {chapterData.map(({ ch, vis, stats, topicStatuses }, i) => (
           <motion.div
             key={ch.id}
