@@ -510,7 +510,112 @@ export default function ChaptersPage() {
               </motion.div>
             ))}
           </motion.div>
+
+          {/* ── Skills tag cloud ── */}
+          <motion.div variants={heroI} style={{ marginTop: 44 }}>
+            <div style={{
+              display: "flex", alignItems: "center", gap: 14,
+              maxWidth: 560, margin: "0 auto 20px",
+            }}>
+              <div style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
+              <span style={{ fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: textMuted, whiteSpace: "nowrap" }}>
+                Skills You&apos;ll Master
+              </span>
+              <div style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 9, justifyContent: "center", maxWidth: 620, margin: "0 auto" }}>
+              {([
+                ["Kali Linux",       "244,63,94"],
+                ["Nmap",             "37,99,235"],
+                ["Wireshark",        "124,58,237"],
+                ["Bash Scripting",   "16,185,129"],
+                ["TCP/IP",           "6,182,212"],
+                ["OSINT",            "245,158,11"],
+                ["Metasploit",       "244,63,94"],
+                ["Ethical Hacking",  "37,99,235"],
+                ["Network Security", "124,58,237"],
+                ["Linux CLI",        "16,185,129"],
+                ["Cryptography",     "245,158,11"],
+                ["Reconnaissance",   "6,182,212"],
+              ] as [string, string][]).map(([skill, rgb], i) => (
+                <motion.span
+                  key={skill}
+                  initial={mounted ? { opacity: 0, scale: 0.75, y: 8 } : false}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ delay: 0.55 + i * 0.04, type: "spring", stiffness: 320, damping: 20 }}
+                  whileHover={{ scale: 1.08, y: -2 }}
+                  style={{
+                    fontSize: "12px", fontWeight: 600, padding: "6px 15px", borderRadius: 999,
+                    background: isDark ? `rgba(${rgb},0.12)` : `rgba(${rgb},0.09)`,
+                    border: `1px solid rgba(${rgb},0.25)`,
+                    color: isDark ? `rgba(${rgb},1)` : `rgb(${rgb})`,
+                    cursor: "default",
+                    boxShadow: `0 2px 10px rgba(${rgb},0.12)`,
+                  }}
+                >
+                  {skill}
+                </motion.span>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
+      </div>
+
+      {/* ── Chapter Journey strip ── */}
+      <div style={{
+        background: isDark ? "rgba(255,255,255,0.025)" : "rgba(255,255,255,0.7)",
+        borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(37,99,235,0.10)"}`,
+        borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(37,99,235,0.10)"}`,
+        backdropFilter: "blur(12px)",
+        padding: "22px 24px",
+        overflowX: "auto",
+      }}>
+        <div style={{ maxWidth: 860, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 0 }}>
+          {([
+            { num: "01", label: "Startup",      accent: "#3B82F6", rgb: "59,130,246",   Icon: Shield   },
+            { num: "02", label: "How PC Works", accent: "#06B6D4", rgb: "6,182,212",    Icon: Cpu      },
+            { num: "03", label: "Networking",   accent: "#8B5CF6", rgb: "139,92,246",   Icon: Wifi     },
+            { num: "04", label: "Linux CLI",    accent: "#10B981", rgb: "16,185,129",   Icon: Terminal },
+            { num: "05", label: "Kali Linux",   accent: "#F43F5E", rgb: "244,63,94",    Icon: Code2    },
+          ] as { num: string; label: string; accent: string; rgb: string; Icon: React.ElementType }[]).map((c, i) => (
+            <div key={c.num} style={{ display: "flex", alignItems: "center" }}>
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 + i * 0.1, type: "spring", stiffness: 300, damping: 22 }}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, minWidth: 80 }}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.15, boxShadow: `0 0 22px rgba(${c.rgb},0.55)` }}
+                  transition={{ type: "spring", stiffness: 360, damping: 18 }}
+                  style={{
+                    width: 46, height: 46, borderRadius: 14,
+                    background: `linear-gradient(135deg, ${c.accent}, ${c.accent}bb)`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: `0 4px 16px rgba(${c.rgb},0.32)`,
+                    cursor: "default",
+                  }}
+                >
+                  <c.Icon size={20} color="#fff" strokeWidth={1.75} />
+                </motion.div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: "9.5px", fontWeight: 800, letterSpacing: "0.10em", color: c.accent, textTransform: "uppercase" }}>
+                    CH {c.num}
+                  </div>
+                  <div style={{ fontSize: "11px", fontWeight: 600, color: textMuted, marginTop: 1, whiteSpace: "nowrap" }}>
+                    {c.label}
+                  </div>
+                </div>
+              </motion.div>
+              {i < 4 && (
+                <div style={{ width: 48, height: 2, margin: "0 4px", marginBottom: 28,
+                  background: `linear-gradient(90deg, ${c.accent}88, ${["#06B6D4","#8B5CF6","#10B981","#F43F5E"][i]}88)`,
+                  flexShrink: 0,
+                }} />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── Chapter list ── */}
