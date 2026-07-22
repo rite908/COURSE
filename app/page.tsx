@@ -91,6 +91,33 @@ const ROADMAP = [
   { num: 5, label: "Kali Linux",         sub: "Chapter 5", color: "#DC2626" },
 ];
 
+/* ─── Count-up animation component ─── */
+function CountUp({ to, suffix = "", duration = 1.4, delay = 0 }: { to: number; suffix?: string; duration?: number; delay?: number }) {
+  const [val, setVal] = useState(0);
+  const ref  = useRef<HTMLSpanElement>(null);
+  const ran  = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting || ran.current) return;
+      ran.current = true;
+      const t0 = performance.now() + delay * 1000;
+      const tick = (now: number) => {
+        if (now < t0) { requestAnimationFrame(tick); return; }
+        const p = Math.min((now - t0) / (duration * 1000), 1);
+        setVal(Math.round((1 - Math.pow(1 - p, 3)) * to));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      obs.disconnect();
+    }, { threshold: 0.4 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [to, duration, delay]);
+  return <span ref={ref}>{val}{suffix}</span>;
+}
+
 /* ─── Max-width content container ─── */
 const MAX = 1180;
 
@@ -656,20 +683,21 @@ export default function LandingPage() {
                 <Chip icon={<BookOpen size={12} color="#3B82F6" />} label="Course Content" />
               </motion.div>
 
-              {/* Animated stat bubbles */}
+              {/* Animated stat bubbles — count-up numbers */}
               <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", marginBottom: 28 }}>
                 {[
-                  { value: "5",    label: "Chapters", color: "#2563EB", lightBg: "#EEF3FF", darkBg: "rgba(37,99,235,0.12)" },
-                  { value: "41",   label: "Topics",   color: "#7C3AED", lightBg: "#F3EEFF", darkBg: "rgba(124,58,237,0.12)" },
-                  { value: "615+", label: "MCQs",     color: "#0EA5E9", lightBg: "#F0F9FF", darkBg: "rgba(14,165,233,0.12)" },
+                  { to: 5,   suffix: "",  label: "Chapters", color: "#2563EB", lightBg: "#EEF3FF", darkBg: "rgba(37,99,235,0.12)" },
+                  { to: 41,  suffix: "",  label: "Topics",   color: "#7C3AED", lightBg: "#F3EEFF", darkBg: "rgba(124,58,237,0.12)" },
+                  { to: 615, suffix: "+", label: "MCQs",     color: "#0EA5E9", lightBg: "#F0F9FF", darkBg: "rgba(14,165,233,0.12)" },
                 ].map((stat, i) => (
                   <motion.div key={stat.label}
                     initial={mounted ? { opacity: 0, scale: 0.75, y: 14 } : false}
                     whileInView={{ opacity: 1, scale: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={{ scale: 1.06, transition: { duration: 0.18 } }}
+                    whileHover={{ scale: 1.06, boxShadow: isDark ? `0 8px 32px ${stat.color}40` : `0 8px 24px ${stat.color}20`, transition: { duration: 0.18 } }}
                     style={{
+                      position: "relative", overflow: "hidden",
                       display: "inline-flex", flexDirection: "column", alignItems: "center",
                       padding: "14px 28px", borderRadius: 18,
                       background: isDark ? stat.darkBg : stat.lightBg,
@@ -678,12 +706,25 @@ export default function LandingPage() {
                       cursor: "default",
                     }}
                   >
+                    {/* Shimmer sweep on hover */}
+                    <motion.div
+                      variants={{ hovered: { x: "300%", transition: { duration: 0.55, ease: "easeInOut" } } }}
+                      initial={{ x: "-100%" }}
+                      style={{
+                        position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
+                        background: `linear-gradient(90deg,transparent 20%,${stat.color}18 50%,transparent 80%)`,
+                        transform: "skewX(-20deg)",
+                      }}
+                    />
                     <span style={{
+                      position: "relative", zIndex: 1,
                       fontSize: isLg ? "2.2rem" : "1.8rem", fontWeight: 900, lineHeight: 1,
                       background: `linear-gradient(135deg,${stat.color},${stat.color}bb)`,
                       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-                    }}>{stat.value}</span>
-                    <span style={{ fontSize: "11px", fontWeight: 700, color: stat.color, opacity: 0.75, textTransform: "uppercase", letterSpacing: "0.09em", marginTop: 5 }}>{stat.label}</span>
+                    }}>
+                      {mounted ? <CountUp to={stat.to} suffix={stat.suffix} delay={i * 0.15} /> : `${stat.to}${stat.suffix}`}
+                    </span>
+                    <span style={{ position: "relative", zIndex: 1, fontSize: "11px", fontWeight: 700, color: stat.color, opacity: 0.75, textTransform: "uppercase", letterSpacing: "0.09em", marginTop: 5 }}>{stat.label}</span>
                   </motion.div>
                 ))}
               </div>
@@ -725,6 +766,7 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.07, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover="hovered"
                     style={{
                       position: "relative",
                       borderRadius: 20, background: T.card,
@@ -736,6 +778,16 @@ export default function LandingPage() {
                       transition: "border-color 0.3s, box-shadow 0.3s",
                     }}
                   >
+                    {/* Shimmer sweep on hover */}
+                    <motion.div
+                      variants={{ hovered: { x: "260%", transition: { duration: 0.6, ease: "easeInOut" } } }}
+                      initial={{ x: "-100%" }}
+                      style={{
+                        position: "absolute", inset: 0, zIndex: 4, pointerEvents: "none",
+                        background: `linear-gradient(90deg,transparent 20%,${ch.color}0E 50%,transparent 80%)`,
+                        transform: "skewX(-18deg)",
+                      }}
+                    />
                     {/* Left border strip — animated height */}
                     <motion.div
                       animate={{
@@ -839,25 +891,39 @@ export default function LandingPage() {
                         {/* Stats row */}
                         <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
                           {[
-                            { icon: <Layers size={11} color={ch.color} />,      text: `${ch.topics.length} topics`, color: ch.color },
-                            { icon: <HelpCircle size={11} color={ch.color} />,  text: `${ch.mcqs} MCQs`,            color: ch.color },
-                            { icon: <CheckCircle2 size={11} color="#059669" />, text: "Available",                  color: "#059669" },
+                            { icon: <Layers size={11} color={ch.color} />,     text: `${ch.topics.length} topics`, color: ch.color },
+                            { icon: <HelpCircle size={11} color={ch.color} />, text: `${ch.mcqs} MCQs`,            color: ch.color },
                           ].map(({ icon, text, color }) => (
                             <span key={text} style={{ fontSize: "12px", color, display: "flex", alignItems: "center", gap: 5, fontWeight: 600 }}>
                               {icon}{text}
                             </span>
                           ))}
+                          {/* Pulsing live "Available" dot */}
+                          <span style={{ fontSize: "12px", color: "#059669", display: "flex", alignItems: "center", gap: 6, fontWeight: 600 }}>
+                            <span style={{ position: "relative", display: "inline-flex", width: 10, height: 10 }}>
+                              <motion.span
+                                animate={{ scale: [1, 2.2, 1], opacity: [0.7, 0, 0.7] }}
+                                transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+                                style={{
+                                  position: "absolute", inset: 0, borderRadius: "50%",
+                                  background: "#059669", display: "block",
+                                }}
+                              />
+                              <span style={{ position: "relative", width: 10, height: 10, borderRadius: "50%", background: "#059669", display: "block" }} />
+                            </span>
+                            Available
+                          </span>
 
-                          {/* Animated MCQ progress bar */}
+                          {/* MCQ content bar — real weight out of 615 total */}
                           <div style={{ display: "flex", alignItems: "center", gap: 7, marginLeft: "auto" }}>
                             <div style={{
-                              width: 64, height: 4, borderRadius: 3,
+                              width: 72, height: 4, borderRadius: 3,
                               background: isDark ? "rgba(255,255,255,0.07)" : "#E5E7EB",
                               overflow: "hidden",
                             }}>
                               <motion.div
                                 initial={{ width: 0 }}
-                                whileInView={{ width: `${Math.round((ch.mcqs / 180) * 100)}%` }}
+                                whileInView={{ width: `${Math.round((ch.mcqs / 615) * 100)}%` }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 + 0.4, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
                                 style={{
@@ -867,8 +933,8 @@ export default function LandingPage() {
                                 }}
                               />
                             </div>
-                            <span style={{ fontSize: "10px", color: T.muted, fontWeight: 600 }}>
-                              {Math.round((ch.mcqs / 180) * 100)}%
+                            <span style={{ fontSize: "10px", color: ch.color, fontWeight: 700 }}>
+                              {ch.mcqs} MCQs
                             </span>
                           </div>
                         </div>
