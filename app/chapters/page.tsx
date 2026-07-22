@@ -482,9 +482,9 @@ function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
       transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
       aria-hidden="true"
       style={{
-        position: "absolute", left: -155, top: "50%", transform: "translateY(-50%)",
+        position: "absolute", left: -260, top: 0,
         zIndex: 1, pointerEvents: "none", userSelect: "none",
-        width: 390, height: 510,
+        width: 580, height: "100%",
       }}
     >
       <motion.div
@@ -498,9 +498,9 @@ function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
           animate={{ opacity: [0.38, 0.65, 0.38] }}
           transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            position: "absolute", inset: "-28%",
+            position: "absolute", inset: "-20%",
             background: "radial-gradient(ellipse 55% 65% at 62% 50%, rgba(139,92,246,0.35) 0%, transparent 68%)",
-            filter: "blur(22px)", zIndex: 0, pointerEvents: "none",
+            filter: "blur(28px)", zIndex: 0, pointerEvents: "none",
           }}
         />
         {/* Faint circuit traces */}
@@ -524,7 +524,7 @@ function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
           style={{
             position: "relative", zIndex: 3,
             width: "100%", height: "100%",
-            objectFit: "cover", objectPosition: "12% center",
+            objectFit: "cover", objectPosition: "0% center",
           }}
         />
         {/* Soft digital particles */}
@@ -560,9 +560,9 @@ function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounte
       transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
       aria-hidden="true"
       style={{
-        position: "absolute", right: -155, top: "50%", transform: "translateY(-50%)",
+        position: "absolute", right: -260, top: 0,
         zIndex: 1, pointerEvents: "none", userSelect: "none",
-        width: 390, height: 510,
+        width: 580, height: "100%",
       }}
     >
       <motion.div
@@ -576,9 +576,9 @@ function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounte
           animate={{ opacity: [0.38, 0.65, 0.38] }}
           transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           style={{
-            position: "absolute", inset: "-28%",
+            position: "absolute", inset: "-20%",
             background: "radial-gradient(ellipse 55% 65% at 38% 50%, rgba(139,92,246,0.35) 0%, transparent 68%)",
-            filter: "blur(22px)", zIndex: 0, pointerEvents: "none",
+            filter: "blur(28px)", zIndex: 0, pointerEvents: "none",
           }}
         />
         {/* Faint circuit traces */}
