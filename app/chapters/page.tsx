@@ -12,7 +12,7 @@ import { CHAPTERS } from "@/lib/chapters";
 import { getCurrentUser, getChapterStats, getUserProgress, type UserName } from "@/lib/storage";
 import { useTheme } from "@/lib/theme";
 
-// ── Chapter visual config ─────────────────────────────────────────────────
+// ── Config ────────────────────────────────────────────────────────────────
 
 const VISUALS = {
   "1": { accent: "#2563EB", bg: "rgba(37,99,235,0.14)",  Icon: Shield,   difficulty: "Beginner", diffColor: "#059669", hours: "2h 15m", mcqs: 90  },
@@ -30,36 +30,61 @@ const TOPIC_DURATIONS: Record<string, number[]> = {
   "5": [30, 35, 40, 38, 42, 40],
 };
 
-// ── Small components ──────────────────────────────────────────────────────
+// ── ProgressRing ──────────────────────────────────────────────────────────
 
 function ProgressRing({ percent, accent, isDark }: { percent: number; accent: string; isDark: boolean }) {
+  const [display, setDisplay] = useState(0);
   const size = 64, r = 26, circ = 2 * Math.PI * r;
-  const offset = circ - (percent / 100) * circ;
+
+  // Smooth count-up animation
+  useEffect(() => {
+    if (percent === 0) { setDisplay(0); return; }
+    const duration = 1100;
+    const startTime = Date.now();
+    let raf: number;
+    const tick = () => {
+      const p = Math.min((Date.now() - startTime) / duration, 1);
+      setDisplay(Math.round((1 - Math.pow(1 - p, 3)) * percent));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [percent]);
+
   const trackColor = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
-  const zeroColor  = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)";
+  const zeroColor  = isDark ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.22)";
+
   return (
     <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
         <circle cx={32} cy={32} r={r} fill="none" stroke={trackColor} strokeWidth={4} />
-        <circle
+        <motion.circle
           cx={32} cy={32} r={r} fill="none"
           stroke={accent} strokeWidth={4} strokeLinecap="round"
           strokeDasharray={circ}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 0.9s ease" }}
+          initial={{ strokeDashoffset: circ }}
+          animate={{ strokeDashoffset: circ - (percent / 100) * circ }}
+          transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
         />
       </svg>
-      <span style={{
-        position: "absolute", inset: 0,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: "13px", fontWeight: 700,
-        color: percent > 0 ? accent : zeroColor,
-      }}>
-        {percent}%
-      </span>
+      <motion.span
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, delay: 0.6 }}
+        style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "13px", fontWeight: 700,
+          color: percent > 0 ? accent : zeroColor,
+        }}
+      >
+        {display}%
+      </motion.span>
     </div>
   );
 }
+
+// ── DifficultyBadge ───────────────────────────────────────────────────────
 
 function DifficultyBadge({ label, color }: { label: string; color: string }) {
   return (
@@ -72,33 +97,47 @@ function DifficultyBadge({ label, color }: { label: string; color: string }) {
   );
 }
 
+// ── HexIcon ───────────────────────────────────────────────────────────────
+
 function HexIcon({ accent, bg, Icon }: { accent: string; bg: string; Icon: React.ElementType }) {
   return (
-    <div style={{
-      width: 56, height: 56, flexShrink: 0,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      background: bg,
-      clipPath: "polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%)",
-    }}>
+    <motion.div
+      whileHover={{ scale: 1.1, filter: `drop-shadow(0 0 10px ${accent}90)` }}
+      transition={{ type: "spring", stiffness: 380, damping: 22 }}
+      style={{
+        width: 56, height: 56, flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: bg,
+        clipPath: "polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%)",
+      }}
+    >
       <Icon size={22} color={accent} strokeWidth={1.8} />
-    </div>
+    </motion.div>
   );
 }
 
+// ── TopicRow ──────────────────────────────────────────────────────────────
+
 function TopicRow({
-  topicId, accent, mins, status, isDark,
+  topicId, accent, mins, status, isDark, index,
 }: {
-  topicId: string; accent: string; mins: number; status: "done" | "current" | "locked"; isDark: boolean;
+  topicId: string; accent: string; mins: number;
+  status: "done" | "current" | "locked"; isDark: boolean; index: number;
 }) {
   const lockedColor = isDark ? "#475569" : "#9CA3AF";
   const doneColor   = isDark ? "#94A3B8"  : "#6B7280";
   return (
-    <div style={{
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "9px 14px", borderRadius: 8,
-      background: status === "current" ? accent + "12" : "transparent",
-      border: `1px solid ${status === "current" ? accent + "28" : "transparent"}`,
-    }}>
+    <motion.div
+      initial={{ opacity: 0, x: -14 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.28, ease: "easeOut", delay: index * 0.05 }}
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "9px 14px", borderRadius: 8,
+        background: status === "current" ? accent + "12" : "transparent",
+        border: `1px solid ${status === "current" ? accent + "28" : "transparent"}`,
+      }}
+    >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         {status === "done"    && <CheckCircle size={14} color="#10B981" />}
         {status === "current" && <Play        size={14} color={accent}  />}
@@ -112,7 +151,7 @@ function TopicRow({
         </span>
       </div>
       <span style={{ fontSize: "12px", color: lockedColor }}>{mins} min</span>
-    </div>
+    </motion.div>
   );
 }
 
@@ -132,37 +171,47 @@ function ChapterCard({
   isDark: boolean;
 }) {
   const { Icon, accent, bg, difficulty, diffColor, hours, mcqs } = vis;
-  const isStarted = stats.percent > 0;
-  const durations = TOPIC_DURATIONS[ch.id] ?? Array(ch.totalTopics).fill(20);
+  const isStarted  = stats.percent > 0;
+  const durations  = TOPIC_DURATIONS[ch.id] ?? Array(ch.totalTopics).fill(20);
   const cardBg     = isDark ? "#0D1117" : "#FFFFFF";
   const cardBorder = isDark ? "#1E2433" : "#E5E7EB";
   const metaColor  = isDark ? "#64748B" : "#9CA3AF";
   const titleColor = isDark ? "#F1F5F9" : "#111827";
   const descColor  = isDark ? "#64748B" : "#6B7280";
-  const btnHoverBg = isDark ? "rgba(255,255,255,0.07)" : "#F3F4F6";
+  const btnIdleBg  = isDark ? "rgba(255,255,255,0.07)" : "#F3F4F6";
   const chevronCol = isDark ? "#64748B" : "#9CA3AF";
 
   return (
     <motion.div
       layout
-      whileHover={{ y: -4, boxShadow: `0 8px 32px ${accent}22` }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      whileHover={{ y: -5, boxShadow: `0 14px 44px ${accent}28` }}
+      transition={{ type: "spring", stiffness: 270, damping: 26 }}
       style={{
         background: cardBg,
-        border: `1px solid ${isExpanded ? accent + "40" : cardBorder}`,
+        border: `1px solid ${isExpanded ? accent + "45" : cardBorder}`,
         borderRadius: 16, overflow: "hidden",
         transition: "border-color 0.3s",
       }}
     >
-      {/* Accent top stripe */}
-      <div style={{ height: 2, background: `linear-gradient(90deg,${accent},${accent}44)` }} />
+      {/* Top stripe — sweeps in from left */}
+      <motion.div
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.65, ease: "easeOut", delay: 0.15 }}
+        style={{
+          height: 2, transformOrigin: "left",
+          background: `linear-gradient(90deg,${accent},${accent}44)`,
+        }}
+      />
 
       {/* Card body */}
       <div style={{ padding: "22px 24px 20px", display: "flex", alignItems: "center", gap: 20 }}>
-        {/* Hex icon */}
         <HexIcon accent={accent} bg={bg} Icon={Icon} />
 
-        {/* Text content */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5, flexWrap: "wrap" }}>
             <span style={{ fontSize: "11px", fontWeight: 700, color: accent, letterSpacing: "0.06em" }}>
@@ -180,9 +229,9 @@ function ChapterCard({
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
             {([
-              [BookOpen,    `${ch.totalTopics} Topics`],
-              [HelpCircle,  `${mcqs} MCQs`],
-              [Clock,       hours],
+              [BookOpen,   `${ch.totalTopics} Topics`],
+              [HelpCircle, `${mcqs} MCQs`],
+              [Clock,      hours],
             ] as [React.ElementType, string][]).map(([MI, text]) => (
               <span key={text} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "12px", color: metaColor }}>
                 <MI size={11} />{text}
@@ -191,19 +240,19 @@ function ChapterCard({
           </div>
         </div>
 
-        {/* Right: progress + button + chevron */}
+        {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: 14, flexShrink: 0 }}>
           <ProgressRing percent={stats.percent} accent={accent} isDark={isDark} />
 
           <Link href={`/chapter/${ch.id}`} style={{ textDecoration: "none" }}>
             <motion.button
-              whileHover={{ boxShadow: isStarted ? `0 0 18px ${accent}55` : undefined }}
+              whileHover={{ scale: 1.05, boxShadow: isStarted ? `0 0 22px ${accent}55` : undefined }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
               style={{
                 padding: "9px 16px", borderRadius: 10, border: "none", cursor: "pointer",
                 fontSize: "13px", fontWeight: 600, whiteSpace: "nowrap",
-                background: isStarted
-                  ? "linear-gradient(135deg,#2563EB,#7C3AED)"
-                  : btnHoverBg,
+                background: isStarted ? "linear-gradient(135deg,#2563EB,#7C3AED)" : btnIdleBg,
                 color: isStarted ? "#FFFFFF" : titleColor,
               }}
             >
@@ -211,18 +260,17 @@ function ChapterCard({
             </motion.button>
           </Link>
 
-          <button
+          {/* Chevron — Framer Motion handles rotation */}
+          <motion.button
             onClick={onToggle}
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            whileHover={{ scale: 1.2, color: isDark ? "#94A3B8" : "#6B7280" }}
+            transition={{ duration: 0.28, ease: "easeInOut" }}
             aria-label="Toggle topics"
-            style={{
-              background: "none", border: "none", cursor: "pointer", padding: 4,
-              color: chevronCol, display: "flex", alignItems: "center",
-              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.3s ease",
-            }}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: chevronCol, display: "flex" }}
           >
             <ChevronDown size={20} />
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -234,7 +282,7 @@ function ChapterCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: "easeInOut" }}
+            transition={{ duration: 0.32, ease: "easeInOut" }}
             style={{ overflow: "hidden" }}
           >
             <div style={{
@@ -250,6 +298,7 @@ function ChapterCard({
                   mins={durations[i] ?? 20}
                   status={status}
                   isDark={isDark}
+                  index={i}
                 />
               ))}
             </div>
@@ -262,6 +311,15 @@ function ChapterCard({
 
 // ── Page ──────────────────────────────────────────────────────────────────
 
+const heroVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+const heroItem = {
+  hidden:   { opacity: 0, y: -18 },
+  visible:  { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+};
+
 export default function ChaptersPage() {
   const { isDark } = useTheme();
   const [user,     setUser]     = useState<UserName | null>(null);
@@ -273,19 +331,18 @@ export default function ChaptersPage() {
     setMounted(true);
   }, []);
 
-  const bg     = isDark ? "#060912" : "#F8FAFF";
-  const heroBg = isDark ? "linear-gradient(180deg,#0A0E1A,#060912)" : "linear-gradient(180deg,#F5F8FF,#FFFFFF)";
+  const bg          = isDark ? "#060912" : "#F8FAFF";
+  const heroBg      = isDark ? "linear-gradient(180deg,#0A0E1A,#060912)" : "linear-gradient(180deg,#F5F8FF,#FFFFFF)";
   const textPrimary = isDark ? "#F1F5F9" : "#111827";
   const textMuted   = isDark ? "#64748B"  : "#9CA3AF";
-  const chipBg  = isDark ? "rgba(37,99,235,0.15)" : "#EFF6FF";
-  const chipBdr = isDark ? "rgba(37,99,235,0.35)" : "#DBEAFE";
-  const chipTxt = isDark ? "#60A5FA" : "#2563EB";
-  const dotBorder = isDark ? "#2D3748" : "#E2E8F0";
-  const dotEmpty  = isDark ? "#1E2433" : "#CBD5E1";
+  const chipBg      = isDark ? "rgba(37,99,235,0.15)" : "#EFF6FF";
+  const chipBdr     = isDark ? "rgba(37,99,235,0.35)" : "#DBEAFE";
+  const chipTxt     = isDark ? "#60A5FA" : "#2563EB";
+  const dotBorder   = isDark ? "#2D3748" : "#E2E8F0";
+  const dotEmpty    = isDark ? "#1E2433" : "#CBD5E1";
 
-  // Pre-compute per-chapter data
   const chapterData = CHAPTERS.map((ch) => {
-    const vis = VISUALS[ch.id as keyof typeof VISUALS];
+    const vis   = VISUALS[ch.id as keyof typeof VISUALS];
     const stats = mounted && user
       ? getChapterStats(user, ch.id, ch.totalTopics)
       : { completed: 0, unlocked: 0, total: ch.totalTopics, percent: 0 };
@@ -306,74 +363,97 @@ export default function ChaptersPage() {
   return (
     <main style={{ minHeight: "100vh", background: bg, paddingTop: 68 }}>
 
-      {/* Hero */}
+      {/* ── Hero ── */}
       <div style={{ background: heroBg, padding: "64px 24px 52px", textAlign: "center" }}>
         <motion.div
-          initial={mounted ? { opacity: 0, y: -14 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
+          variants={heroVariants}
+          initial={mounted ? "hidden" : false}
+          animate="visible"
         >
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 7,
-            padding: "5px 14px", borderRadius: 999,
-            background: chipBg, border: `1px solid ${chipBdr}`, marginBottom: 18,
-          }}>
-            <BookOpen size={12} color="#3B82F6" />
-            <span style={{ fontSize: "11px", fontWeight: 700, color: chipTxt, textTransform: "uppercase", letterSpacing: "0.09em" }}>
-              Course Content
-            </span>
-          </div>
+          <motion.div variants={heroItem} style={{ display: "inline-block", marginBottom: 18 }}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 7,
+              padding: "5px 14px", borderRadius: 999,
+              background: chipBg, border: `1px solid ${chipBdr}`,
+            }}>
+              <BookOpen size={12} color="#3B82F6" />
+              <span style={{ fontSize: "11px", fontWeight: 700, color: chipTxt, textTransform: "uppercase", letterSpacing: "0.09em" }}>
+                Course Content
+              </span>
+            </div>
+          </motion.div>
 
-          <h1 style={{ fontWeight: 900, color: textPrimary, fontSize: "2.5rem", letterSpacing: "-0.03em", marginBottom: 12 }}>
+          <motion.h1 variants={heroItem}
+            style={{ fontWeight: 900, color: textPrimary, fontSize: "2.5rem", letterSpacing: "-0.03em", marginBottom: 12 }}
+          >
             5 Chapters · 41 Topics ·{" "}
             <span style={{ background: "linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               615+ MCQs
             </span>
-          </h1>
-          <p style={{ color: textMuted, fontSize: "15px", maxWidth: 500, margin: "0 auto" }}>
+          </motion.h1>
+
+          <motion.p variants={heroItem} style={{ color: textMuted, fontSize: "15px", maxWidth: 500, margin: "0 auto" }}>
             Ek structured path jo tumhe zero se ethical hacker banata hai — computers ke andar se lekar Kali Linux tak.
-          </p>
+          </motion.p>
         </motion.div>
       </div>
 
-      {/* Chapter list */}
+      {/* ── Chapter list ── */}
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "40px 24px 80px", position: "relative" }}>
 
-        {/* Timeline line */}
-        <div style={{
-          position: "absolute", left: 47, top: 52, bottom: 90, width: 1,
-          background: isDark ? "rgba(37,99,235,0.18)" : "rgba(37,99,235,0.12)",
-          boxShadow: "0 0 6px rgba(37,99,235,0.25)",
-        }} />
+        {/* Timeline line — draws downward on mount */}
+        <motion.div
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.3, ease: "easeInOut", delay: 0.25 }}
+          style={{
+            position: "absolute", left: 47, top: 52, bottom: 90, width: 1,
+            background: isDark ? "rgba(37,99,235,0.2)" : "rgba(37,99,235,0.14)",
+            boxShadow: "0 0 7px rgba(37,99,235,0.32)",
+            transformOrigin: "top",
+          }}
+        />
 
         {chapterData.map(({ ch, vis, stats, topicStatuses }, i) => (
           <div key={ch.id} style={{ position: "relative", paddingLeft: 62, marginBottom: 18 }}>
 
-            {/* Timeline dot */}
-            <div style={{
-              position: "absolute", left: 41, top: 34,
-              width: 13, height: 13, borderRadius: "50%", zIndex: 1,
-              background: stats.percent === 100 ? "#10B981" : stats.percent > 0 ? vis.accent : dotEmpty,
-              border: `2px solid ${stats.percent > 0 ? vis.accent : dotBorder}`,
-              boxShadow: stats.percent > 0 ? `0 0 10px ${vis.accent}60` : "none",
-              transition: "background 0.3s, box-shadow 0.3s",
-            }} />
-
+            {/* Timeline dot — pops in with spring, pulses if in-progress */}
             <motion.div
-              initial={mounted ? { opacity: 0, x: -16 } : false}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.07, duration: 0.38 }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 420, damping: 18, delay: 0.35 + i * 0.11 }}
+              style={{ position: "absolute", left: 41, top: 34, zIndex: 1 }}
             >
-              <ChapterCard
-                ch={ch}
-                vis={vis}
-                stats={stats}
-                topicStatuses={topicStatuses}
-                isExpanded={expanded === ch.id}
-                onToggle={() => setExpanded(prev => prev === ch.id ? null : ch.id)}
-                isDark={isDark}
-              />
+              <div style={{
+                width: 13, height: 13, borderRadius: "50%",
+                background: stats.percent === 100 ? "#10B981" : stats.percent > 0 ? vis.accent : dotEmpty,
+                border: `2px solid ${stats.percent > 0 ? vis.accent : dotBorder}`,
+                boxShadow: stats.percent > 0 ? `0 0 12px ${vis.accent}70` : "none",
+                transition: "background 0.3s, box-shadow 0.3s",
+              }} />
+              {/* Ping ring for actively in-progress chapters */}
+              {stats.percent > 0 && stats.percent < 100 && (
+                <motion.div
+                  animate={{ scale: [1, 2.2], opacity: [0.55, 0] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+                  style={{
+                    position: "absolute", inset: 0,
+                    borderRadius: "50%", border: `1.5px solid ${vis.accent}`,
+                    pointerEvents: "none",
+                  }}
+                />
+              )}
             </motion.div>
+
+            <ChapterCard
+              ch={ch}
+              vis={vis}
+              stats={stats}
+              topicStatuses={topicStatuses}
+              isExpanded={expanded === ch.id}
+              onToggle={() => setExpanded(prev => prev === ch.id ? null : ch.id)}
+              isDark={isDark}
+            />
           </div>
         ))}
       </div>
