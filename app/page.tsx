@@ -643,123 +643,319 @@ export default function LandingPage() {
       {/* ══════════════════════════
           CHAPTERS ACCORDION
       ══════════════════════════ */}
-      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0`, position: "relative", overflow: "hidden" }}>
+        {/* Section glow blobs — like hero */}
+        <div style={{ position: "absolute", left: "-8%", top: "15%", width: "42%", height: "65%", background: "radial-gradient(ellipse,rgba(37,99,235,0.07) 0%,transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", right: "-8%", bottom: "10%", width: "42%", height: "65%", background: "radial-gradient(ellipse,rgba(124,58,237,0.07) 0%,transparent 70%)", pointerEvents: "none" }} />
+
         {W(
           <>
-            <motion.div {...inView()} style={{ textAlign: "center", marginBottom: 48 }}>
-              <Chip icon={<BookOpen size={12} color="#3B82F6" />} label="Course Content" />
-              <h2 style={{
-                fontWeight: 900, color: T.text,
-                fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
-                letterSpacing: "-0.025em", marginBottom: 14,
-              }}>
-                5 Chapters · 41 Topics ·{" "}
-                <span style={{ background: "linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                  615+ MCQs
-                </span>
-              </h2>
-              <p style={{ color: T.text2, fontSize: isMd ? "16px" : "14px", maxWidth: 540, margin: "0 auto", lineHeight: 1.75 }}>
-                Ek structured path jo tumhe zero se ethical hacker banata hai — computers ke andar se lekar Kali Linux tak.
-              </p>
-            </motion.div>
+            {/* ── Header ── */}
+            <div style={{ textAlign: "center", marginBottom: 60 }}>
+              <motion.div {...inView()}>
+                <Chip icon={<BookOpen size={12} color="#3B82F6" />} label="Course Content" />
+              </motion.div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* Animated stat bubbles */}
+              <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", marginBottom: 28 }}>
+                {[
+                  { value: "5",    label: "Chapters", color: "#2563EB", lightBg: "#EEF3FF", darkBg: "rgba(37,99,235,0.12)" },
+                  { value: "41",   label: "Topics",   color: "#7C3AED", lightBg: "#F3EEFF", darkBg: "rgba(124,58,237,0.12)" },
+                  { value: "615+", label: "MCQs",     color: "#0EA5E9", lightBg: "#F0F9FF", darkBg: "rgba(14,165,233,0.12)" },
+                ].map((stat, i) => (
+                  <motion.div key={stat.label}
+                    initial={mounted ? { opacity: 0, scale: 0.75, y: 14 } : false}
+                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ scale: 1.06, transition: { duration: 0.18 } }}
+                    style={{
+                      display: "inline-flex", flexDirection: "column", alignItems: "center",
+                      padding: "14px 28px", borderRadius: 18,
+                      background: isDark ? stat.darkBg : stat.lightBg,
+                      border: `1px solid ${stat.color}30`,
+                      boxShadow: isDark ? `0 4px 24px ${stat.color}25, 0 0 0 1px ${stat.color}15` : `0 4px 16px ${stat.color}12`,
+                      cursor: "default",
+                    }}
+                  >
+                    <span style={{
+                      fontSize: isLg ? "2.2rem" : "1.8rem", fontWeight: 900, lineHeight: 1,
+                      background: `linear-gradient(135deg,${stat.color},${stat.color}bb)`,
+                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                    }}>{stat.value}</span>
+                    <span style={{ fontSize: "11px", fontWeight: 700, color: stat.color, opacity: 0.75, textTransform: "uppercase", letterSpacing: "0.09em", marginTop: 5 }}>{stat.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.h2
+                initial={mounted ? { opacity: 0, y: 16 } : false}
+                whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  fontWeight: 900, color: T.text,
+                  fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
+                  letterSpacing: "-0.025em", marginBottom: 14,
+                }}
+              >
+                Zero Se{" "}
+                <span style={{ background: "linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                  Ethical Hacker
+                </span>
+                {" "}Tak — Chapter by Chapter
+              </motion.h2>
+
+              <motion.p
+                initial={mounted ? { opacity: 0, y: 12 } : false}
+                whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: 0.38, duration: 0.5 }}
+                style={{ color: T.text2, fontSize: isMd ? "16px" : "14px", maxWidth: 540, margin: "0 auto", lineHeight: 1.75 }}
+              >
+                Ek structured path jo tumhe zero se ethical hacker banata hai — computers ke andar se lekar Kali Linux tak.
+              </motion.p>
+            </div>
+
+            {/* ── Chapter cards ── */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {CHAPTERS.map((ch, i) => {
                 const isOpen = openCh === ch.num;
                 return (
                   <motion.div key={ch.num}
-                    initial={mounted ? { opacity: 0, y: 16 } : false} whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.4 }}
+                    initial={mounted ? { opacity: 0, y: 20 } : false}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.07, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                     style={{
-                      borderRadius: 18, background: T.card,
-                      border: `1px solid ${isOpen ? ch.color + "44" : T.border}`,
+                      position: "relative",
+                      borderRadius: 20, background: T.card,
+                      border: `1px solid ${isOpen ? ch.color + "55" : T.border}`,
                       boxShadow: isOpen
-                        ? `0 4px 32px ${ch.color}20`
-                        : `0 2px 10px rgba(0,0,0,${isDark ? 0.2 : 0.04})`,
+                        ? `0 8px 48px ${ch.color}22, 0 0 0 1px ${ch.color}18`
+                        : `0 2px 14px rgba(0,0,0,${isDark ? 0.2 : 0.04})`,
                       overflow: "hidden",
-                      transition: "border-color 0.25s, box-shadow 0.25s",
+                      transition: "border-color 0.3s, box-shadow 0.3s",
                     }}
                   >
-                    {/* Header row */}
+                    {/* Left border strip — animated height */}
+                    <motion.div
+                      animate={{
+                        height: isOpen ? "100%" : "52%",
+                        opacity: isOpen ? 1 : 0.55,
+                      }}
+                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                      style={{
+                        position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)",
+                        width: 4, borderRadius: "0 3px 3px 0",
+                        background: `linear-gradient(180deg,${ch.color},${ch.color}88)`,
+                        boxShadow: isDark ? `0 0 16px ${ch.color}90` : `0 0 8px ${ch.color}40`,
+                      }}
+                    />
+
+                    {/* Background colour wash — fades in on open */}
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                          transition={{ duration: 0.35 }}
+                          style={{
+                            position: "absolute", inset: 0, pointerEvents: "none",
+                            background: isDark
+                              ? `radial-gradient(ellipse at 0% 0%, ${ch.color}0D 0%, transparent 55%)`
+                              : `radial-gradient(ellipse at 0% 0%, ${ch.color}09 0%, transparent 55%)`,
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
+
+                    {/* Large faded watermark number */}
+                    <div style={{
+                      position: "absolute", right: isMd ? 24 : 12, top: "50%",
+                      transform: "translateY(-50%)",
+                      fontSize: "7rem", fontWeight: 900, lineHeight: 1,
+                      color: ch.color, opacity: isDark ? 0.05 : 0.04,
+                      pointerEvents: "none", userSelect: "none",
+                    }}>
+                      {String(ch.num).padStart(2, "0")}
+                    </div>
+
+                    {/* ── Header button ── */}
                     <button
                       onClick={() => setOpenCh(isOpen ? null : ch.num)}
                       style={{
                         width: "100%", background: "none", border: "none", cursor: "pointer",
                         display: "flex", alignItems: "center", gap: isMd ? 20 : 14,
-                        padding: isMd ? "22px 26px" : "18px 18px", textAlign: "left",
+                        padding: isMd ? "24px 28px 24px 24px" : "18px 20px",
+                        textAlign: "left", position: "relative",
                       }}
                     >
-                      <div style={{
-                        width: 52, height: 52, borderRadius: 15, flexShrink: 0,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        background: isDark ? ch.darkBg : ch.lightBg, color: ch.color,
-                      }}>
+                      {/* Icon — glows on open */}
+                      <motion.div
+                        animate={{
+                          boxShadow: isOpen
+                            ? `0 0 0 4px ${ch.color}20, 0 0 24px ${ch.color}50`
+                            : `0 0 0 0px transparent`,
+                        }}
+                        whileHover={{ scale: 1.08, boxShadow: `0 0 0 4px ${ch.color}20, 0 0 20px ${ch.color}45` }}
+                        transition={{ duration: 0.3 }}
+                        style={{
+                          width: 56, height: 56, borderRadius: 16, flexShrink: 0,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          background: isDark ? ch.darkBg : ch.lightBg, color: ch.color,
+                          border: `1px solid ${ch.color}35`,
+                        }}
+                      >
                         {ch.icon}
-                      </div>
+                      </motion.div>
+
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontSize: "10px", fontWeight: 800, color: ch.color, textTransform: "uppercase", letterSpacing: "0.1em" }}>Ch {ch.num}</span>
-                          <span style={{ fontWeight: 800, fontSize: isMd ? "17px" : "15px", color: T.text }}>{ch.title}</span>
+                        {/* Title row */}
+                        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginBottom: 6 }}>
+                          {/* Solid coloured badge */}
+                          <span style={{
+                            fontSize: "10px", fontWeight: 800, color: "white",
+                            background: ch.color, padding: "3px 9px", borderRadius: 7,
+                            textTransform: "uppercase", letterSpacing: "0.08em",
+                            boxShadow: isDark ? `0 0 12px ${ch.color}80` : `0 2px 8px ${ch.color}40`,
+                          }}>Ch {ch.num}</span>
+                          <span style={{ fontWeight: 800, fontSize: isMd ? "17px" : "15px", color: T.text }}>
+                            {ch.title}
+                          </span>
                           {isMd && (
-                            <span style={{ fontSize: "10px", fontWeight: 700, padding: "2px 10px", borderRadius: 999, background: isDark ? ch.darkBg : ch.lightBg, color: ch.color }}>
+                            <span style={{
+                              fontSize: "11px", fontWeight: 700, padding: "3px 11px", borderRadius: 999,
+                              background: isDark ? ch.darkBg : ch.lightBg, color: ch.color,
+                              border: `1px solid ${ch.color}28`,
+                            }}>
                               {ch.subtitle}
                             </span>
                           )}
                         </div>
-                        <p style={{ color: T.text2, fontSize: "13.5px", lineHeight: 1.6, marginBottom: 8 }}>{ch.desc}</p>
-                        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+
+                        {/* Description */}
+                        <p style={{ color: T.text2, fontSize: "13.5px", lineHeight: 1.65, marginBottom: 10 }}>
+                          {ch.desc}
+                        </p>
+
+                        {/* Stats row */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
                           {[
-                            { icon: <Layers size={11} color={ch.color} />,     text: `${ch.topics.length} topics` },
-                            { icon: <HelpCircle size={11} color={ch.color} />, text: `${ch.mcqs} MCQs` },
-                            { icon: <CheckCircle2 size={11} color="#059669" />, text: "Available", green: true },
-                          ].map(({ icon, text, green }) => (
-                            <span key={text} style={{ fontSize: "12px", color: green ? "#059669" : T.muted, display: "flex", alignItems: "center", gap: 5 }}>
+                            { icon: <Layers size={11} color={ch.color} />,      text: `${ch.topics.length} topics`, color: ch.color },
+                            { icon: <HelpCircle size={11} color={ch.color} />,  text: `${ch.mcqs} MCQs`,            color: ch.color },
+                            { icon: <CheckCircle2 size={11} color="#059669" />, text: "Available",                  color: "#059669" },
+                          ].map(({ icon, text, color }) => (
+                            <span key={text} style={{ fontSize: "12px", color, display: "flex", alignItems: "center", gap: 5, fontWeight: 600 }}>
                               {icon}{text}
                             </span>
                           ))}
+
+                          {/* Animated MCQ progress bar */}
+                          <div style={{ display: "flex", alignItems: "center", gap: 7, marginLeft: "auto" }}>
+                            <div style={{
+                              width: 64, height: 4, borderRadius: 3,
+                              background: isDark ? "rgba(255,255,255,0.07)" : "#E5E7EB",
+                              overflow: "hidden",
+                            }}>
+                              <motion.div
+                                initial={{ width: 0 }}
+                                whileInView={{ width: `${Math.round((ch.mcqs / 180) * 100)}%` }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 + 0.4, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                                style={{
+                                  height: "100%", borderRadius: 3,
+                                  background: `linear-gradient(90deg,${ch.color},${ch.color}cc)`,
+                                  boxShadow: isDark ? `0 0 6px ${ch.color}80` : "none",
+                                }}
+                              />
+                            </div>
+                            <span style={{ fontSize: "10px", color: T.muted, fontWeight: 600 }}>
+                              {Math.round((ch.mcqs / 180) * 100)}%
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.22 }} style={{ flexShrink: 0 }}>
-                        <ChevronRight size={18} color={isOpen ? ch.color : T.muted} />
+
+                      {/* Chevron */}
+                      <motion.div
+                        animate={{ rotate: isOpen ? 90 : 0 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        style={{ flexShrink: 0 }}
+                      >
+                        <ChevronRight size={20} color={isOpen ? ch.color : T.muted} />
                       </motion.div>
                     </button>
 
-                    {/* Expandable */}
+                    {/* ── Expandable topics ── */}
                     <AnimatePresence>
                       {isOpen && (
                         <motion.div
-                          initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                           style={{ overflow: "hidden" }}
                         >
-                          <div style={{ borderTop: `1px solid ${ch.color}33`, padding: isMd ? "20px 26px 26px" : "16px 18px 22px" }}>
+                          <div style={{
+                            borderTop: `1px solid ${ch.color}28`,
+                            padding: isMd ? "24px 28px 30px 28px" : "18px 20px 24px",
+                          }}>
+                            {/* Topics label */}
+                            <div style={{
+                              display: "flex", alignItems: "center", gap: 8, marginBottom: 18,
+                            }}>
+                              <span style={{
+                                fontSize: "11px", fontWeight: 800, color: ch.color,
+                                textTransform: "uppercase", letterSpacing: "0.1em",
+                              }}>
+                                {ch.topics.length} Topics in this chapter
+                              </span>
+                              <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg,${ch.color}30,transparent)` }} />
+                            </div>
+
+                            {/* Topic grid — staggered slide-in */}
                             <div style={{
                               display: "grid",
                               gridTemplateColumns: isLg ? "repeat(2,1fr)" : isSm ? "repeat(2,1fr)" : "1fr",
-                              gap: "10px 28px", marginBottom: 20,
+                              gap: "10px 32px",
+                              marginBottom: 26,
                             }}>
                               {ch.topics.map((topic, ti) => (
-                                <div key={ti} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                                <motion.div key={ti}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: ti * 0.045, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                                  style={{ display: "flex", alignItems: "flex-start", gap: 10 }}
+                                >
                                   <div style={{
-                                    width: 22, height: 22, borderRadius: "50%", flexShrink: 0, marginTop: 1,
+                                    width: 24, height: 24, borderRadius: "50%", flexShrink: 0, marginTop: 2,
                                     background: isDark ? ch.darkBg : ch.lightBg,
                                     display: "flex", alignItems: "center", justifyContent: "center",
+                                    border: `1px solid ${ch.color}30`,
+                                    boxShadow: isDark ? `0 0 8px ${ch.color}30` : "none",
                                   }}>
                                     <span style={{ fontSize: "9px", fontWeight: 800, color: ch.color }}>{ch.num}.{ti + 1}</span>
                                   </div>
-                                  <span style={{ fontSize: "13.5px", color: T.text2, lineHeight: 1.6, paddingTop: 1 }}>{topic}</span>
-                                </div>
+                                  <span style={{ fontSize: "13.5px", color: T.text2, lineHeight: 1.65, paddingTop: 3 }}>{topic}</span>
+                                </motion.div>
                               ))}
                             </div>
+
+                            {/* Gradient CTA button — matches chapter color */}
                             <Link href="/chapters">
-                              <motion.div whileHover={{ scale: 1.02 }} style={{
-                                display: "inline-flex", alignItems: "center", gap: 8,
-                                padding: "10px 20px", borderRadius: 12,
-                                background: isDark ? ch.darkBg : ch.lightBg,
-                                color: ch.color, fontSize: "13.5px", fontWeight: 700, cursor: "pointer",
-                              }}>
-                                Start Chapter {ch.num} <ArrowRight size={14} />
+                              <motion.div
+                                whileHover={{ scale: 1.04, boxShadow: `0 8px 28px ${ch.color}50` }}
+                                whileTap={{ scale: 0.97 }}
+                                transition={{ duration: 0.18 }}
+                                style={{
+                                  display: "inline-flex", alignItems: "center", gap: 10,
+                                  padding: "13px 28px", borderRadius: 14,
+                                  background: `linear-gradient(135deg,${ch.color} 0%,${ch.color}cc 100%)`,
+                                  color: "white", fontSize: "14px", fontWeight: 700,
+                                  cursor: "pointer",
+                                  boxShadow: `0 4px 18px ${ch.color}45`,
+                                }}
+                              >
+                                Start Chapter {ch.num} — {ch.title}
+                                <ArrowRight size={15} />
                               </motion.div>
                             </Link>
                           </div>
