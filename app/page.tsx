@@ -273,7 +273,8 @@ export default function LandingPage() {
   const [user,    setUser]    = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [vw,      setVw]      = useState(1280);
-  const [openCh,  setOpenCh]  = useState<number | null>(null);
+  const [openCh,       setOpenCh]       = useState<number | null>(null);
+  const [marqueePaused, setMarqueePaused] = useState(false);
 
   useEffect(() => {
     const update = () => setVw(window.innerWidth);
@@ -669,144 +670,240 @@ export default function LandingPage() {
       </section>
 
       {/* Chapter marquee strip — outside hero so overflow:hidden doesn't clip it */}
-      <div style={{
-        position: "relative",
-        overflowX: "hidden",
-        padding: "24px 0",
-        background: T.bg,
-      }}>
-        {/* Fade edges */}
-        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to right,#0A0E1A,transparent)" : "linear-gradient(to right,#F8FAFF,transparent)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 120, zIndex: 2, background: isDark ? "linear-gradient(to left,#0A0E1A,transparent)" : "linear-gradient(to left,#F8FAFF,transparent)", pointerEvents: "none" }} />
+      <motion.div
+        initial={mounted ? { opacity: 0, y: 20 } : false}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        style={{ position: "relative", overflowX: "hidden", padding: "32px 0", background: T.bg }}
+        onMouseEnter={() => setMarqueePaused(true)}
+        onMouseLeave={() => setMarqueePaused(false)}
+      >
+        {/* Top / bottom shimmer lines */}
+        <motion.div
+          animate={{ opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg,transparent,#2563EB55,#7C3AED55,transparent)", pointerEvents: "none" }}
+        />
+        <motion.div
+          animate={{ opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+          style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg,transparent,#0EA5E955,#2563EB55,transparent)", pointerEvents: "none" }}
+        />
 
-        <div className="chapter-marquee-track">
+        {/* Fade edges */}
+        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 130, zIndex: 2, background: isDark ? "linear-gradient(to right,#0A0E1A,transparent)" : "linear-gradient(to right,#F8FAFF,transparent)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 130, zIndex: 2, background: isDark ? "linear-gradient(to left,#0A0E1A,transparent)" : "linear-gradient(to left,#F8FAFF,transparent)", pointerEvents: "none" }} />
+
+        <div
+          className="chapter-marquee-track"
+          style={{ animationPlayState: marqueePaused ? "paused" : "running" }}
+        >
           {[...CHAPTERS, ...CHAPTERS].map((ch, i) => (
-            <div key={i} style={{
-              display: "inline-flex", alignItems: "center", gap: 14,
-              padding: "10px 20px",
-              marginRight: 12,
-              flexShrink: 0,
-              borderRadius: 16,
-              background: isDark ? "#0D1117" : "#FFFFFF",
-              border: `1px solid ${isDark ? "#1E2433" : "#E5E7EB"}`,
-              boxShadow: isDark ? `0 4px 24px ${ch.color}30` : `0 2px 16px rgba(0,0,0,0.07)`,
-              cursor: "default",
-            }}>
+            <motion.div
+              key={i}
+              whileHover={{
+                y: -6,
+                scale: 1.03,
+                boxShadow: isDark
+                  ? `0 12px 40px ${ch.color}45, 0 0 0 1.5px ${ch.color}60`
+                  : `0 12px 36px ${ch.color}30, 0 0 0 1.5px ${ch.color}45`,
+                transition: { duration: 0.2, ease: "easeOut" },
+              }}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 14,
+                padding: "12px 20px", marginRight: 12, flexShrink: 0,
+                borderRadius: 18, cursor: "pointer",
+                background: isDark ? "#0D1117" : "#FFFFFF",
+                border: `1px solid ${isDark ? "#1E2433" : "#E5E7EB"}`,
+                boxShadow: isDark ? `0 4px 24px ${ch.color}28` : `0 2px 16px rgba(0,0,0,0.06)`,
+                position: "relative", overflow: "hidden",
+              }}
+            >
+              {/* Shimmer sweep on hover */}
+              <motion.div
+                variants={{ hover: { x: ["−110%", "210%"], transition: { duration: 0.55, ease: "easeInOut" } } }}
+                initial={{ x: "-110%" }}
+                whileHover={{ x: "210%", transition: { duration: 0.55, ease: "easeInOut" } }}
+                style={{
+                  position: "absolute", top: 0, bottom: 0, left: 0, width: "60%",
+                  background: `linear-gradient(105deg, transparent, ${ch.color}20, transparent)`,
+                  pointerEvents: "none",
+                }}
+              />
+
               {/* Icon bubble */}
-              <div style={{
-                width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                background: isDark ? ch.darkBg : ch.lightBg,
-                color: ch.color,
-                boxShadow: `0 0 16px ${ch.color}40`,
-                border: `1px solid ${ch.color}30`,
-              }}>
+              <motion.div
+                whileHover={{ scale: 1.15, rotate: 8, boxShadow: `0 0 22px ${ch.color}70`, transition: { type: "spring", stiffness: 380, damping: 16 } }}
+                style={{
+                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: isDark ? ch.darkBg : ch.lightBg, color: ch.color,
+                  boxShadow: `0 0 16px ${ch.color}40`,
+                  border: `1px solid ${ch.color}30`,
+                }}
+              >
                 {ch.icon}
-              </div>
+              </motion.div>
 
               {/* Text block */}
               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {/* Chapter number badge + title */}
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{
                     fontSize: "10px", fontWeight: 800, letterSpacing: "0.1em",
                     padding: "2px 7px", borderRadius: 6,
-                    background: ch.color, color: "#fff",
-                    lineHeight: 1.5, flexShrink: 0,
+                    background: ch.color, color: "#fff", lineHeight: 1.5, flexShrink: 0,
                   }}>
                     {String(ch.num).padStart(2, "0")}
                   </span>
-                  <span style={{
-                    fontSize: "14px", fontWeight: 700, color: T.text,
-                    whiteSpace: "nowrap", lineHeight: 1,
-                  }}>
+                  <span style={{ fontSize: "14px", fontWeight: 700, color: T.text, whiteSpace: "nowrap", lineHeight: 1 }}>
                     {ch.title}
                   </span>
                 </div>
-                {/* Subtitle */}
-                <span style={{
-                  fontSize: "11px", fontWeight: 500, color: ch.color,
-                  whiteSpace: "nowrap", letterSpacing: "0.01em", opacity: 0.85,
-                }}>
+                <span style={{ fontSize: "11px", fontWeight: 500, color: ch.color, whiteSpace: "nowrap", letterSpacing: "0.01em", opacity: 0.85 }}>
                   {ch.subtitle}
                 </span>
               </div>
 
-              {/* MCQ count chip */}
-              <div style={{
-                display: "flex", alignItems: "center", gap: 4,
-                padding: "4px 10px", borderRadius: 20,
-                background: isDark ? "rgba(255,255,255,0.06)" : `${ch.color}12`,
-                border: `1px solid ${ch.color}25`,
-                marginLeft: 4,
-              }}>
+              {/* MCQ chip */}
+              <motion.div
+                whileHover={{ background: ch.color, transition: { duration: 0.2 } }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 4,
+                  padding: "4px 10px", borderRadius: 20, marginLeft: 4,
+                  background: isDark ? "rgba(255,255,255,0.06)" : `${ch.color}12`,
+                  border: `1px solid ${ch.color}25`,
+                }}
+              >
                 <span style={{ fontSize: "10px", fontWeight: 700, color: ch.color, whiteSpace: "nowrap" }}>
                   {ch.mcqs} MCQs
                 </span>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* ══════════════════════════
           STATS STRIP
       ══════════════════════════ */}
-      <div style={{
-        background: "transparent",
-        padding: `${vp * 0.6}px 0`,
-      }}>
+      <div style={{ background: "transparent", padding: `${vp * 0.65}px 0` }}>
         {W(
           <div style={{
             display: "grid",
             gridTemplateColumns: isLg ? "repeat(5,1fr)" : isMd ? "repeat(3,1fr)" : "repeat(2,1fr)",
             gap: 14,
           }}>
-            {STATS.map((s, i) => (
-              <motion.div key={s.label}
-                initial={mounted ? { opacity: 0, y: 16 } : false} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08, duration: 0.45 }}
-                whileHover={{ y: -4, boxShadow: isDark ? `0 8px 32px rgba(0,0,0,0.38), 0 0 0 1px ${s.color}55` : `0 8px 28px rgba(0,0,0,0.10), 0 0 0 1px ${s.color}40`, transition: { duration: 0.2 } }}
-                style={{
-                  position: "relative",
-                  display: "flex", flexDirection: isMd ? "row" : "column",
-                  alignItems: "center", textAlign: isMd ? "left" : "center",
-                  gap: isMd ? 18 : 10,
-                  padding: isMd ? "22px 24px" : "20px 16px",
-                  borderRadius: 20, background: T.card,
-                  border: `1px solid ${T.border}`,
-                  boxShadow: `0 2px 16px rgba(0,0,0,${isDark ? 0.28 : 0.05})`,
-                  overflow: "hidden",
-                }}
-              >
-                {/* Full-width accent line — animated scaleX in */}
-                <motion.span
-                  initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+            {STATS.map((s, i) => {
+              // count-up config per stat
+              const cuMap: Record<string, { to: number; suffix: string } | null> = {
+                "Active Students":    { to: 10,  suffix: "K+" },
+                "Chapters & Lessons": { to: 500, suffix: "+" },
+                "Free Forever":       { to: 100, suffix: "%" },
+                "Student Rating":     null,
+                "Community Support":  null,
+              };
+              const cu = cuMap[s.label];
+              return (
+                <motion.div key={s.label}
+                  initial={mounted ? { opacity: 0, y: 20, scale: 0.95 } : false}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 + 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                  style={{
-                    position: "absolute", top: 0, left: 0, right: 0, height: 3,
-                    background: s.color, transformOrigin: "left",
-                    boxShadow: isDark ? `0 0 12px ${s.color}CC, 0 0 28px ${s.color}66` : "none",
+                  transition={{ delay: i * 0.09, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover="hovered"
+                  variants={{
+                    hovered: {
+                      y: -6,
+                      boxShadow: isDark
+                        ? `0 12px 40px rgba(0,0,0,0.4), 0 0 0 1.5px ${s.color}60`
+                        : `0 12px 36px rgba(0,0,0,0.1), 0 0 0 1.5px ${s.color}50`,
+                      transition: { duration: 0.2 },
+                    },
                   }}
-                />
+                  style={{
+                    position: "relative",
+                    display: "flex", flexDirection: isMd ? "row" : "column",
+                    alignItems: "center", textAlign: isMd ? "left" : "center",
+                    gap: isMd ? 18 : 10,
+                    padding: isMd ? "24px 24px" : "22px 16px",
+                    borderRadius: 20, background: T.card,
+                    border: `1px solid ${T.border}`,
+                    boxShadow: `0 2px 16px rgba(0,0,0,${isDark ? 0.28 : 0.05})`,
+                    overflow: "hidden",
+                  }}
+                >
+                  {/* Shimmer sweep on hover */}
+                  <motion.div
+                    variants={{ hovered: { x: "260%", transition: { duration: 0.6, ease: "easeInOut" } } }}
+                    initial={{ x: "-100%" }}
+                    style={{
+                      position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+                      background: `linear-gradient(90deg,transparent 20%,${s.color}12 50%,transparent 80%)`,
+                      transform: "skewX(-18deg)",
+                    }}
+                  />
 
-                {/* Subtle top colour wash for depth */}
-                <span style={{
-                  position: "absolute", top: 0, left: 0, right: 0, height: 72,
-                  background: `linear-gradient(180deg,${s.color}18 0%,transparent 100%)`,
-                  pointerEvents: "none",
-                }} />
+                  {/* Accent top bar — animated scaleX */}
+                  <motion.span
+                    initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.09 + 0.18, duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: "absolute", top: 0, left: 0, right: 0, height: 3,
+                      background: `linear-gradient(90deg,${s.color},${s.color}88)`,
+                      transformOrigin: "left",
+                      boxShadow: isDark ? `0 0 14px ${s.color}CC, 0 0 32px ${s.color}55` : "none",
+                    }}
+                  />
 
-                <div style={{ position: "relative", width: 52, height: 52, borderRadius: 16, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: isDark ? s.darkBg : s.lightBg, color: s.color }}>
-                  {s.icon}
-                </div>
-                <div style={{ position: "relative", minWidth: 0, flex: 1 }}>
-                  <div style={{ fontWeight: 900, fontSize: "clamp(1.1rem, 1.3vw, 1.6rem)", color: T.text, lineHeight: 1.15 }}>{s.value}</div>
-                  <div style={{ fontSize: "10px", color: T.muted, fontWeight: 700, marginTop: 5, textTransform: "uppercase", letterSpacing: "0.08em", lineHeight: 1.4 }}>{s.label}</div>
-                </div>
-              </motion.div>
-            ))}
+                  {/* Top color wash */}
+                  <span style={{
+                    position: "absolute", top: 0, left: 0, right: 0, height: 80,
+                    background: `linear-gradient(180deg,${s.color}18 0%,transparent 100%)`,
+                    pointerEvents: "none",
+                  }} />
+
+                  {/* Continuously pulsing icon */}
+                  <motion.div
+                    animate={{
+                      boxShadow: [
+                        `0 0 0 0px ${s.color}00`,
+                        `0 0 0 7px ${s.color}22`,
+                        `0 0 0 0px ${s.color}00`,
+                      ],
+                      scale: [1, 1.07, 1],
+                    }}
+                    transition={{ duration: 2.6 + i * 0.35, repeat: Infinity, ease: "easeInOut" }}
+                    whileHover={{ scale: 1.18, rotate: 8, boxShadow: `0 0 22px ${s.color}70`, transition: { type: "spring", stiffness: 380, damping: 16 } }}
+                    style={{
+                      position: "relative", zIndex: 2,
+                      width: 52, height: 52, borderRadius: 16, flexShrink: 0,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: isDark ? s.darkBg : s.lightBg, color: s.color,
+                    }}
+                  >
+                    {s.icon}
+                  </motion.div>
+
+                  <div style={{ position: "relative", zIndex: 2, minWidth: 0, flex: 1 }}>
+                    <motion.div
+                      initial={mounted ? { opacity: 0, y: 8 } : false}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.09 + 0.25, duration: 0.4 }}
+                      style={{ fontWeight: 900, fontSize: "clamp(1.15rem,1.3vw,1.65rem)", color: T.text, lineHeight: 1.15 }}
+                    >
+                      {mounted && cu
+                        ? <CountUp to={cu.to} suffix={cu.suffix} delay={i * 0.1} />
+                        : s.value}
+                    </motion.div>
+                    <div style={{ fontSize: "10px", color: T.muted, fontWeight: 700, marginTop: 5, textTransform: "uppercase", letterSpacing: "0.08em", lineHeight: 1.4 }}>
+                      {s.label}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -1185,6 +1282,18 @@ export default function LandingPage() {
       ══════════════════════════ */}
       <section style={{ position:"relative", overflow:"hidden", padding:`${vp}px 0`, background:"transparent" }}>
 
+        {/* ── Background blobs ── */}
+        <motion.div
+          animate={{ scale:[1,1.18,1], opacity:[0.06,0.12,0.06] }}
+          transition={{ duration:8, repeat:Infinity, ease:"easeInOut" }}
+          style={{ position:"absolute", top:"-10%", left:"-8%", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle,rgba(37,99,235,0.22) 0%,transparent 70%)", filter:"blur(55px)", pointerEvents:"none", zIndex:0 }}
+        />
+        <motion.div
+          animate={{ scale:[1,1.22,1], opacity:[0.05,0.1,0.05] }}
+          transition={{ duration:11, repeat:Infinity, ease:"easeInOut", delay:3 }}
+          style={{ position:"absolute", bottom:"-10%", right:"-8%", width:380, height:380, borderRadius:"50%", background:"radial-gradient(circle,rgba(124,58,237,0.2) 0%,transparent 70%)", filter:"blur(55px)", pointerEvents:"none", zIndex:0 }}
+        />
+
         {W(
           <div style={{ position:"relative", zIndex:1 }}>
 
@@ -1452,10 +1561,28 @@ export default function LandingPage() {
       {/* ══════════════════════════
           WHO IS THIS FOR
       ══════════════════════════ */}
-      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
+      <section style={{ background: "transparent", padding: `${vp}px 0`, position: "relative", overflow: "hidden" }}>
+
+        {/* ── Unique background: animated mesh of 3 orbs ── */}
+        <motion.div
+          animate={{ x:[0,35,-20,0], y:[0,-28,18,0], scale:[1,1.15,0.95,1] }}
+          transition={{ duration:13, repeat:Infinity, ease:"easeInOut" }}
+          style={{ position:"absolute", top:"-5%", right:"-6%", width:380, height:380, borderRadius:"50%", background:"radial-gradient(circle,rgba(37,99,235,0.14) 0%,transparent 70%)", filter:"blur(50px)", pointerEvents:"none", zIndex:0 }}
+        />
+        <motion.div
+          animate={{ x:[0,-40,25,0], y:[0,30,-18,0], scale:[1,0.9,1.12,1] }}
+          transition={{ duration:17, repeat:Infinity, ease:"easeInOut", delay:2.5 }}
+          style={{ position:"absolute", bottom:"-5%", left:"-6%", width:420, height:420, borderRadius:"50%", background:"radial-gradient(circle,rgba(124,58,237,0.12) 0%,transparent 70%)", filter:"blur(55px)", pointerEvents:"none", zIndex:0 }}
+        />
+        <motion.div
+          animate={{ scale:[1,1.25,1], opacity:[0.06,0.12,0.06] }}
+          transition={{ duration:10, repeat:Infinity, ease:"easeInOut", delay:5 }}
+          style={{ position:"absolute", top:"40%", left:"42%", width:260, height:260, borderRadius:"50%", background:"radial-gradient(circle,rgba(14,165,233,0.1) 0%,transparent 70%)", filter:"blur(40px)", pointerEvents:"none", zIndex:0 }}
+        />
+
         {W(
-          <>
-            <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div style={{ position:"relative", zIndex:1 }}>
+            <div style={{ textAlign: "center", marginBottom: 52 }}>
 
               {/* Chip */}
               <motion.div
@@ -1468,37 +1595,59 @@ export default function LandingPage() {
                 <Chip icon={<User size={12} color="#3B82F6" />} label="Yeh Course Kis Ke Liye Hai?" />
               </motion.div>
 
-              {/* Heading — two phrases stagger in with blur reveal */}
+              {/* Heading — unique spring-pop per word (different from Roadmap blur) */}
               <h2 style={{
                 fontWeight: 900, color: T.text,
                 fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.6rem",
-                letterSpacing: "-0.025em", margin: 0,
+                letterSpacing: "-0.025em", margin: "0 0 14px",
               }}>
+                {["Har", "Koi", "Shuru", "Kar", "Sakta", "Hai"].map((word, wi) => (
+                  <motion.span
+                    key={word + wi}
+                    initial={mounted ? { opacity: 0, scale: 0.4, rotate: -12 } : false}
+                    whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: wi * 0.07, duration: 0.5, type: "spring", stiffness: 280, damping: 18 }}
+                    style={{ display: "inline-block", marginRight: "0.25em" }}
+                  >{word}</motion.span>
+                ))}{" "}
                 <motion.span
-                  initial={mounted ? { opacity: 0, y: 28, filter: "blur(8px)" } : false}
-                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  initial={mounted ? { opacity: 0, scale: 0.4, rotate: 12 } : false}
+                  whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
                   viewport={{ once: true, margin: "-60px" }}
-                  transition={{ delay: 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  style={{ display: "inline" }}
-                >
-                  Har Koi Shuru Kar Sakta Hai —{" "}
-                </motion.span>
-                <motion.span
-                  initial={mounted ? { opacity: 0, y: 28, filter: "blur(8px)" } : false}
-                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{ delay: 0.26, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ delay: 0.5, duration: 0.55, type: "spring", stiffness: 260, damping: 16 }}
                   style={{
-                    display: "inline",
+                    display: "inline-block",
                     background: "linear-gradient(130deg,#2563EB,#7C3AED)",
                     WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                   }}
-                >
-                  Bilkul Zero Se
-                </motion.span>
+                >—</motion.span>{" "}
+                <motion.span
+                  animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  initial={mounted ? { opacity: 0, x: 20 } : false}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  style={{
+                    display: "inline-block",
+                    background: "linear-gradient(130deg,#2563EB,#7C3AED,#0EA5E9,#2563EB)",
+                    backgroundSize: "300% auto",
+                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                  }}
+                >Bilkul Zero Se</motion.span>
               </h2>
 
+              <motion.p
+                initial={mounted ? { opacity: 0, y: 10 } : false}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: 0.6, duration: 0.45 }}
+                style={{ color: T.text2, fontSize: isMd ? "15px" : "13.5px", maxWidth: 480, margin: "0 auto", lineHeight: 1.8 }}
+              >
+                Zero knowledge assumed. Koi bhi shuru kar sakta hai — students se leke working professionals tak.
+              </motion.p>
             </div>
+
             <div style={{
               display: "grid",
               gridTemplateColumns: isLg ? "repeat(4,1fr)" : isMd ? "repeat(2,1fr)" : "repeat(2,1fr)",
@@ -1506,94 +1655,117 @@ export default function LandingPage() {
             }}>
               {FOR_WHOM.map((card, i) => (
                 <motion.div key={card.title}
-                  initial={mounted ? { opacity: 0, y: 40, scale: 0.94 } : false}
+                  initial={mounted ? { opacity: 0, y: 40, scale: 0.93 } : false}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ delay: i * 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  // Continuous independent float per card
+                  animate={{ y: [0, i % 2 === 0 ? -6 : 6, 0] }}
                   whileHover="hover"
                   variants={{
                     hover: {
-                      y: -10,
+                      y: -12,
+                      scale: 1.02,
                       boxShadow: isDark
-                        ? `0 20px 56px ${card.color}35, 0 0 0 1.5px ${card.color}60`
-                        : `0 16px 48px ${card.color}25, 0 0 0 1.5px ${card.color}45`,
+                        ? `0 22px 60px ${card.color}38, 0 0 0 1.5px ${card.color}65`
+                        : `0 18px 52px ${card.color}28, 0 0 0 1.5px ${card.color}50`,
                       transition: { duration: 0.22, ease: "easeOut" },
                     }
                   }}
                   style={{
-                    position: "relative", borderRadius: 20, background: T.card,
+                    position: "relative", borderRadius: 22, background: T.card,
                     border: `1px solid ${T.border}`,
-                    padding: isMd ? "32px 24px" : "24px 18px",
+                    padding: isMd ? "34px 24px" : "26px 18px",
                     boxShadow: `0 2px 14px rgba(0,0,0,${isDark ? 0.22 : 0.04})`,
                     textAlign: "center", overflow: "hidden", cursor: "default",
                   }}
                 >
-                  {/* Shimmer sweep on hover — fixed with correct hyphen */}
+                  {/* Shimmer sweep on hover */}
                   <motion.div
-                    variants={{
-                      hover: {
-                        x: ["-110%", "210%"],
-                        transition: { duration: 0.6, ease: "easeInOut" },
-                      }
-                    }}
+                    variants={{ hover: { x: ["−110%", "210%"], transition: { duration: 0.6, ease: "easeInOut" } } }}
+                    whileHover={{ x: "210%", transition: { duration: 0.6, ease: "easeInOut" } }}
+                    initial={{ x: "-110%" }}
                     style={{
                       position: "absolute", top: 0, bottom: 0, left: 0, width: "60%",
                       background: `linear-gradient(105deg, transparent, ${card.color}28, transparent)`,
-                      pointerEvents: "none", zIndex: 1, borderRadius: 20,
+                      pointerEvents: "none", zIndex: 1, borderRadius: 22,
                     }}
                   />
 
-                  {/* Top accent bar */}
+                  {/* Top accent bar — animated scaleX */}
                   <motion.span
                     initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 + 0.25, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ delay: i * 0.1 + 0.28, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                     style={{
                       position: "absolute", top: 0, left: 0, right: 0, height: 3,
-                      background: `linear-gradient(90deg, ${card.color}, ${card.color}88)`,
+                      background: `linear-gradient(90deg, ${card.color}, ${card.color}80, transparent)`,
                       transformOrigin: "left",
-                      boxShadow: isDark ? `0 0 14px ${card.color}99` : "none",
+                      boxShadow: isDark ? `0 0 16px ${card.color}99` : "none",
+                    }}
+                  />
+
+                  {/* Continuously breathing corner glow */}
+                  <motion.div
+                    animate={{ scale:[1,1.3,1], opacity:[0.3,0.55,0.3] }}
+                    transition={{ duration: 3.5 + i * 0.4, repeat: Infinity, ease:"easeInOut" }}
+                    style={{
+                      position: "absolute", bottom: "-20%", right: "-15%",
+                      width: 120, height: 120, borderRadius: "50%",
+                      background: `radial-gradient(circle,${card.color}${isDark?"35":"20"},transparent 70%)`,
+                      filter: "blur(18px)", pointerEvents: "none",
                     }}
                   />
 
                   {/* Top colour wash */}
                   <span style={{
                     position: "absolute", top: 0, left: 0, right: 0, height: 90,
-                    background: `linear-gradient(180deg,${card.color}10 0%,transparent 100%)`,
+                    background: `linear-gradient(180deg,${card.color}12 0%,transparent 100%)`,
                     pointerEvents: "none",
                   }} />
 
-                  {/* Icon */}
-                  <motion.div
-                    variants={{
-                      hover: {
-                        scale: 1.15,
-                        rotate: 6,
-                        boxShadow: isDark ? `0 0 32px ${card.color}80` : `0 8px 28px ${card.color}40`,
-                        transition: { type: "spring", stiffness: 380, damping: 16 },
-                      }
-                    }}
-                    style={{
-                      width: 64, height: 64, borderRadius: 20, margin: "0 auto 18px",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      background: isDark ? card.darkBg : card.lightBg,
-                      fontSize: "2rem", position: "relative", zIndex: 2,
-                      boxShadow: isDark ? `0 0 20px ${card.color}35` : `0 4px 16px ${card.color}18`,
-                      border: `1px solid ${card.color}25`,
-                    }}
-                  >{card.icon}</motion.div>
+                  {/* Icon — continuous pulse ring + hover spring */}
+                  <div style={{ position: "relative", display: "inline-block", marginBottom: 18 }}>
+                    <motion.div
+                      animate={{ scale:[1,1.35,1], opacity:[0.3,0.55,0.3] }}
+                      transition={{ duration: 2.4 + i * 0.3, repeat: Infinity, ease:"easeInOut" }}
+                      style={{
+                        position: "absolute", inset: -5, borderRadius: 24,
+                        background: `radial-gradient(circle,${card.color}45,transparent 70%)`,
+                        filter: "blur(8px)", zIndex: 0,
+                      }}
+                    />
+                    <motion.div
+                      variants={{
+                        hover: {
+                          scale: 1.18, rotate: 8,
+                          boxShadow: isDark ? `0 0 36px ${card.color}88` : `0 10px 32px ${card.color}50`,
+                          transition: { type: "spring", stiffness: 380, damping: 14 },
+                        }
+                      }}
+                      style={{
+                        position: "relative", zIndex: 2,
+                        width: 68, height: 68, borderRadius: 22,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        background: isDark ? card.darkBg : card.lightBg,
+                        fontSize: "2.1rem",
+                        boxShadow: isDark ? `0 0 22px ${card.color}40` : `0 4px 18px ${card.color}22`,
+                        border: `1px solid ${card.color}28`,
+                      }}
+                    >{card.icon}</motion.div>
+                  </div>
 
                   {/* Title */}
                   <motion.h3
-                    variants={{ hover: { y: -2, transition: { duration: 0.2 } } }}
-                    style={{ fontWeight: 800, fontSize: "15px", color: T.text, marginBottom: 10, position: "relative", zIndex: 2 }}
+                    variants={{ hover: { y: -3, color: card.color, transition: { duration: 0.2 } } }}
+                    style={{ fontWeight: 800, fontSize: "15px", color: T.text, marginBottom: 10, position: "relative", zIndex: 2, transition: "color 0.2s" }}
                   >{card.title}</motion.h3>
 
-                  <p style={{ color: T.text2, fontSize: "13px", lineHeight: 1.75, position: "relative", zIndex: 2 }}>{card.desc}</p>
+                  <p style={{ color: T.text2, fontSize: "13px", lineHeight: 1.8, position: "relative", zIndex: 2 }}>{card.desc}</p>
                 </motion.div>
               ))}
             </div>
-          </>
+          </div>
         )}
       </section>
 
