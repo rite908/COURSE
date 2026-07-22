@@ -1367,40 +1367,39 @@ export default function LandingPage() {
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ delay: i * 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
                   whileHover="hover"
-                  style={{ position: "relative", borderRadius: 20, background: T.card, border: `1px solid ${T.border}`,
+                  variants={{
+                    hover: {
+                      y: -10,
+                      boxShadow: isDark
+                        ? `0 20px 56px ${card.color}35, 0 0 0 1.5px ${card.color}60`
+                        : `0 16px 48px ${card.color}25, 0 0 0 1.5px ${card.color}45`,
+                      transition: { duration: 0.22, ease: "easeOut" },
+                    }
+                  }}
+                  style={{
+                    position: "relative", borderRadius: 20, background: T.card,
+                    border: `1px solid ${T.border}`,
                     padding: isMd ? "32px 24px" : "24px 18px",
                     boxShadow: `0 2px 14px rgba(0,0,0,${isDark ? 0.22 : 0.04})`,
                     textAlign: "center", overflow: "hidden", cursor: "default",
                   }}
                 >
-                  {/* Lift + glow on hover */}
+                  {/* Shimmer sweep on hover — fixed with correct hyphen */}
                   <motion.div
                     variants={{
                       hover: {
-                        boxShadow: isDark
-                          ? `0 20px 56px ${card.color}30, 0 0 0 1.5px ${card.color}55`
-                          : `0 16px 48px ${card.color}22, 0 0 0 1.5px ${card.color}40`,
-                        y: -10,
-                        transition: { duration: 0.22, ease: "easeOut" },
+                        x: ["-110%", "210%"],
+                        transition: { duration: 0.6, ease: "easeInOut" },
                       }
                     }}
-                    style={{ position: "absolute", inset: 0, borderRadius: 20, pointerEvents: "none" }}
-                  />
-
-                  {/* Shimmer sweep on hover */}
-                  <motion.div
-                    variants={{
-                      hover: { x: ["−100%", "200%"], opacity: [0, 0.6, 0] as number[],
-                        transition: { duration: 0.65, ease: "easeInOut" } }
-                    }}
                     style={{
-                      position: "absolute", inset: 0, borderRadius: 20, pointerEvents: "none",
-                      background: `linear-gradient(105deg, transparent 30%, ${card.color}22 50%, transparent 70%)`,
-                      zIndex: 1,
+                      position: "absolute", top: 0, bottom: 0, left: 0, width: "60%",
+                      background: `linear-gradient(105deg, transparent, ${card.color}28, transparent)`,
+                      pointerEvents: "none", zIndex: 1, borderRadius: 20,
                     }}
                   />
 
-                  {/* Top accent bar — slides in on scroll */}
+                  {/* Top accent bar */}
                   <motion.span
                     initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
@@ -1420,12 +1419,15 @@ export default function LandingPage() {
                     pointerEvents: "none",
                   }} />
 
-                  {/* Icon — scales + glows on hover */}
+                  {/* Icon */}
                   <motion.div
                     variants={{
-                      hover: { scale: 1.14, rotate: 6,
-                        boxShadow: isDark ? `0 0 28px ${card.color}70` : `0 8px 28px ${card.color}35`,
-                        transition: { type: "spring", stiffness: 380, damping: 16 } }
+                      hover: {
+                        scale: 1.15,
+                        rotate: 6,
+                        boxShadow: isDark ? `0 0 32px ${card.color}80` : `0 8px 28px ${card.color}40`,
+                        transition: { type: "spring", stiffness: 380, damping: 16 },
+                      }
                     }}
                     style={{
                       width: 64, height: 64, borderRadius: 20, margin: "0 auto 18px",
@@ -1437,7 +1439,7 @@ export default function LandingPage() {
                     }}
                   >{card.icon}</motion.div>
 
-                  {/* Title — slides up slightly on hover */}
+                  {/* Title */}
                   <motion.h3
                     variants={{ hover: { y: -2, transition: { duration: 0.2 } } }}
                     style={{ fontWeight: 800, fontSize: "15px", color: T.text, marginBottom: 10, position: "relative", zIndex: 2 }}
