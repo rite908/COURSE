@@ -1362,46 +1362,88 @@ export default function LandingPage() {
             }}>
               {FOR_WHOM.map((card, i) => (
                 <motion.div key={card.title}
-                  initial={mounted ? { opacity: 0, y: 20 } : false} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}
-                  whileHover={{ y: -8, boxShadow: isDark ? `0 12px 40px ${card.color}25, 0 0 0 1px ${card.color}40` : `0 12px 36px ${card.color}18, 0 0 0 1px ${card.color}30`, transition: { duration: 0.2 } }}
-                  style={{
-                    position: "relative", borderRadius: 20, background: T.card,
-                    border: `1px solid ${T.border}`,
+                  initial={mounted ? { opacity: 0, y: 40, scale: 0.94 } : false}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ delay: i * 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover="hover"
+                  style={{ position: "relative", borderRadius: 20, background: T.card, border: `1px solid ${T.border}`,
                     padding: isMd ? "32px 24px" : "24px 18px",
                     boxShadow: `0 2px 14px rgba(0,0,0,${isDark ? 0.22 : 0.04})`,
-                    textAlign: "center", overflow: "hidden",
+                    textAlign: "center", overflow: "hidden", cursor: "default",
                   }}
                 >
-                  {/* Animated top accent bar */}
+                  {/* Lift + glow on hover */}
+                  <motion.div
+                    variants={{
+                      hover: {
+                        boxShadow: isDark
+                          ? `0 20px 56px ${card.color}30, 0 0 0 1.5px ${card.color}55`
+                          : `0 16px 48px ${card.color}22, 0 0 0 1.5px ${card.color}40`,
+                        y: -10,
+                        transition: { duration: 0.22, ease: "easeOut" },
+                      }
+                    }}
+                    style={{ position: "absolute", inset: 0, borderRadius: 20, pointerEvents: "none" }}
+                  />
+
+                  {/* Shimmer sweep on hover */}
+                  <motion.div
+                    variants={{
+                      hover: { x: ["−100%", "200%"], opacity: [0, 0.6, 0] as number[],
+                        transition: { duration: 0.65, ease: "easeInOut" } }
+                    }}
+                    style={{
+                      position: "absolute", inset: 0, borderRadius: 20, pointerEvents: "none",
+                      background: `linear-gradient(105deg, transparent 30%, ${card.color}22 50%, transparent 70%)`,
+                      zIndex: 1,
+                    }}
+                  />
+
+                  {/* Top accent bar — slides in on scroll */}
                   <motion.span
                     initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 + 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ delay: i * 0.1 + 0.25, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
                     style={{
                       position: "absolute", top: 0, left: 0, right: 0, height: 3,
-                      background: card.color, transformOrigin: "left",
-                      boxShadow: isDark ? `0 0 12px ${card.color}99` : "none",
+                      background: `linear-gradient(90deg, ${card.color}, ${card.color}88)`,
+                      transformOrigin: "left",
+                      boxShadow: isDark ? `0 0 14px ${card.color}99` : "none",
                     }}
                   />
-                  {/* Subtle top colour wash */}
+
+                  {/* Top colour wash */}
                   <span style={{
-                    position: "absolute", top: 0, left: 0, right: 0, height: 80,
-                    background: `linear-gradient(180deg,${card.color}12 0%,transparent 100%)`,
+                    position: "absolute", top: 0, left: 0, right: 0, height: 90,
+                    background: `linear-gradient(180deg,${card.color}10 0%,transparent 100%)`,
                     pointerEvents: "none",
                   }} />
-                  {/* Icon bubble with colour */}
-                  <div style={{
-                    width: 64, height: 64, borderRadius: 20, margin: "0 auto 18px",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    background: isDark ? card.darkBg : card.lightBg,
-                    fontSize: "2rem",
-                    boxShadow: isDark ? `0 0 20px ${card.color}40` : `0 4px 16px ${card.color}20`,
-                    border: `1px solid ${card.color}25`,
-                    position: "relative",
-                  }}>{card.icon}</div>
-                  <h3 style={{ fontWeight: 800, fontSize: "15px", color: T.text, marginBottom: 10 }}>{card.title}</h3>
-                  <p style={{ color: T.text2, fontSize: "13px", lineHeight: 1.75 }}>{card.desc}</p>
+
+                  {/* Icon — scales + glows on hover */}
+                  <motion.div
+                    variants={{
+                      hover: { scale: 1.14, rotate: 6,
+                        boxShadow: isDark ? `0 0 28px ${card.color}70` : `0 8px 28px ${card.color}35`,
+                        transition: { type: "spring", stiffness: 380, damping: 16 } }
+                    }}
+                    style={{
+                      width: 64, height: 64, borderRadius: 20, margin: "0 auto 18px",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: isDark ? card.darkBg : card.lightBg,
+                      fontSize: "2rem", position: "relative", zIndex: 2,
+                      boxShadow: isDark ? `0 0 20px ${card.color}35` : `0 4px 16px ${card.color}18`,
+                      border: `1px solid ${card.color}25`,
+                    }}
+                  >{card.icon}</motion.div>
+
+                  {/* Title — slides up slightly on hover */}
+                  <motion.h3
+                    variants={{ hover: { y: -2, transition: { duration: 0.2 } } }}
+                    style={{ fontWeight: 800, fontSize: "15px", color: T.text, marginBottom: 10, position: "relative", zIndex: 2 }}
+                  >{card.title}</motion.h3>
+
+                  <p style={{ color: T.text2, fontSize: "13px", lineHeight: 1.75, position: "relative", zIndex: 2 }}>{card.desc}</p>
                 </motion.div>
               ))}
             </div>
