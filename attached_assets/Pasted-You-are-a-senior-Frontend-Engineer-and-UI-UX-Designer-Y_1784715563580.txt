@@ -1,0 +1,205 @@
+You are a senior Frontend Engineer and UI/UX Designer.
+
+Your task is to modify ONLY the Hero Section of the Chapters page.
+
+⚠️ CRITICAL RULES (MUST FOLLOW)
+
+- Do NOT redesign the page.
+- Do NOT rewrite the page.
+- Do NOT refactor existing code.
+- Do NOT rename classes or components.
+- Do NOT modify any existing functionality.
+- Do NOT change typography, colors, spacing, margins, paddings, buttons, cards, navbar, chapter list, statistics, skill tags, animations, responsiveness or layout.
+- Keep everything exactly the same.
+- Perform only the requested visual enhancement.
+
+====================================================
+
+OBJECTIVE
+
+Currently the Hero Section has:
+
+• Left decorative "TWH Terminal"
+• Right decorative "Course Path" panel
+
+Remove BOTH completely.
+
+Replace them with two premium futuristic humanoid robots.
+
+====================================================
+
+LEFT ROBOT
+
+- Place one robot on the far left.
+- Show only the side profile.
+- Robot should face toward the center.
+- Position it partially outside the viewport.
+- About 35–45% of the robot should remain outside the screen.
+- Large cinematic appearance.
+- Should naturally frame the content.
+
+====================================================
+
+RIGHT ROBOT
+
+- Place another identical robot on the far right.
+- Mirror the left robot.
+- Face toward the center.
+- Partially outside the viewport.
+- Same size and proportions.
+
+====================================================
+
+ROBOT DESIGN
+
+Style:
+
+• Highly realistic
+• Premium 3D
+• Humanoid
+• Dark metallic body
+• Purple neon glowing eyes
+• Purple rim lighting
+• Black titanium finish
+• Cyberpunk aesthetic
+• Extremely high detail
+• Elegant and futuristic
+• No weapons
+• No aggressive pose
+• Calm intelligent AI appearance
+
+====================================================
+
+BACKGROUND
+
+Keep the existing background.
+
+Enhance it slightly by adding:
+
+• subtle purple glow
+• soft digital particles
+• faint circuit traces
+• smooth radial lighting behind robots
+
+The background enhancement must blend naturally with the existing theme.
+
+Do NOT make it brighter.
+
+====================================================
+
+LAYERING
+
+Robots are decorative.
+
+They MUST remain behind every UI element.
+
+Title
+Subtitle
+Buttons
+Statistics Cards
+Skill Chips
+Everything else
+
+must stay above robots.
+
+Use proper z-index.
+
+Robots must never cover text.
+
+====================================================
+
+LAYOUT
+
+Maintain the current hero layout exactly.
+
+Do not move:
+
+Heading
+
+Subheading
+
+Cards
+
+Skills
+
+Navigation
+
+Container widths
+
+Grid
+
+Padding
+
+Margins
+
+Nothing should shift.
+
+Only replace decorative side elements.
+
+====================================================
+
+RESPONSIVE BEHAVIOR
+
+Desktop:
+Large cinematic robots.
+
+Laptop:
+Scale proportionally.
+
+Tablet:
+Reduce size.
+
+Mobile:
+Hide both robots completely.
+
+The mobile layout should remain exactly as it currently is.
+
+====================================================
+
+PERFORMANCE
+
+Use optimized images.
+
+pointer-events: none
+
+user-select: none
+
+overflow: hidden
+
+No horizontal scrollbar.
+
+Maintain fast loading.
+
+====================================================
+
+ANIMATION
+
+Very subtle only.
+
+• Slow floating movement (3–6px)
+• Soft purple glow pulse
+• Smooth transitions
+
+No dramatic animation.
+
+====================================================
+
+ACCESSIBILITY
+
+Robots are decorative only.
+
+Set appropriate accessibility attributes.
+
+They must not interfere with keyboard navigation or screen readers.
+
+====================================================
+
+FINAL REQUIREMENT
+
+The final result should look identical to the current website except for ONE change:
+
+Replace the left "TWH Terminal" panel and the right "Course Path" panel with two premium futuristic robots facing each other.
+
+Everything else must remain pixel-perfect unchanged.
+
+If any existing component, spacing, styling, responsiveness or functionality changes, the task should be considered failed.
