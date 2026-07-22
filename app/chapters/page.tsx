@@ -228,17 +228,14 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
       style={{
         position: "relative",
         background: cardBg,
-        borderTop: `1px solid ${cardBorder}`,
-        borderRight: `1px solid ${cardBorder}`,
-        borderBottom: `1px solid ${cardBorder}`,
-        borderLeft: `4px solid ${accent}`,
+        border: `1px solid ${cardBorder}`,
         borderRadius: 22,
         overflow: "hidden",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         boxShadow: isDark
-          ? `0 4px 28px rgba(${glow},0.12), inset 0 1px 0 rgba(255,255,255,0.05)`
-          : `0 4px 28px rgba(${glow},0.10), inset 0 1px 0 rgba(255,255,255,0.9)`,
+          ? `inset 4px 0 0 ${accent}, 0 4px 28px rgba(${glow},0.12), inset 0 1px 0 rgba(255,255,255,0.05)`
+          : `inset 4px 0 0 ${accent}, 0 4px 28px rgba(${glow},0.10), inset 0 1px 0 rgba(255,255,255,0.9)`,
       }}
     >
       {/* Ambient radial glow inside card */}
