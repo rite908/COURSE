@@ -51,8 +51,8 @@ function ProgressRing({ percent, accent, isDark }: { percent: number; accent: st
     return () => cancelAnimationFrame(raf);
   }, [percent]);
 
-  const trackColor = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
-  const zeroColor  = isDark ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.22)";
+  const trackColor = isDark ? `${accent}45` : `${accent}38`;
+  const zeroColor  = isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.30)";
 
   return (
     <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
@@ -102,16 +102,17 @@ function DifficultyBadge({ label, color }: { label: string; color: string }) {
 function HexIcon({ accent, bg, Icon }: { accent: string; bg: string; Icon: React.ElementType }) {
   return (
     <motion.div
-      whileHover={{ scale: 1.1, filter: `drop-shadow(0 0 10px ${accent}90)` }}
+      whileHover={{ scale: 1.12, filter: `drop-shadow(0 0 14px ${accent}99)` }}
       transition={{ type: "spring", stiffness: 380, damping: 22 }}
       style={{
-        width: 56, height: 56, flexShrink: 0,
+        width: 68, height: 68, flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: bg,
+        background: `linear-gradient(135deg,${accent}28,${accent}14)`,
+        border: `1.5px solid ${accent}45`,
         clipPath: "polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%)",
       }}
     >
-      <Icon size={22} color={accent} strokeWidth={1.8} />
+      <Icon size={30} color={accent} strokeWidth={1.7} />
     </motion.div>
   );
 }
@@ -191,7 +192,8 @@ function ChapterCard({
       transition={{ type: "spring", stiffness: 270, damping: 26 }}
       style={{
         background: cardBg,
-        border: `1px solid ${isExpanded ? accent + "45" : cardBorder}`,
+        border: `1px solid ${isExpanded ? accent + "55" : cardBorder}`,
+        borderLeft: `4px solid ${accent}`,
         borderRadius: 16, overflow: "hidden",
         transition: "border-color 0.3s",
       }}
@@ -203,8 +205,9 @@ function ChapterCard({
         viewport={{ once: true }}
         transition={{ duration: 0.65, ease: "easeOut", delay: 0.15 }}
         style={{
-          height: 2, transformOrigin: "left",
-          background: `linear-gradient(90deg,${accent},${accent}44)`,
+          height: 4, transformOrigin: "left",
+          background: `linear-gradient(90deg,${accent},${accent}88,${accent}22)`,
+          boxShadow: `0 0 12px ${accent}55`,
         }}
       />
 
@@ -407,9 +410,12 @@ export default function ChaptersPage() {
           animate={{ scaleY: 1 }}
           transition={{ duration: 1.3, ease: "easeInOut", delay: 0.25 }}
           style={{
-            position: "absolute", left: 47, top: 52, bottom: 90, width: 1,
-            background: isDark ? "rgba(37,99,235,0.2)" : "rgba(37,99,235,0.14)",
-            boxShadow: "0 0 7px rgba(37,99,235,0.32)",
+            position: "absolute", left: 46, top: 52, bottom: 90, width: 3,
+            background: isDark
+              ? "linear-gradient(180deg,#2563EB,#7C3AED88)"
+              : "linear-gradient(180deg,#2563EB,#2563EB55)",
+            boxShadow: "0 0 10px rgba(37,99,235,0.45)",
+            borderRadius: 2,
             transformOrigin: "top",
           }}
         />
