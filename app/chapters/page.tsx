@@ -473,9 +473,10 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
 
 // ── RobotPanel (left) ─────────────────────────────────────────────────────
 
-function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
+function TerminalPanel({ isDark, mounted, cmdIdx: _cmdIdx }: {
   isDark: boolean; mounted: boolean; cmdIdx: number;
 }) {
+  const heroBg = isDark ? "#0C1020" : "#E6EEFF";
   return (
     <motion.div
       animate={{ y: [0, -5, 0] }}
@@ -522,13 +523,23 @@ function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
           alt=""
           role="presentation"
           style={{
-            position: "relative", zIndex: 3,
+            position: "absolute", inset: 0, zIndex: 3,
             width: "100%", height: "100%",
             objectFit: "cover", objectPosition: "0% center",
           }}
         />
+        {/* Eye glow pulse */}
+        <motion.div
+          animate={{ opacity: [0.5, 0.95, 0.5] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position: "absolute", zIndex: 4, inset: 0,
+            background: "radial-gradient(ellipse 18% 10% at 63% 37%, rgba(139,92,246,0.55) 0%, transparent 100%)",
+            pointerEvents: "none",
+          }}
+        />
         {/* Soft digital particles */}
-        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 4, opacity: 0.35, pointerEvents: "none" }}>
+        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 5, opacity: 0.35, pointerEvents: "none" }}>
           {[{cx:72,cy:80},{cx:180,cy:140},{cx:290,cy:60},{cx:110,cy:300},{cx:250,cy:420},{cx:60,cy:450},{cx:330,cy:240}].map((p,i)=>(
             <motion.circle key={i} cx={p.cx} cy={p.cy} r="1.5" fill="#8B5CF6"
               animate={{ opacity:[0.2,0.9,0.2], r:[1.5,2.2,1.5] }}
@@ -536,16 +547,25 @@ function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
             />
           ))}
         </svg>
-        {/* Eye glow pulse */}
-        <motion.div
-          animate={{ opacity: [0.5, 0.95, 0.5] }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            position: "absolute", zIndex: 5, inset: 0,
-            background: "radial-gradient(ellipse 18% 10% at 63% 37%, rgba(139,92,246,0.55) 0%, transparent 100%)",
-            pointerEvents: "none",
-          }}
-        />
+        {/* ── Edge fades — blend robot into hero background ── */}
+        {/* Inner edge (right): fade toward center */}
+        <div style={{
+          position: "absolute", right: 0, top: 0, bottom: 0, width: "52%", zIndex: 6,
+          background: `linear-gradient(to right, transparent 0%, ${heroBg} 100%)`,
+          pointerEvents: "none",
+        }} />
+        {/* Top edge */}
+        <div style={{
+          position: "absolute", left: 0, right: 0, top: 0, height: "22%", zIndex: 6,
+          background: `linear-gradient(to bottom, ${heroBg} 0%, transparent 100%)`,
+          pointerEvents: "none",
+        }} />
+        {/* Bottom edge */}
+        <div style={{
+          position: "absolute", left: 0, right: 0, bottom: 0, height: "22%", zIndex: 6,
+          background: `linear-gradient(to top, ${heroBg} 0%, transparent 100%)`,
+          pointerEvents: "none",
+        }} />
       </motion.div>
     </motion.div>
   );
@@ -553,7 +573,8 @@ function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
 
 // ── RobotPanel (right) ────────────────────────────────────────────────────
 
-function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounted: boolean }) {
+function CoursePathPanel({ isDark, mounted }: { isDark: boolean; mounted: boolean }) {
+  const heroBg = isDark ? "#0C1020" : "#E6EEFF";
   return (
     <motion.div
       animate={{ y: [0, -5, 0] }}
@@ -600,13 +621,23 @@ function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounte
           alt=""
           role="presentation"
           style={{
-            position: "relative", zIndex: 3,
+            position: "absolute", inset: 0, zIndex: 3,
             width: "100%", height: "100%",
-            objectFit: "cover", objectPosition: "88% center",
+            objectFit: "cover", objectPosition: "100% center",
+          }}
+        />
+        {/* Eye glow pulse */}
+        <motion.div
+          animate={{ opacity: [0.5, 0.95, 0.5] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+          style={{
+            position: "absolute", zIndex: 4, inset: 0,
+            background: "radial-gradient(ellipse 18% 10% at 37% 37%, rgba(139,92,246,0.55) 0%, transparent 100%)",
+            pointerEvents: "none",
           }}
         />
         {/* Soft digital particles */}
-        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 4, opacity: 0.35, pointerEvents: "none" }}>
+        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 5, opacity: 0.35, pointerEvents: "none" }}>
           {[{cx:320,cy:90},{cx:200,cy:150},{cx:90,cy:70},{cx:280,cy:310},{cx:140,cy:430},{cx:340,cy:460},{cx:60,cy:250}].map((p,i)=>(
             <motion.circle key={i} cx={p.cx} cy={p.cy} r="1.5" fill="#8B5CF6"
               animate={{ opacity:[0.2,0.9,0.2], r:[1.5,2.2,1.5] }}
@@ -614,16 +645,25 @@ function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounte
             />
           ))}
         </svg>
-        {/* Eye glow pulse */}
-        <motion.div
-          animate={{ opacity: [0.5, 0.95, 0.5] }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-          style={{
-            position: "absolute", zIndex: 5, inset: 0,
-            background: "radial-gradient(ellipse 18% 10% at 37% 37%, rgba(139,92,246,0.55) 0%, transparent 100%)",
-            pointerEvents: "none",
-          }}
-        />
+        {/* ── Edge fades — blend robot into hero background ── */}
+        {/* Inner edge (left): fade toward center */}
+        <div style={{
+          position: "absolute", left: 0, top: 0, bottom: 0, width: "52%", zIndex: 6,
+          background: `linear-gradient(to left, transparent 0%, ${heroBg} 100%)`,
+          pointerEvents: "none",
+        }} />
+        {/* Top edge */}
+        <div style={{
+          position: "absolute", left: 0, right: 0, top: 0, height: "22%", zIndex: 6,
+          background: `linear-gradient(to bottom, ${heroBg} 0%, transparent 100%)`,
+          pointerEvents: "none",
+        }} />
+        {/* Bottom edge */}
+        <div style={{
+          position: "absolute", left: 0, right: 0, bottom: 0, height: "22%", zIndex: 6,
+          background: `linear-gradient(to top, ${heroBg} 0%, transparent 100%)`,
+          pointerEvents: "none",
+        }} />
       </motion.div>
     </motion.div>
   );
