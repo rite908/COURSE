@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import {
   Shield, Cpu, Wifi, Terminal, Code2,
   BookOpen, HelpCircle, Clock, ChevronDown,
@@ -29,6 +29,37 @@ const TOPIC_DURATIONS: Record<string, number[]> = {
   "4": [20, 25, 22, 28, 25, 30],
   "5": [30, 35, 40, 38, 42, 40],
 };
+
+const CMDS = [
+  { cmd: "nmap -sV 192.168.1.0/24",  out: "4 hosts up · 22,80,443 open",  col: "#10B981" },
+  { cmd: "sqlmap -u target/login",    out: "Vuln found · MySQL 8.0 DB",    col: "#EF4444" },
+  { cmd: "hashcat -m 0 hash.txt wl", out: "Speed: 1.4 GH/s · 34% done",   col: "#F59E0B" },
+  { cmd: "tcpdump -i eth0 port 443", out: "TLS 1.3 · 1,024 packets",       col: "#06B6D4" },
+  { cmd: "nikto -h 192.168.1.5",     out: "8 vulns · XSS  SQLi  LFI",      col: "#EF4444" },
+] as const;
+
+// ── CountUp ───────────────────────────────────────────────────────────────
+
+function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const [val, setVal] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const dur = 1600, t0 = Date.now();
+    let raf: number;
+    const tick = () => {
+      const p = Math.min((Date.now() - t0) / dur, 1);
+      setVal(Math.round((1 - Math.pow(1 - p, 3)) * target));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, target]);
+
+  return <span ref={ref}>{val}{suffix}</span>;
+}
 
 // ── ProgressRing ──────────────────────────────────────────────────────────
 
@@ -63,12 +94,10 @@ function ProgressRing({ percent, accent, grad, isDark }: {
             <stop offset="100%" stopColor={c2?.trim() ?? accent} />
           </linearGradient>
         </defs>
-        {/* Track ring */}
         <circle cx={41} cy={41} r={r} fill="none"
           stroke={isDark ? `rgba(255,255,255,0.07)` : `${accent}22`}
           strokeWidth={5.5}
         />
-        {/* Progress arc */}
         <motion.circle
           cx={41} cy={41} r={r} fill="none"
           stroke={`url(#${gradId})`} strokeWidth={5.5} strokeLinecap="round"
@@ -110,15 +139,20 @@ function ProgressRing({ percent, accent, grad, isDark }: {
 
 function DifficultyBadge({ label, color }: { label: string; color: string }) {
   return (
-    <span style={{
-      fontSize: "10px", fontWeight: 700, padding: "3px 10px", borderRadius: 999,
-      color: "#fff",
-      background: `linear-gradient(135deg,${color},${color}bb)`,
-      boxShadow: `0 2px 10px ${color}55`,
-      letterSpacing: "0.04em", textTransform: "uppercase" as const,
-    }}>
+    <motion.span
+      whileHover={{ scale: 1.1 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      style={{
+        fontSize: "10px", fontWeight: 700, padding: "3px 10px", borderRadius: 999,
+        color: "#fff",
+        background: `linear-gradient(135deg,${color},${color}bb)`,
+        boxShadow: `0 2px 10px ${color}55`,
+        letterSpacing: "0.04em", textTransform: "uppercase" as const,
+        cursor: "default",
+      }}
+    >
       {label}
-    </span>
+    </motion.span>
   );
 }
 
@@ -127,8 +161,8 @@ function DifficultyBadge({ label, color }: { label: string; color: string }) {
 function ChapterIcon({ accent, grad, Icon }: { accent: string; grad: string; Icon: React.ElementType }) {
   return (
     <motion.div
-      whileHover={{ scale: 1.1, filter: `drop-shadow(0 0 18px ${accent}cc)` }}
-      transition={{ type: "spring", stiffness: 340, damping: 20 }}
+      whileHover={{ scale: 1.12, rotate: 6, filter: `drop-shadow(0 0 20px ${accent}cc)` }}
+      transition={{ type: "spring", stiffness: 340, damping: 18 }}
       style={{
         width: 72, height: 72, flexShrink: 0,
         display: "flex", alignItems: "center", justifyContent: "center",
@@ -155,7 +189,8 @@ function TopicRow({ topicId, accent, mins, status, isDark, index }: {
     <motion.div
       initial={{ opacity: 0, x: -16 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.25, ease: "easeOut", delay: index * 0.045 }}
+      transition={{ duration: 0.25, ease: "easeOut", delay: index * 0.05 }}
+      whileHover={{ x: 3 }}
       style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "10px 16px", borderRadius: 12,
@@ -165,6 +200,7 @@ function TopicRow({ topicId, accent, mins, status, isDark, index }: {
           ? (isDark ? "rgba(16,185,129,0.07)" : "rgba(16,185,129,0.06)")
           : "transparent",
         border: `1px solid ${status === "current" ? accent + "2e" : status === "done" ? "#10B98128" : "transparent"}`,
+        cursor: "default",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -206,6 +242,7 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
   const { Icon, accent, grad, glow, difficulty, diffColor, hours, mcqs } = vis;
   const isStarted = stats.percent > 0;
   const durations = TOPIC_DURATIONS[ch.id] ?? Array(ch.totalTopics).fill(20);
+  const [hovered, setHovered] = useState(false);
 
   const cardBg     = isDark ? "rgba(10,14,28,0.88)" : "rgba(255,255,255,0.94)";
   const cardBorder = isDark ? `rgba(${glow},0.20)` : `rgba(${glow},0.16)`;
@@ -215,16 +252,15 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
       whileHover={{
-        y: -7,
+        y: -8,
         boxShadow: isDark
-          ? `0 28px 70px rgba(${glow},0.28), 0 8px 24px rgba(${glow},0.16)`
-          : `0 28px 70px rgba(${glow},0.20), 0 8px 24px rgba(${glow},0.12)`,
+          ? `0 32px 80px rgba(${glow},0.32), 0 8px 24px rgba(${glow},0.18)`
+          : `0 32px 80px rgba(${glow},0.22), 0 8px 24px rgba(${glow},0.14)`,
       }}
-      transition={{ type: "spring", stiffness: 250, damping: 28 }}
+      transition={{ type: "spring", stiffness: 260, damping: 28 }}
       style={{
         position: "relative",
         background: cardBg,
@@ -238,30 +274,55 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
           : `inset 4px 0 0 ${accent}, 0 4px 28px rgba(${glow},0.10), inset 0 1px 0 rgba(255,255,255,0.9)`,
       }}
     >
-      {/* Ambient radial glow inside card */}
-      <div style={{
-        position: "absolute", inset: 0, pointerEvents: "none",
-        background: isDark
-          ? `radial-gradient(ellipse 70% 90% at 96% 8%, rgba(${glow},0.11) 0%, transparent 65%)`
-          : `radial-gradient(ellipse 70% 90% at 96% 8%, rgba(${glow},0.08) 0%, transparent 65%)`,
-      }} />
+      {/* Ambient radial glow */}
+      <motion.div
+        animate={{ opacity: hovered ? 1 : 0.6 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          background: isDark
+            ? `radial-gradient(ellipse 70% 90% at 96% 8%, rgba(${glow},0.13) 0%, transparent 65%)`
+            : `radial-gradient(ellipse 70% 90% at 96% 8%, rgba(${glow},0.09) 0%, transparent 65%)`,
+        }}
+      />
+
+      {/* Shimmer sweep on hover */}
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            key="shimmer"
+            initial={{ x: "-110%" }}
+            animate={{ x: "210%" }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.65, ease: "easeInOut" }}
+            style={{
+              position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+              background: "linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.09) 50%,transparent 100%)",
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Big watermark number */}
-      <div style={{
-        position: "absolute", right: -4, top: "50%", transform: "translateY(-52%)",
-        fontSize: "130px", fontWeight: 900, letterSpacing: "-0.04em",
-        lineHeight: 1, pointerEvents: "none", userSelect: "none",
-        color: isDark ? `rgba(${glow},0.065)` : `rgba(${glow},0.055)`,
-      }}>
+      <motion.div
+        animate={{ opacity: hovered ? 0.1 : 0.065 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          position: "absolute", right: -4, top: "50%", transform: "translateY(-52%)",
+          fontSize: "130px", fontWeight: 900, letterSpacing: "-0.04em",
+          lineHeight: 1, pointerEvents: "none", userSelect: "none",
+          color: isDark ? `rgba(${glow},1)` : `rgba(${glow},1)`,
+        }}
+      >
         {String(ch.number).padStart(2, "0")}
-      </div>
+      </motion.div>
 
       {/* Top accent stripe */}
       <motion.div
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.75, ease: "easeOut", delay: 0.12 }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
         style={{
           height: 3.5, transformOrigin: "left",
           background: `linear-gradient(90deg,${accent} 0%,${accent}99 60%,transparent 100%)`,
@@ -270,19 +331,21 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
       />
 
       {/* Card body */}
-      <div style={{ position: "relative", padding: "26px 28px 24px", display: "flex", alignItems: "center", gap: 22 }}>
+      <div style={{ position: "relative", zIndex: 2, padding: "26px 28px 24px", display: "flex", alignItems: "center", gap: 22 }}>
         <ChapterIcon accent={accent} grad={grad} Icon={Icon} />
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          {/* Chapter number + badge */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 7 }}>
-            <span style={{
-              fontSize: "12px", fontWeight: 800, letterSpacing: "0.07em",
-              background: `linear-gradient(${grad})`,
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-            }}>
+            <motion.span
+              animate={{ opacity: hovered ? 1 : 0.8 }}
+              style={{
+                fontSize: "12px", fontWeight: 800, letterSpacing: "0.07em",
+                background: `linear-gradient(${grad})`,
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+              }}
+            >
               CH {String(ch.number).padStart(2, "0")}
-            </span>
+            </motion.span>
             <DifficultyBadge label={difficulty} color={diffColor} />
           </div>
 
@@ -303,32 +366,38 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
               [HelpCircle, `${mcqs} MCQs`,             true],
               [Clock,      hours,                       false],
             ] as [React.ElementType, string, boolean][]).map(([MI, text, colored]) => (
-              <span key={text} style={{
-                display: "flex", alignItems: "center", gap: 5, fontSize: "12px",
-                fontWeight: 600,
-                color: colored ? accent : (isDark ? "#475569" : "#94A3B8"),
-                background: colored
-                  ? `rgba(${glow},0.12)`
-                  : (isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"),
-                padding: "4px 11px", borderRadius: 8,
-                border: colored ? `1px solid rgba(${glow},0.20)` : "1px solid transparent",
-              }}>
+              <motion.span
+                key={text}
+                whileHover={{ scale: 1.06, y: -1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5, fontSize: "12px",
+                  fontWeight: 600,
+                  color: colored ? accent : (isDark ? "#475569" : "#94A3B8"),
+                  background: colored
+                    ? `rgba(${glow},0.12)`
+                    : (isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"),
+                  padding: "4px 11px", borderRadius: 8,
+                  border: colored ? `1px solid rgba(${glow},0.20)` : "1px solid transparent",
+                  cursor: "default",
+                }}
+              >
                 <MI size={11} />{text}
-              </span>
+              </motion.span>
             ))}
           </div>
         </div>
 
-        {/* Right column: ring + actions */}
+        {/* Right: ring + actions */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, flexShrink: 0 }}>
           <ProgressRing percent={stats.percent} accent={accent} grad={grad} isDark={isDark} />
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Link href={`/chapter/${ch.id}`} style={{ textDecoration: "none" }}>
               <motion.button
-                whileHover={{ scale: 1.06, boxShadow: `0 8px 28px rgba(${glow},0.55)` }}
-                whileTap={{ scale: 0.96 }}
-                transition={{ type: "spring", stiffness: 380, damping: 18 }}
+                whileHover={{ scale: 1.07, boxShadow: `0 10px 32px rgba(${glow},0.60)` }}
+                whileTap={{ scale: 0.94 }}
+                transition={{ type: "spring", stiffness: 400, damping: 18 }}
                 style={{
                   padding: "10px 20px", borderRadius: 13, border: "none", cursor: "pointer",
                   fontSize: "13px", fontWeight: 700, whiteSpace: "nowrap",
@@ -348,7 +417,9 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
               whileHover={{
                 background: isDark ? "rgba(255,255,255,0.09)" : `rgba(${glow},0.10)`,
                 color: accent,
+                scale: 1.08,
               }}
+              whileTap={{ scale: 0.92 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
               aria-label="Toggle topics"
               style={{
@@ -372,14 +443,14 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.33, ease: "easeInOut" }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
             style={{ overflow: "hidden" }}
           >
             <div style={{
               borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)"}`,
               padding: "16px 28px 24px",
               display: "flex", flexDirection: "column", gap: 4,
-              position: "relative",
+              position: "relative", zIndex: 2,
             }}>
               {topicStatuses.map((status, i) => (
                 <TopicRow
@@ -400,10 +471,265 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
   );
 }
 
+// ── TerminalPanel ─────────────────────────────────────────────────────────
+
+function TerminalPanel({ isDark, mounted, cmdIdx }: {
+  isDark: boolean; mounted: boolean; cmdIdx: number;
+}) {
+  const cmd = CMDS[cmdIdx % CMDS.length];
+
+  return (
+    <motion.div
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+      style={{ position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)", zIndex: 3 }}
+    >
+      <motion.div
+        initial={mounted ? { opacity: 0, x: -50, scale: 0.92 } : false}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={{ duration: 0.55, delay: 0.6, ease: "easeOut" }}
+        style={{
+          width: 250, pointerEvents: "none",
+          borderRadius: 8,
+          background: isDark ? "rgba(3,8,22,0.95)" : "rgba(255,255,255,0.97)",
+          border: `1px solid ${isDark ? "rgba(16,185,129,0.38)" : "rgba(16,185,129,0.48)"}`,
+          boxShadow: isDark
+            ? "0 0 50px rgba(16,185,129,0.18), 0 16px 48px rgba(0,0,0,0.65)"
+            : "0 8px 48px rgba(16,185,129,0.18), 0 4px 20px rgba(0,0,0,0.08)",
+          overflow: "hidden",
+        }}
+      >
+        {/* Corner brackets */}
+        {(["tl","tr","bl","br"] as const).map(c => (
+          <div key={c} style={{
+            position: "absolute",
+            top: c[0]==="t" ? -1 : "auto", bottom: c[0]==="b" ? -1 : "auto",
+            left: c[1]==="l" ? -1 : "auto", right: c[1]==="r" ? -1 : "auto",
+            width: 11, height: 11,
+            borderTop:    c[0]==="t" ? "2px solid #10B981" : "none",
+            borderBottom: c[0]==="b" ? "2px solid #10B981" : "none",
+            borderLeft:   c[1]==="l" ? "2px solid #10B981" : "none",
+            borderRight:  c[1]==="r" ? "2px solid #10B981" : "none",
+          }} />
+        ))}
+
+        {/* Title bar */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 7, padding: "8px 13px",
+          background: isDark ? "rgba(16,185,129,0.08)" : "rgba(16,185,129,0.06)",
+          borderBottom: `1px solid ${isDark ? "rgba(16,185,129,0.14)" : "rgba(16,185,129,0.16)"}`,
+        }}>
+          <div style={{ display: "flex", gap: 5 }}>
+            {(["#EF4444","#F59E0B","#10B981"] as const).map(c => (
+              <div key={c} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />
+            ))}
+          </div>
+          <span style={{
+            fontFamily: "monospace", fontSize: "10px", fontWeight: 800,
+            letterSpacing: "0.12em", color: isDark ? "#34D399" : "#059669",
+            textTransform: "uppercase", marginLeft: 4,
+          }}>
+            TWH Terminal
+          </span>
+          <motion.div
+            animate={{ opacity: [1, 0.15, 1] }}
+            transition={{ duration: 1.1, repeat: Infinity }}
+            style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", marginLeft: "auto",
+              boxShadow: isDark ? "0 0 6px #10B981" : "none" }}
+          />
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: "12px 13px 13px", fontFamily: "monospace" }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={cmdIdx}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.28 }}
+            >
+              {/* Prompt + command */}
+              <div style={{ fontSize: "11px", marginBottom: 7, lineHeight: 1.5 }}>
+                <span style={{ color: "#10B981" }}>root@kali</span>
+                <span style={{ color: isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.28)" }}>:</span>
+                <span style={{ color: "#F59E0B" }}>~# </span>
+                <span style={{ color: isDark ? "#CBD5E1" : "#1E293B" }}>{cmd.cmd}</span>
+                <motion.span
+                  animate={{ opacity: [1, 0, 1] }}
+                  transition={{ duration: 0.75, repeat: Infinity }}
+                  style={{ color: "#10B981" }}
+                >█</motion.span>
+              </div>
+              {/* Output */}
+              <div style={{
+                fontSize: "10.5px", color: cmd.col,
+                paddingLeft: 8, borderLeft: `2px solid ${cmd.col}55`,
+                lineHeight: 1.5,
+              }}>
+                {cmd.out}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Animated scan line */}
+          <div style={{ marginTop: 10, height: 2, background: isDark ? "rgba(16,185,129,0.10)" : "rgba(16,185,129,0.13)", borderRadius: 999, overflow: "hidden" }}>
+            <motion.div
+              animate={{ x: ["-100%", "220%"] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "linear", delay: 0.3 }}
+              style={{ height: "100%", width: "40%", background: "linear-gradient(90deg,transparent,#10B981,transparent)" }}
+            />
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── CoursePathPanel ───────────────────────────────────────────────────────
+
+function CoursePathPanel({ isDark, mounted }: { isDark: boolean; mounted: boolean }) {
+  const SHORT = ["Startup", "How PC Works", "Networking", "Linux CLI", "Kali Linux"];
+
+  return (
+    <motion.div
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      style={{ position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)", zIndex: 3 }}
+    >
+      <motion.div
+        initial={mounted ? { opacity: 0, x: 50, scale: 0.92 } : false}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={{ duration: 0.55, delay: 0.75, ease: "easeOut" }}
+        style={{
+          width: 224, pointerEvents: "none",
+          borderRadius: 8,
+          background: isDark ? "rgba(4,4,22,0.95)" : "rgba(255,255,255,0.97)",
+          border: `1px solid ${isDark ? "rgba(124,58,237,0.38)" : "rgba(124,58,237,0.44)"}`,
+          boxShadow: isDark
+            ? "0 0 50px rgba(124,58,237,0.18), 0 16px 48px rgba(0,0,0,0.65)"
+            : "0 8px 48px rgba(124,58,237,0.15), 0 4px 20px rgba(0,0,0,0.08)",
+          overflow: "hidden",
+        }}
+      >
+        {/* Corner brackets */}
+        {(["tl","tr","bl","br"] as const).map(c => (
+          <div key={c} style={{
+            position: "absolute",
+            top: c[0]==="t" ? -1 : "auto", bottom: c[0]==="b" ? -1 : "auto",
+            left: c[1]==="l" ? -1 : "auto", right: c[1]==="r" ? -1 : "auto",
+            width: 11, height: 11,
+            borderTop:    c[0]==="t" ? "2px solid #7C3AED" : "none",
+            borderBottom: c[0]==="b" ? "2px solid #7C3AED" : "none",
+            borderLeft:   c[1]==="l" ? "2px solid #7C3AED" : "none",
+            borderRight:  c[1]==="r" ? "2px solid #7C3AED" : "none",
+          }} />
+        ))}
+
+        {/* Title bar */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8, padding: "8px 13px",
+          background: isDark ? "rgba(124,58,237,0.08)" : "rgba(124,58,237,0.05)",
+          borderBottom: `1px solid ${isDark ? "rgba(124,58,237,0.14)" : "rgba(124,58,237,0.16)"}`,
+        }}>
+          <motion.div
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            style={{ width: 8, height: 8, borderRadius: 2, background: "linear-gradient(135deg,#7C3AED,#EC4899)", flexShrink: 0 }}
+          />
+          <span style={{
+            fontFamily: "monospace", fontSize: "10px", fontWeight: 800,
+            letterSpacing: "0.12em", color: isDark ? "#C4B5FD" : "#5B21B6",
+            textTransform: "uppercase",
+          }}>
+            Course Path
+          </span>
+          <span style={{
+            marginLeft: "auto", fontFamily: "monospace", fontSize: "9px",
+            color: isDark ? "rgba(124,58,237,0.5)" : "rgba(91,33,182,0.5)", fontWeight: 700,
+          }}>5 CH</span>
+        </div>
+
+        {/* Chapters list */}
+        <div style={{ padding: "11px 13px 12px", position: "relative" }}>
+          {/* Connector line */}
+          <div style={{
+            position: "absolute", left: 19, top: 18, bottom: 42, width: 1,
+            background: isDark
+              ? "linear-gradient(180deg,rgba(124,58,237,0.50) 0%,rgba(124,58,237,0.05) 100%)"
+              : "linear-gradient(180deg,rgba(124,58,237,0.24) 0%,rgba(124,58,237,0.03) 100%)",
+          }} />
+
+          {CHAPTERS.map(({ id, number }, i) => {
+            const vis = VISUALS[id as keyof typeof VISUALS];
+            return (
+              <motion.div
+                key={id}
+                initial={mounted ? { opacity: 0, x: 10 } : false}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.85 + i * 0.1, duration: 0.25 }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 9,
+                  marginBottom: i < 4 ? 11 : 0, position: "relative",
+                }}
+              >
+                {/* Icon dot */}
+                <motion.div
+                  whileHover={{ scale: 1.2 }}
+                  style={{
+                    width: 15, height: 15, borderRadius: "50%", flexShrink: 0, zIndex: 1,
+                    background: `linear-gradient(${vis.grad})`,
+                    boxShadow: isDark ? `0 0 9px ${vis.accent}65` : `0 2px 6px ${vis.accent}40`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  <vis.Icon size={7} color="#fff" strokeWidth={2.5} />
+                </motion.div>
+
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+                    <span style={{
+                      fontSize: "9px", fontFamily: "monospace", fontWeight: 700,
+                      color: isDark ? `${vis.accent}99` : `${vis.accent}cc`,
+                      letterSpacing: "0.04em",
+                    }}>
+                      CH.{String(number).padStart(2,"0")}
+                    </span>
+                    <span style={{
+                      fontSize: "11px", fontWeight: 600,
+                      color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.72)",
+                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                    }}>
+                      {SHORT[i]}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+
+          {/* Footer */}
+          <div style={{
+            marginTop: 11, paddingTop: 9,
+            borderTop: `1px solid ${isDark ? "rgba(124,58,237,0.12)" : "rgba(124,58,237,0.12)"}`,
+            display: "flex", justifyContent: "space-between",
+            fontSize: "9px", fontFamily: "monospace",
+          }}>
+            <span style={{ color: isDark ? "rgba(124,58,237,0.45)" : "rgba(91,33,182,0.45)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              Total
+            </span>
+            <span style={{ color: "#10B981", fontWeight: 800 }}>17h 30m</span>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────
 
-const heroV = { hidden: {}, visible: { transition: { staggerChildren: 0.13 } } };
-const heroI = { hidden: { opacity: 0, y: -22 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } };
+const heroV = { hidden: {}, visible: { transition: { staggerChildren: 0.12 } } };
+const heroI = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.48, ease: "easeOut" } } };
 
 export default function ChaptersPage() {
   const { isDark } = useTheme();
@@ -411,6 +737,7 @@ export default function ChaptersPage() {
   const [mounted,  setMounted]  = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [vw,       setVw]       = useState(1280);
+  const [cmdIdx,   setCmdIdx]   = useState(0);
 
   useEffect(() => {
     setUser(getCurrentUser());
@@ -421,11 +748,16 @@ export default function ChaptersPage() {
     return () => window.removeEventListener("resize", upd);
   }, []);
 
-  const pageBg  = isDark ? "#070B16" : "#EEF3FF";
-  const heroBg  = isDark ? "#0C1020" : "#E6EEFF";
+  // Cycle terminal commands
+  useEffect(() => {
+    const id = setInterval(() => setCmdIdx(p => p + 1), 2800);
+    return () => clearInterval(id);
+  }, []);
+
+  const pageBg      = isDark ? "#070B16" : "#EEF3FF";
+  const heroBg      = isDark ? "#0C1020" : "#E6EEFF";
   const textPrimary = isDark ? "#F1F5F9" : "#0F172A";
   const textMuted   = isDark ? "#475569"  : "#64748B";
-
   const statCardBg  = isDark ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.85)";
   const statCardBdr = isDark ? "rgba(255,255,255,0.08)" : "rgba(37,99,235,0.14)";
 
@@ -447,22 +779,24 @@ export default function ChaptersPage() {
   });
 
   return (
-    <main style={{ minHeight: "100vh", background: pageBg, paddingTop: 68 }}>
-
+    <motion.main
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: "easeOut" }}
+      style={{ minHeight: "100vh", background: pageBg, paddingTop: 68 }}
+    >
       {/* ── Hero ── */}
       <div style={{ position: "relative", background: heroBg, padding: "72px 24px 60px", textAlign: "center", overflow: "hidden" }}>
-        {/* Animated dot grid background */}
-        <svg
-          aria-hidden="true"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", opacity: isDark ? 0.18 : 0.22 }}
-        >
+
+        {/* Animated dot grid */}
+        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", opacity: isDark ? 0.18 : 0.22 }}>
           <defs>
             <pattern id="dot-grid" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
               <circle cx="1.5" cy="1.5" r="1.5" fill={isDark ? "#3B82F6" : "#2563EB"} />
             </pattern>
             <radialGradient id="dot-fade" cx="50%" cy="50%" r="55%">
-              <stop offset="0%" stopColor="white" stopOpacity="0" />
-              <stop offset="60%" stopColor="white" stopOpacity="0" />
+              <stop offset="0%"   stopColor="white" stopOpacity="0" />
+              <stop offset="60%"  stopColor="white" stopOpacity="0" />
               <stop offset="100%" stopColor="white" stopOpacity="1" />
             </radialGradient>
             <mask id="dot-mask">
@@ -473,24 +807,50 @@ export default function ChaptersPage() {
           <rect width="100%" height="100%" fill="url(#dot-grid)" mask="url(#dot-mask)" />
         </svg>
 
-        {/* Gradient orbs */}
-        <div style={{ position: "absolute", top: "-30%", left: "50%", transform: "translateX(-50%)", width: 700, height: 500, background: "radial-gradient(ellipse,rgba(37,99,235,0.18) 0%,transparent 68%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: "10%", right: "5%", width: 350, height: 350, background: "radial-gradient(ellipse,rgba(124,58,237,0.12) 0%,transparent 68%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: "0%", left: "8%", width: 280, height: 280, background: "radial-gradient(ellipse,rgba(236,72,153,0.09) 0%,transparent 70%)", pointerEvents: "none" }} />
+        {/* Floating animated orbs */}
+        <motion.div
+          animate={{ y: [0, -28, 0], x: [0, 12, 0], scale: [1, 1.08, 1] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: "absolute", top: "-30%", left: "50%", transform: "translateX(-50%)", width: 700, height: 500, background: "radial-gradient(ellipse,rgba(37,99,235,0.20) 0%,transparent 68%)", pointerEvents: "none" }}
+        />
+        <motion.div
+          animate={{ y: [0, 20, 0], x: [0, -15, 0], scale: [1, 1.12, 1] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+          style={{ position: "absolute", top: "10%", right: "5%", width: 350, height: 350, background: "radial-gradient(ellipse,rgba(124,58,237,0.14) 0%,transparent 68%)", pointerEvents: "none" }}
+        />
+        <motion.div
+          animate={{ y: [0, -18, 0], x: [0, 10, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          style={{ position: "absolute", bottom: "0%", left: "8%", width: 280, height: 280, background: "radial-gradient(ellipse,rgba(236,72,153,0.11) 0%,transparent 70%)", pointerEvents: "none" }}
+        />
 
+        {/* Side panels */}
+        {vw >= 1140 && <TerminalPanel isDark={isDark} mounted={mounted} cmdIdx={cmdIdx} />}
+        {vw >= 1140 && <CoursePathPanel isDark={isDark} mounted={mounted} />}
+
+        {/* Hero content */}
         <motion.div variants={heroV} initial={mounted ? "hidden" : false} animate="visible">
+
           {/* Pill badge */}
           <motion.div variants={heroI} style={{ display: "inline-block", marginBottom: 22 }}>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 18px", borderRadius: 999,
-              background: isDark ? "rgba(37,99,235,0.14)" : "rgba(37,99,235,0.09)",
-              border: `1px solid ${isDark ? "rgba(37,99,235,0.32)" : "rgba(37,99,235,0.22)"}`,
-            }}>
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "linear-gradient(135deg,#3B82F6,#8B5CF6)", display: "inline-block" }} />
+            <motion.div
+              animate={{ boxShadow: ["0 0 0px rgba(37,99,235,0)", "0 0 18px rgba(37,99,235,0.25)", "0 0 0px rgba(37,99,235,0)"] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 18px", borderRadius: 999,
+                background: isDark ? "rgba(37,99,235,0.14)" : "rgba(37,99,235,0.09)",
+                border: `1px solid ${isDark ? "rgba(37,99,235,0.32)" : "rgba(37,99,235,0.22)"}`,
+              }}
+            >
+              <motion.span
+                animate={{ scale: [1, 1.4, 1] }}
+                transition={{ duration: 1.8, repeat: Infinity }}
+                style={{ width: 7, height: 7, borderRadius: "50%", background: "linear-gradient(135deg,#3B82F6,#8B5CF6)", display: "inline-block" }}
+              />
               <span style={{ fontSize: "11px", fontWeight: 700, color: isDark ? "#60A5FA" : "#2563EB", textTransform: "uppercase", letterSpacing: "0.10em" }}>
                 Course Curriculum
               </span>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Heading */}
@@ -509,27 +869,28 @@ export default function ChaptersPage() {
             Ek structured path jo tumhe zero se ethical hacker banata hai — computers ke andar se lekar Kali Linux tak.
           </motion.p>
 
-          {/* Stat cards */}
+          {/* Stat cards with CountUp */}
           <motion.div variants={heroI} style={{ display: "inline-flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
             {([
-              ["5",    "Chapters", "linear-gradient(135deg,#2563EB,#4F46E5)", "37,99,235"],
-              ["41",   "Topics",   "linear-gradient(135deg,#7C3AED,#C026D3)", "124,58,237"],
-              ["615+", "MCQs",     "linear-gradient(135deg,#E11D48,#F97316)", "225,29,72"],
-            ] as [string, string, string, string][]).map(([num, label, grad, rgb]) => (
+              [5,    "",  "Chapters", "linear-gradient(135deg,#2563EB,#4F46E5)", "37,99,235"],
+              [41,   "",  "Topics",   "linear-gradient(135deg,#7C3AED,#C026D3)", "124,58,237"],
+              [615,  "+", "MCQs",     "linear-gradient(135deg,#E11D48,#F97316)", "225,29,72"],
+            ] as [number, string, string, string, string][]).map(([num, suf, label, grad, rgb]) => (
               <motion.div
                 key={label}
-                whileHover={{ y: -4, boxShadow: `0 16px 40px rgba(${rgb},0.25)` }}
-                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                whileHover={{ y: -6, scale: 1.04, boxShadow: `0 20px 48px rgba(${rgb},0.28)` }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 320, damping: 22 }}
                 style={{
                   padding: "20px 32px", borderRadius: 18, textAlign: "center",
                   background: statCardBg, border: `1px solid ${statCardBdr}`,
                   backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
                   boxShadow: `0 4px 22px rgba(${rgb},0.12)`,
-                  minWidth: 100,
+                  minWidth: 100, cursor: "default",
                 }}
               >
                 <div style={{ fontSize: "2.2rem", fontWeight: 900, letterSpacing: "-0.04em", background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", lineHeight: 1 }}>
-                  {num}
+                  <CountUp target={num} suffix={suf} />
                 </div>
                 <div style={{ fontSize: "11px", fontWeight: 700, color: textMuted, letterSpacing: "0.09em", textTransform: "uppercase", marginTop: 6 }}>
                   {label}
@@ -538,18 +899,24 @@ export default function ChaptersPage() {
             ))}
           </motion.div>
 
-          {/* ── Skills tag cloud ── */}
+          {/* Skills tag cloud */}
           <motion.div variants={heroI} style={{ marginTop: 44 }}>
-            <div style={{
-              display: "flex", alignItems: "center", gap: 14,
-              maxWidth: 560, margin: "0 auto 20px",
-            }}>
-              <div style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 14, maxWidth: 560, margin: "0 auto 20px" }}>
+              <motion.div
+                initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+                transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
+                style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)", transformOrigin: "right" }}
+              />
               <span style={{ fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: textMuted, whiteSpace: "nowrap" }}>
                 Skills You&apos;ll Master
               </span>
-              <div style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
+              <motion.div
+                initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+                transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
+                style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)", transformOrigin: "left" }}
+              />
             </div>
+
             <div style={{ display: "flex", flexWrap: "wrap", gap: 9, justifyContent: "center", maxWidth: 620, margin: "0 auto" }}>
               {([
                 ["Kali Linux",       "244,63,94"],
@@ -567,10 +934,11 @@ export default function ChaptersPage() {
               ] as [string, string][]).map(([skill, rgb], i) => (
                 <motion.span
                   key={skill}
-                  initial={mounted ? { opacity: 0, scale: 0.75, y: 8 } : false}
+                  initial={mounted ? { opacity: 0, scale: 0.7, y: 10 } : false}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ delay: 0.55 + i * 0.04, type: "spring", stiffness: 320, damping: 20 }}
-                  whileHover={{ scale: 1.08, y: -2 }}
+                  transition={{ delay: 0.5 + i * 0.04, type: "spring", stiffness: 300, damping: 20 }}
+                  whileHover={{ scale: 1.1, y: -3, boxShadow: `0 6px 20px rgba(${rgb},0.30)` }}
+                  whileTap={{ scale: 0.95 }}
                   style={{
                     fontSize: "12px", fontWeight: 600, padding: "6px 15px", borderRadius: 999,
                     background: isDark ? `rgba(${rgb},0.12)` : `rgba(${rgb},0.09)`,
@@ -589,41 +957,51 @@ export default function ChaptersPage() {
       </div>
 
       {/* ── Section header ── */}
-      <div style={{ maxWidth: 860, margin: "0 auto", padding: "52px 24px 0" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        style={{ maxWidth: 860, margin: "0 auto", padding: "52px 24px 0" }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
-          <div style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.07)" : "rgba(37,99,235,0.12)" }} />
+          <motion.div
+            initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+            transition={{ duration: 0.65, ease: "easeOut" }}
+            style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.07)" : "rgba(37,99,235,0.12)", transformOrigin: "right" }}
+          />
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <motion.div
-              animate={{ opacity: [1, 0.3, 1] }}
+              animate={{ opacity: [1, 0.25, 1], scale: [1, 1.3, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
               style={{ width: 6, height: 6, borderRadius: "50%", background: "linear-gradient(135deg,#2563EB,#7C3AED)" }}
             />
-            <span style={{
-              fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              color: isDark ? "rgba(255,255,255,0.35)" : "rgba(37,99,235,0.55)",
-            }}>
+            <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase", color: isDark ? "rgba(255,255,255,0.35)" : "rgba(37,99,235,0.55)", whiteSpace: "nowrap" }}>
               Choose Your Chapter
             </span>
             <motion.div
-              animate={{ opacity: [1, 0.3, 1] }}
+              animate={{ opacity: [1, 0.25, 1], scale: [1, 1.3, 1] }}
               transition={{ duration: 2, repeat: Infinity, delay: 1 }}
               style={{ width: 6, height: 6, borderRadius: "50%", background: "linear-gradient(135deg,#7C3AED,#EC4899)" }}
             />
           </div>
-          <div style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.07)" : "rgba(37,99,235,0.12)" }} />
+          <motion.div
+            initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+            transition={{ duration: 0.65, ease: "easeOut" }}
+            style={{ flex: 1, height: 1, background: isDark ? "rgba(255,255,255,0.07)" : "rgba(37,99,235,0.12)", transformOrigin: "left" }}
+          />
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Chapter list ── */}
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 24px 110px" }}>
         {chapterData.map(({ ch, vis, stats, topicStatuses }, i) => (
           <motion.div
             key={ch.id}
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.45, ease: "easeOut", delay: i * 0.08 }}
+            initial={{ opacity: 0, y: 40, scale: 0.97 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: i * 0.07 }}
             style={{ marginBottom: 20 }}
           >
             <ChapterCard
@@ -635,6 +1013,6 @@ export default function ChaptersPage() {
           </motion.div>
         ))}
       </div>
-    </main>
+    </motion.main>
   );
 }
