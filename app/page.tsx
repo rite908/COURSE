@@ -1064,118 +1064,124 @@ export default function LandingPage() {
 
             {/* ── Desktop ── */}
             {isLg ? (
-              <>{/* ── Desktop: step nodes + cards ── */}
-              {/* paddingTop makes room for the node circles that sit on top of each card */}
-              <div style={{ display:"flex", gap:12, position:"relative", paddingTop:30 }}>
-
-                {/* Track line — sits at y=0 of this container, which = center of node circles */}
-                <div style={{
-                  position:"absolute", top:0, left:"10%", right:"10%", height:1,
-                  background: T.border, borderRadius:1,
-                }} />
-                <motion.div
-                  initial={{ scaleX:0 }} whileInView={{ scaleX:1 }} viewport={{ once:true }}
-                  transition={{ duration:1.2, ease:[0.22,1,0.36,1], delay:0.05 }}
-                  style={{
-                    position:"absolute", top:0, left:"10%", right:"10%", height:1,
-                    background:"linear-gradient(90deg,#2563EB,#7C3AED,#0EA5E9,#059669,#DC2626)",
-                    transformOrigin:"left", borderRadius:1,
-                  }}
-                />
-                {/* Travelling dot */}
-                <div style={{ position:"absolute", top:-3, left:"10%", right:"10%", overflow:"hidden", height:7, pointerEvents:"none" }}>
-                  <motion.div
-                    animate={{ x:["-5%","105%"] }}
-                    transition={{ repeat:Infinity, duration:4, ease:"linear", repeatDelay:3 }}
-                    style={{
-                      position:"absolute", top:0, left:0, width:"15%", height:"100%",
-                      background:`linear-gradient(90deg,transparent,${isDark?"rgba(255,255,255,0.55)":"rgba(37,99,235,0.5)"},transparent)`,
-                    }}
-                  />
-                </div>
+              <>{/* ── Desktop: minimal cards with elegant connector ── */}
+              <div style={{ display:"flex", gap:16, position:"relative", alignItems:"stretch" }}>
 
                 {ROADMAP.map((step, i) => (
-                  <div key={step.num} style={{ flex:1, position:"relative" }}>
-                    {/* Node circle — centered on the track line */}
-                    <motion.div
-                      initial={mounted ? { scale:0 } : false}
-                      whileInView={{ scale:1 }}
-                      viewport={{ once:true }}
-                      transition={{ delay: i * 0.12 + 0.3, type:"spring", stiffness:400, damping:20 }}
-                      style={{
-                        position:"absolute", top:-26, left:"50%", transform:"translateX(-50%)",
-                        width:52, height:52, borderRadius:"50%", zIndex:2,
-                        background:`linear-gradient(135deg,${step.color},${step.color}cc)`,
-                        boxShadow:`0 4px 20px ${step.color}45`,
-                        display:"flex", alignItems:"center", justifyContent:"center",
-                        color:"white", fontWeight:800, fontSize:"16px",
-                      }}
-                    >
-                      {step.num}
-                    </motion.div>
+                  <motion.div
+                    key={step.num}
+                    initial={mounted ? { opacity:0, y:24 } : false}
+                    whileInView={{ opacity:1, y:0 }}
+                    viewport={{ once:true }}
+                    transition={{ delay: i * 0.1, duration:0.5, ease:[0.22,1,0.36,1] }}
+                    whileHover="hover"
+                    style={{ flex:1, position:"relative" }}
+                  >
+                    {/* Connector line between cards */}
+                    {i < ROADMAP.length - 1 && (
+                      <motion.div
+                        initial={{ scaleX:0, opacity:0 }}
+                        whileInView={{ scaleX:1, opacity:1 }}
+                        viewport={{ once:true }}
+                        transition={{ delay: i * 0.1 + 0.4, duration:0.5, ease:[0.22,1,0.36,1] }}
+                        style={{
+                          position:"absolute", top:"50%", right:-16, width:16, height:1,
+                          background:`linear-gradient(90deg,${step.color}60,${ROADMAP[i+1].color}60)`,
+                          transformOrigin:"left", zIndex:1,
+                        }}
+                      />
+                    )}
 
                     {/* Card */}
                     <motion.div
-                      initial={mounted ? { opacity:0, y:18 } : false}
-                      whileInView={{ opacity:1, y:0 }}
-                      viewport={{ once:true }}
-                      transition={{ delay: i * 0.1 + 0.5, duration:0.5, ease:[0.22,1,0.36,1] }}
-                      whileHover={{ y:-5, transition:{ duration:0.2 } }}
+                      variants={{
+                        hover: {
+                          y: -6,
+                          boxShadow: isDark
+                            ? `0 16px 48px ${step.color}25, 0 0 0 1px ${step.color}40`
+                            : `0 12px 40px ${step.color}18, 0 0 0 1px ${step.color}30`,
+                          transition: { duration:0.22, ease:"easeOut" },
+                        }
+                      }}
                       style={{
-                        borderRadius:16, overflow:"hidden", cursor:"pointer",
-                        background:T.card,
+                        height:"100%", borderRadius:20, cursor:"pointer",
+                        background: T.card,
                         border:`1px solid ${T.border}`,
-                        boxShadow: isDark
-                          ? `0 2px 16px rgba(0,0,0,0.3)`
-                          : `0 2px 16px rgba(0,0,0,0.06)`,
-                        paddingTop:40, padding:"40px 20px 22px",
+                        boxShadow: isDark ? `0 2px 12px rgba(0,0,0,0.25)` : `0 2px 10px rgba(0,0,0,0.04)`,
+                        padding:"28px 20px 22px",
                         display:"flex", flexDirection:"column", alignItems:"center",
-                        textAlign:"center", gap:10,
-                        transition:"box-shadow 0.2s",
+                        textAlign:"center", gap:14, position:"relative", overflow:"hidden",
                       }}
                     >
-                      {/* Colored top stripe */}
-                      <div style={{
-                        position:"absolute", top:0, left:0, right:0, height:3,
-                        background:`linear-gradient(90deg,${step.color},${step.color}88)`,
-                      }} />
+                      {/* Subtle bottom accent bar */}
+                      <motion.div
+                        variants={{ hover: { opacity:1, scaleX:1 } }}
+                        initial={{ opacity:0, scaleX:0.4 }}
+                        style={{
+                          position:"absolute", bottom:0, left:"20%", right:"20%", height:2,
+                          background:`linear-gradient(90deg,${step.color}00,${step.color},${step.color}00)`,
+                          borderRadius:2, transformOrigin:"center",
+                          transition:"opacity 0.22s, transform 0.22s",
+                        }}
+                      />
+
+                      {/* Step number badge */}
+                      <motion.div
+                        initial={mounted ? { scale:0, rotate:-12 } : false}
+                        whileInView={{ scale:1, rotate:0 }}
+                        viewport={{ once:true }}
+                        transition={{ delay: i * 0.1 + 0.2, type:"spring", stiffness:380, damping:18 }}
+                        style={{
+                          width:32, height:32, borderRadius:10,
+                          background: isDark ? step.darkBg : step.lightBg,
+                          border:`1.5px solid ${step.color}40`,
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          color:step.color, fontWeight:800, fontSize:"13px",
+                          fontFamily:"var(--font-orbitron, monospace)",
+                          alignSelf:"flex-end", marginBottom:-4,
+                        }}
+                      >
+                        {step.num}
+                      </motion.div>
 
                       {/* Icon */}
                       <motion.div
-                        whileInView={{ scale:[0.7,1.1,1] }}
-                        viewport={{ once:true }}
-                        transition={{ delay: i * 0.1 + 0.6, duration:0.4, ease:[0.22,1,0.36,1] }}
+                        variants={{ hover: { scale:1.12, rotate:6 } }}
+                        transition={{ type:"spring", stiffness:400, damping:16 }}
                         style={{
-                          width:46, height:46, borderRadius:"50%",
+                          width:52, height:52, borderRadius:16,
                           background: isDark ? step.darkBg : step.lightBg,
-                          border:`1.5px solid ${step.color}35`,
                           display:"flex", alignItems:"center", justifyContent:"center",
                           color:step.color,
+                          boxShadow: isDark ? `0 0 0 1px ${step.color}25` : `0 0 0 1px ${step.color}18`,
                         }}
                       >
                         {step.icon}
                       </motion.div>
 
                       {/* Text */}
-                      <div>
+                      <div style={{ flex:1, display:"flex", flexDirection:"column", gap:3, alignItems:"center" }}>
                         <div style={{ fontWeight:700, fontSize:"14px", color:T.text, lineHeight:1.3 }}>
                           {step.label}
                         </div>
-                        <div style={{ fontSize:"12px", color:T.muted, marginTop:3 }}>
+                        <div style={{ fontSize:"11px", color:T.muted }}>
                           {step.sub}
                         </div>
                       </div>
 
-                      {/* Topics count */}
+                      {/* Stats row */}
                       <div style={{
-                        fontSize:"11px", fontWeight:600, color:step.color,
-                        padding:"3px 10px", borderRadius:999,
-                        background: isDark ? step.darkBg : step.lightBg,
+                        display:"flex", gap:6, alignItems:"center",
+                        fontSize:"11px", fontWeight:600, color:T.muted,
                       }}>
-                        {step.topics} topics · {step.mcqs} MCQs
+                        <span style={{ color:step.color }}>{step.topics}</span>
+                        <span>topics</span>
+                        <span style={{ color:T.border, fontSize:"8px" }}>●</span>
+                        <span style={{ color:step.color }}>{step.mcqs}</span>
+                        <span>MCQs</span>
                       </div>
                     </motion.div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
               </>
