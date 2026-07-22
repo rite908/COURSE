@@ -471,256 +471,159 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
   );
 }
 
-// ── TerminalPanel ─────────────────────────────────────────────────────────
+// ── RobotPanel (left) ─────────────────────────────────────────────────────
 
-function TerminalPanel({ isDark, mounted, cmdIdx }: {
+function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
   isDark: boolean; mounted: boolean; cmdIdx: number;
 }) {
-  const cmd = CMDS[cmdIdx % CMDS.length];
-
   return (
     <motion.div
-      animate={{ y: [0, -10, 0] }}
-      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-      style={{ position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)", zIndex: 3 }}
+      animate={{ y: [0, -5, 0] }}
+      transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+      aria-hidden="true"
+      style={{
+        position: "absolute", left: -155, top: "50%", transform: "translateY(-50%)",
+        zIndex: 1, pointerEvents: "none", userSelect: "none",
+        width: 390, height: 510,
+      }}
     >
       <motion.div
-        initial={mounted ? { opacity: 0, x: -50, scale: 0.92 } : false}
-        animate={{ opacity: 1, x: 0, scale: 1 }}
-        transition={{ duration: 0.55, delay: 0.6, ease: "easeOut" }}
-        style={{
-          width: 250, pointerEvents: "none",
-          borderRadius: 8,
-          background: isDark ? "rgba(3,8,22,0.95)" : "rgba(255,255,255,0.97)",
-          border: `1px solid ${isDark ? "rgba(16,185,129,0.38)" : "rgba(16,185,129,0.48)"}`,
-          boxShadow: isDark
-            ? "0 0 50px rgba(16,185,129,0.18), 0 16px 48px rgba(0,0,0,0.65)"
-            : "0 8px 48px rgba(16,185,129,0.18), 0 4px 20px rgba(0,0,0,0.08)",
-          overflow: "hidden",
-        }}
+        initial={mounted ? { opacity: 0, x: -40 } : false}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.85, delay: 0.5, ease: "easeOut" }}
+        style={{ position: "relative", width: "100%", height: "100%" }}
       >
-        {/* Corner brackets */}
-        {(["tl","tr","bl","br"] as const).map(c => (
-          <div key={c} style={{
-            position: "absolute",
-            top: c[0]==="t" ? -1 : "auto", bottom: c[0]==="b" ? -1 : "auto",
-            left: c[1]==="l" ? -1 : "auto", right: c[1]==="r" ? -1 : "auto",
-            width: 11, height: 11,
-            borderTop:    c[0]==="t" ? "2px solid #10B981" : "none",
-            borderBottom: c[0]==="b" ? "2px solid #10B981" : "none",
-            borderLeft:   c[1]==="l" ? "2px solid #10B981" : "none",
-            borderRight:  c[1]==="r" ? "2px solid #10B981" : "none",
-          }} />
-        ))}
-
-        {/* Title bar */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 7, padding: "8px 13px",
-          background: isDark ? "rgba(16,185,129,0.08)" : "rgba(16,185,129,0.06)",
-          borderBottom: `1px solid ${isDark ? "rgba(16,185,129,0.14)" : "rgba(16,185,129,0.16)"}`,
-        }}>
-          <div style={{ display: "flex", gap: 5 }}>
-            {(["#EF4444","#F59E0B","#10B981"] as const).map(c => (
-              <div key={c} style={{ width: 8, height: 8, borderRadius: "50%", background: c }} />
-            ))}
-          </div>
-          <span style={{
-            fontFamily: "monospace", fontSize: "10px", fontWeight: 800,
-            letterSpacing: "0.12em", color: isDark ? "#34D399" : "#059669",
-            textTransform: "uppercase", marginLeft: 4,
-          }}>
-            TWH Terminal
-          </span>
-          <motion.div
-            animate={{ opacity: [1, 0.15, 1] }}
-            transition={{ duration: 1.1, repeat: Infinity }}
-            style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", marginLeft: "auto",
-              boxShadow: isDark ? "0 0 6px #10B981" : "none" }}
-          />
-        </div>
-
-        {/* Body */}
-        <div style={{ padding: "12px 13px 13px", fontFamily: "monospace" }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={cmdIdx}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.28 }}
-            >
-              {/* Prompt + command */}
-              <div style={{ fontSize: "11px", marginBottom: 7, lineHeight: 1.5 }}>
-                <span style={{ color: "#10B981" }}>root@kali</span>
-                <span style={{ color: isDark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.28)" }}>:</span>
-                <span style={{ color: "#F59E0B" }}>~# </span>
-                <span style={{ color: isDark ? "#CBD5E1" : "#1E293B" }}>{cmd.cmd}</span>
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ duration: 0.75, repeat: Infinity }}
-                  style={{ color: "#10B981" }}
-                >█</motion.span>
-              </div>
-              {/* Output */}
-              <div style={{
-                fontSize: "10.5px", color: cmd.col,
-                paddingLeft: 8, borderLeft: `2px solid ${cmd.col}55`,
-                lineHeight: 1.5,
-              }}>
-                {cmd.out}
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Animated scan line */}
-          <div style={{ marginTop: 10, height: 2, background: isDark ? "rgba(16,185,129,0.10)" : "rgba(16,185,129,0.13)", borderRadius: 999, overflow: "hidden" }}>
-            <motion.div
-              animate={{ x: ["-100%", "220%"] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "linear", delay: 0.3 }}
-              style={{ height: "100%", width: "40%", background: "linear-gradient(90deg,transparent,#10B981,transparent)" }}
+        {/* Radial purple glow behind robot */}
+        <motion.div
+          animate={{ opacity: [0.38, 0.65, 0.38] }}
+          transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position: "absolute", inset: "-28%",
+            background: "radial-gradient(ellipse 55% 65% at 62% 50%, rgba(139,92,246,0.35) 0%, transparent 68%)",
+            filter: "blur(22px)", zIndex: 0, pointerEvents: "none",
+          }}
+        />
+        {/* Faint circuit traces */}
+        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 2, opacity: 0.18, pointerEvents: "none" }}>
+          <defs>
+            <pattern id="cct-l" x="0" y="0" width="64" height="64" patternUnits="userSpaceOnUse">
+              <path d="M12 32 L32 32 L32 12" fill="none" stroke="#8B5CF6" strokeWidth="0.9"/>
+              <path d="M32 52 L52 52 L52 32" fill="none" stroke="#7C3AED" strokeWidth="0.7"/>
+              <circle cx="32" cy="32" r="2.2" fill="#8B5CF6"/>
+              <circle cx="12" cy="32" r="1.4" fill="#7C3AED"/>
+              <circle cx="52" cy="52" r="1.2" fill="#6D28D9"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#cct-l)"/>
+        </svg>
+        {/* Robot image — left robot */}
+        <img
+          src="/robot-hero.jpg"
+          alt=""
+          role="presentation"
+          style={{
+            position: "relative", zIndex: 3,
+            width: "100%", height: "100%",
+            objectFit: "cover", objectPosition: "12% center",
+          }}
+        />
+        {/* Soft digital particles */}
+        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 4, opacity: 0.35, pointerEvents: "none" }}>
+          {[{cx:72,cy:80},{cx:180,cy:140},{cx:290,cy:60},{cx:110,cy:300},{cx:250,cy:420},{cx:60,cy:450},{cx:330,cy:240}].map((p,i)=>(
+            <motion.circle key={i} cx={p.cx} cy={p.cy} r="1.5" fill="#8B5CF6"
+              animate={{ opacity:[0.2,0.9,0.2], r:[1.5,2.2,1.5] }}
+              transition={{ duration: 2.5+i*0.4, repeat: Infinity, ease:"easeInOut", delay: i*0.35 }}
             />
-          </div>
-        </div>
+          ))}
+        </svg>
+        {/* Eye glow pulse */}
+        <motion.div
+          animate={{ opacity: [0.5, 0.95, 0.5] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position: "absolute", zIndex: 5, inset: 0,
+            background: "radial-gradient(ellipse 18% 10% at 63% 37%, rgba(139,92,246,0.55) 0%, transparent 100%)",
+            pointerEvents: "none",
+          }}
+        />
       </motion.div>
     </motion.div>
   );
 }
 
-// ── CoursePathPanel ───────────────────────────────────────────────────────
+// ── RobotPanel (right) ────────────────────────────────────────────────────
 
-function CoursePathPanel({ isDark, mounted }: { isDark: boolean; mounted: boolean }) {
-  const SHORT = ["Startup", "How PC Works", "Networking", "Linux CLI", "Kali Linux"];
-
+function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounted: boolean }) {
   return (
     <motion.div
-      animate={{ y: [0, -10, 0] }}
-      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-      style={{ position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)", zIndex: 3 }}
+      animate={{ y: [0, -5, 0] }}
+      transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+      aria-hidden="true"
+      style={{
+        position: "absolute", right: -155, top: "50%", transform: "translateY(-50%)",
+        zIndex: 1, pointerEvents: "none", userSelect: "none",
+        width: 390, height: 510,
+      }}
     >
       <motion.div
-        initial={mounted ? { opacity: 0, x: 50, scale: 0.92 } : false}
-        animate={{ opacity: 1, x: 0, scale: 1 }}
-        transition={{ duration: 0.55, delay: 0.75, ease: "easeOut" }}
-        style={{
-          width: 224, pointerEvents: "none",
-          borderRadius: 8,
-          background: isDark ? "rgba(4,4,22,0.95)" : "rgba(255,255,255,0.97)",
-          border: `1px solid ${isDark ? "rgba(124,58,237,0.38)" : "rgba(124,58,237,0.44)"}`,
-          boxShadow: isDark
-            ? "0 0 50px rgba(124,58,237,0.18), 0 16px 48px rgba(0,0,0,0.65)"
-            : "0 8px 48px rgba(124,58,237,0.15), 0 4px 20px rgba(0,0,0,0.08)",
-          overflow: "hidden",
-        }}
+        initial={mounted ? { opacity: 0, x: 40 } : false}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.85, delay: 0.65, ease: "easeOut" }}
+        style={{ position: "relative", width: "100%", height: "100%" }}
       >
-        {/* Corner brackets */}
-        {(["tl","tr","bl","br"] as const).map(c => (
-          <div key={c} style={{
-            position: "absolute",
-            top: c[0]==="t" ? -1 : "auto", bottom: c[0]==="b" ? -1 : "auto",
-            left: c[1]==="l" ? -1 : "auto", right: c[1]==="r" ? -1 : "auto",
-            width: 11, height: 11,
-            borderTop:    c[0]==="t" ? "2px solid #7C3AED" : "none",
-            borderBottom: c[0]==="b" ? "2px solid #7C3AED" : "none",
-            borderLeft:   c[1]==="l" ? "2px solid #7C3AED" : "none",
-            borderRight:  c[1]==="r" ? "2px solid #7C3AED" : "none",
-          }} />
-        ))}
-
-        {/* Title bar */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 8, padding: "8px 13px",
-          background: isDark ? "rgba(124,58,237,0.08)" : "rgba(124,58,237,0.05)",
-          borderBottom: `1px solid ${isDark ? "rgba(124,58,237,0.14)" : "rgba(124,58,237,0.16)"}`,
-        }}>
-          <motion.div
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            style={{ width: 8, height: 8, borderRadius: 2, background: "linear-gradient(135deg,#7C3AED,#EC4899)", flexShrink: 0 }}
-          />
-          <span style={{
-            fontFamily: "monospace", fontSize: "10px", fontWeight: 800,
-            letterSpacing: "0.12em", color: isDark ? "#C4B5FD" : "#5B21B6",
-            textTransform: "uppercase",
-          }}>
-            Course Path
-          </span>
-          <span style={{
-            marginLeft: "auto", fontFamily: "monospace", fontSize: "9px",
-            color: isDark ? "rgba(124,58,237,0.5)" : "rgba(91,33,182,0.5)", fontWeight: 700,
-          }}>5 CH</span>
-        </div>
-
-        {/* Chapters list */}
-        <div style={{ padding: "11px 13px 12px", position: "relative" }}>
-          {/* Connector line */}
-          <div style={{
-            position: "absolute", left: 19, top: 18, bottom: 42, width: 1,
-            background: isDark
-              ? "linear-gradient(180deg,rgba(124,58,237,0.50) 0%,rgba(124,58,237,0.05) 100%)"
-              : "linear-gradient(180deg,rgba(124,58,237,0.24) 0%,rgba(124,58,237,0.03) 100%)",
-          }} />
-
-          {CHAPTERS.map(({ id, number }, i) => {
-            const vis = VISUALS[id as keyof typeof VISUALS];
-            return (
-              <motion.div
-                key={id}
-                initial={mounted ? { opacity: 0, x: 10 } : false}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.85 + i * 0.1, duration: 0.25 }}
-                style={{
-                  display: "flex", alignItems: "center", gap: 9,
-                  marginBottom: i < 4 ? 11 : 0, position: "relative",
-                }}
-              >
-                {/* Icon dot */}
-                <motion.div
-                  whileHover={{ scale: 1.2 }}
-                  style={{
-                    width: 15, height: 15, borderRadius: "50%", flexShrink: 0, zIndex: 1,
-                    background: `linear-gradient(${vis.grad})`,
-                    boxShadow: isDark ? `0 0 9px ${vis.accent}65` : `0 2px 6px ${vis.accent}40`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                >
-                  <vis.Icon size={7} color="#fff" strokeWidth={2.5} />
-                </motion.div>
-
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
-                    <span style={{
-                      fontSize: "9px", fontFamily: "monospace", fontWeight: 700,
-                      color: isDark ? `${vis.accent}99` : `${vis.accent}cc`,
-                      letterSpacing: "0.04em",
-                    }}>
-                      CH.{String(number).padStart(2,"0")}
-                    </span>
-                    <span style={{
-                      fontSize: "11px", fontWeight: 600,
-                      color: isDark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.72)",
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                    }}>
-                      {SHORT[i]}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-
-          {/* Footer */}
-          <div style={{
-            marginTop: 11, paddingTop: 9,
-            borderTop: `1px solid ${isDark ? "rgba(124,58,237,0.12)" : "rgba(124,58,237,0.12)"}`,
-            display: "flex", justifyContent: "space-between",
-            fontSize: "9px", fontFamily: "monospace",
-          }}>
-            <span style={{ color: isDark ? "rgba(124,58,237,0.45)" : "rgba(91,33,182,0.45)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-              Total
-            </span>
-            <span style={{ color: "#10B981", fontWeight: 800 }}>17h 30m</span>
-          </div>
-        </div>
+        {/* Radial purple glow behind robot */}
+        <motion.div
+          animate={{ opacity: [0.38, 0.65, 0.38] }}
+          transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          style={{
+            position: "absolute", inset: "-28%",
+            background: "radial-gradient(ellipse 55% 65% at 38% 50%, rgba(139,92,246,0.35) 0%, transparent 68%)",
+            filter: "blur(22px)", zIndex: 0, pointerEvents: "none",
+          }}
+        />
+        {/* Faint circuit traces */}
+        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 2, opacity: 0.18, pointerEvents: "none" }}>
+          <defs>
+            <pattern id="cct-r" x="0" y="0" width="64" height="64" patternUnits="userSpaceOnUse">
+              <path d="M52 32 L32 32 L32 52" fill="none" stroke="#8B5CF6" strokeWidth="0.9"/>
+              <path d="M32 12 L12 12 L12 32" fill="none" stroke="#7C3AED" strokeWidth="0.7"/>
+              <circle cx="32" cy="32" r="2.2" fill="#8B5CF6"/>
+              <circle cx="52" cy="32" r="1.4" fill="#7C3AED"/>
+              <circle cx="12" cy="12" r="1.2" fill="#6D28D9"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#cct-r)"/>
+        </svg>
+        {/* Robot image — right robot */}
+        <img
+          src="/robot-hero.jpg"
+          alt=""
+          role="presentation"
+          style={{
+            position: "relative", zIndex: 3,
+            width: "100%", height: "100%",
+            objectFit: "cover", objectPosition: "88% center",
+          }}
+        />
+        {/* Soft digital particles */}
+        <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 4, opacity: 0.35, pointerEvents: "none" }}>
+          {[{cx:320,cy:90},{cx:200,cy:150},{cx:90,cy:70},{cx:280,cy:310},{cx:140,cy:430},{cx:340,cy:460},{cx:60,cy:250}].map((p,i)=>(
+            <motion.circle key={i} cx={p.cx} cy={p.cy} r="1.5" fill="#8B5CF6"
+              animate={{ opacity:[0.2,0.9,0.2], r:[1.5,2.2,1.5] }}
+              transition={{ duration: 2.5+i*0.4, repeat: Infinity, ease:"easeInOut", delay: i*0.35+0.2 }}
+            />
+          ))}
+        </svg>
+        {/* Eye glow pulse */}
+        <motion.div
+          animate={{ opacity: [0.5, 0.95, 0.5] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+          style={{
+            position: "absolute", zIndex: 5, inset: 0,
+            background: "radial-gradient(ellipse 18% 10% at 37% 37%, rgba(139,92,246,0.55) 0%, transparent 100%)",
+            pointerEvents: "none",
+          }}
+        />
       </motion.div>
     </motion.div>
   );
@@ -829,7 +732,7 @@ export default function ChaptersPage() {
         {vw >= 1140 && <CoursePathPanel isDark={isDark} mounted={mounted} />}
 
         {/* Hero content */}
-        <motion.div variants={heroV} initial={mounted ? "hidden" : false} animate="visible">
+        <motion.div variants={heroV} initial={mounted ? "hidden" : false} animate="visible" style={{ position: "relative", zIndex: 2 }}>
 
           {/* Pill badge */}
           <motion.div variants={heroI} style={{ display: "inline-block", marginBottom: 22 }}>
