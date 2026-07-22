@@ -1463,11 +1463,16 @@ export default function LandingPage() {
             gap: isLg ? 72 : 40, alignItems: isLg ? "center" : "flex-start",
           }}>
             {/* Avatar + badges */}
-            <motion.div {...inView()} style={{
-              flexShrink: 0, display: "flex", flexDirection: "column",
-              alignItems: "flex-start", gap: 14, minWidth: isLg ? 200 : "unset",
-            }}>
-              <div style={{ position: "relative", marginBottom: 4 }}>
+            <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 14, minWidth: isLg ? 200 : "unset" }}>
+
+              {/* Avatar — drops in with spring */}
+              <motion.div
+                initial={mounted ? { opacity: 0, scale: 0.7, y: -20 } : false}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.6, type: "spring", stiffness: 280, damping: 22 }}
+                style={{ position: "relative", marginBottom: 4 }}
+              >
                 {/* Pulsing outer glow ring */}
                 <motion.div
                   animate={{ opacity: [0.35, 0.75, 0.35], scale: [1, 1.08, 1] }}
@@ -1489,48 +1494,99 @@ export default function LandingPage() {
                     opacity: 0.5, pointerEvents: "none",
                   }}
                 />
-                <div style={{
-                  position: "relative",
-                  width: 110, height: 110, borderRadius: 28,
-                  background: "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: "0 8px 32px rgba(37,99,235,0.38)",
-                  fontSize: "2.8rem", fontWeight: 900, color: "white", zIndex: 1,
-                }}>A</div>
-                <div style={{
-                  position: "absolute", bottom: -6, right: -6,
-                  width: 26, height: 26, borderRadius: "50%",
-                  background: "#059669", border: `3px solid ${T.altBg}`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  zIndex: 2,
-                }}>
+                <motion.div
+                  whileHover={{ scale: 1.06, boxShadow: "0 12px 48px rgba(37,99,235,0.55)" }}
+                  transition={{ type: "spring", stiffness: 340, damping: 18 }}
+                  style={{
+                    position: "relative",
+                    width: 110, height: 110, borderRadius: 28,
+                    background: "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: "0 8px 32px rgba(37,99,235,0.38)",
+                    fontSize: "2.8rem", fontWeight: 900, color: "white", zIndex: 1,
+                  }}
+                >A</motion.div>
+                {/* Online badge — pops in after avatar */}
+                <motion.div
+                  initial={mounted ? { scale: 0 } : false}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4, type: "spring", stiffness: 500, damping: 18 }}
+                  style={{
+                    position: "absolute", bottom: -6, right: -6,
+                    width: 26, height: 26, borderRadius: "50%",
+                    background: "#059669", border: `3px solid ${T.altBg}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    zIndex: 2,
+                  }}
+                >
                   <Star size={10} color="white" fill="white" />
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
+
+              {/* Skill badges — stagger in from left */}
               {[
-                { label: "Ethical Hacker",   color: "#2563EB", darkBg: "rgba(37,99,235,0.15)",  lightBg: "#EEF3FF" },
-                { label: "OSINT Expert",     color: "#7C3AED", darkBg: "rgba(124,58,237,0.15)", lightBg: "#F3EEFF" },
-                { label: "Full-Stack Dev",   color: "#0EA5E9", darkBg: "rgba(14,165,233,0.15)", lightBg: "#F0F9FF" },
-                { label: "Started at Age 12",color: "#059669", darkBg: "rgba(5,150,105,0.15)",  lightBg: "#ECFDF5" },
-              ].map(chip => (
-                <span key={chip.label} style={{
-                  fontSize: "12px", fontWeight: 700, padding: "5px 14px", borderRadius: 999,
-                  background: isDark ? chip.darkBg : chip.lightBg, color: chip.color, whiteSpace: "nowrap",
-                }}>{chip.label}</span>
+                { label: "Ethical Hacker",    color: "#2563EB", darkBg: "rgba(37,99,235,0.15)",  lightBg: "#EEF3FF" },
+                { label: "OSINT Expert",      color: "#7C3AED", darkBg: "rgba(124,58,237,0.15)", lightBg: "#F3EEFF" },
+                { label: "Full-Stack Dev",    color: "#0EA5E9", darkBg: "rgba(14,165,233,0.15)", lightBg: "#F0F9FF" },
+                { label: "Started at Age 12", color: "#059669", darkBg: "rgba(5,150,105,0.15)",  lightBg: "#ECFDF5" },
+              ].map((chip, i) => (
+                <motion.span
+                  key={chip.label}
+                  initial={mounted ? { opacity: 0, x: -24 } : false}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.09 + 0.15, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ x: 5, transition: { duration: 0.18 } }}
+                  style={{
+                    fontSize: "12px", fontWeight: 700, padding: "5px 14px", borderRadius: 999,
+                    background: isDark ? chip.darkBg : chip.lightBg, color: chip.color,
+                    whiteSpace: "nowrap", cursor: "default",
+                    boxShadow: `0 0 0 1px ${chip.color}25`,
+                  }}
+                >{chip.label}</motion.span>
               ))}
-            </motion.div>
+            </div>
 
             {/* Bio */}
-            <motion.div {...inView(0.1)} style={{ flex: 1, minWidth: 0 }}>
-              <Chip icon={<Shield size={12} color="#3B82F6" />} label="Course Creator" />
-              <h2 style={{
-                fontWeight: 900,
-                fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.7rem",
-                color: T.text, letterSpacing: "-0.025em", marginBottom: 6,
-              }}>Afsar Ali</h2>
-              <p style={{ fontSize: "14px", fontWeight: 600, color: T.chipTxt, marginBottom: 24 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+
+              {/* Chip */}
+              <motion.div
+                initial={mounted ? { opacity: 0, scale: 0.8, y: -8 } : false}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                style={{ display: "inline-block" }}
+              >
+                <Chip icon={<Shield size={12} color="#3B82F6" />} label="Course Creator" />
+              </motion.div>
+
+              {/* Name — characters blur in */}
+              <motion.h2
+                initial={mounted ? { opacity: 0, y: 24, filter: "blur(8px)" } : false}
+                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  fontWeight: 900,
+                  fontSize: isLg ? "2.4rem" : isMd ? "2rem" : "1.7rem",
+                  color: T.text, letterSpacing: "-0.025em", marginBottom: 6,
+                }}
+              >Afsar Ali</motion.h2>
+
+              {/* Subtitle */}
+              <motion.p
+                initial={mounted ? { opacity: 0, y: 12 } : false}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: 0.18, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                style={{ fontSize: "14px", fontWeight: 600, color: T.chipTxt, marginBottom: 24 }}
+              >
                 Technical White Hat · &ldquo;Legend of Indian Cybersecurity&rdquo;
-              </p>
+              </motion.p>
+
+              {/* Bullet points — stagger up */}
               <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 28 }}>
                 {[
                   { icon: "🚀", text: "22 saal ka ethical hacker — tech ki duniya mein 12 saal ki umar se kaam kar raha hai." },
@@ -1538,27 +1594,53 @@ export default function LandingPage() {
                   { icon: "📚", text: "Yeh course unka vision hai — Computer Expert + Ethical Hacker dono ek saath banana." },
                   { icon: "💬", text: "Hinglish mein likhta hai — real life analogies se, boring theory nahi." },
                 ].map((item, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                    <div style={{
-                      width: 38, height: 38, borderRadius: 12, flexShrink: 0,
-                      background: isDark ? "rgba(37,99,235,0.12)" : "#EEF3FF",
-                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: "17px",
-                    }}>{item.icon}</div>
+                  <motion.div
+                    key={i}
+                    initial={mounted ? { opacity: 0, x: 28 } : false}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.1 + 0.25, duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ x: 4, transition: { duration: 0.18 } }}
+                    style={{ display: "flex", alignItems: "flex-start", gap: 14, cursor: "default" }}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.18, rotate: -8, transition: { type: "spring", stiffness: 400, damping: 14 } }}
+                      style={{
+                        width: 38, height: 38, borderRadius: 12, flexShrink: 0,
+                        background: isDark ? "rgba(37,99,235,0.12)" : "#EEF3FF",
+                        display: "flex", alignItems: "center", justifyContent: "center", fontSize: "17px",
+                      }}
+                    >{item.icon}</motion.div>
                     <p style={{ color: T.text2, fontSize: "14.5px", lineHeight: 1.75, paddingTop: 7 }}>{item.text}</p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-              <a href="https://twh-osint.vercel.app/twh" target="_blank" rel="noopener noreferrer">
-                <motion.div whileHover={{ scale: 1.02 }} style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  padding: "11px 22px", borderRadius: 12,
-                  background: isDark ? "rgba(37,99,235,0.15)" : "#EEF3FF",
-                  color: "#2563EB", fontSize: "13.5px", fontWeight: 700, cursor: "pointer",
-                }}>
-                  <Globe2 size={15} /> Visit TWH OSINT Platform <ArrowRight size={14} />
-                </motion.div>
-              </a>
-            </motion.div>
+
+              {/* CTA button */}
+              <motion.div
+                initial={mounted ? { opacity: 0, y: 16 } : false}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: 0.65, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <a href="https://twh-osint.vercel.app/twh" target="_blank" rel="noopener noreferrer">
+                  <motion.div
+                    whileHover={{ scale: 1.04, boxShadow: "0 8px 28px rgba(37,99,235,0.28)", x: 3 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 340, damping: 18 }}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      padding: "11px 22px", borderRadius: 12,
+                      background: isDark ? "rgba(37,99,235,0.15)" : "#EEF3FF",
+                      color: "#2563EB", fontSize: "13.5px", fontWeight: 700, cursor: "pointer",
+                      border: "1px solid rgba(37,99,235,0.2)",
+                    }}
+                  >
+                    <Globe2 size={15} /> Visit TWH OSINT Platform <ArrowRight size={14} />
+                  </motion.div>
+                </a>
+              </motion.div>
+            </div>
           </div>
         )}
       </section>
