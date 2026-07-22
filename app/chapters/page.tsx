@@ -473,10 +473,9 @@ function ChapterCard({ ch, vis, stats, topicStatuses, isExpanded, onToggle, isDa
 
 // ── RobotPanel (left) ─────────────────────────────────────────────────────
 
-function TerminalPanel({ isDark, mounted, cmdIdx: _cmdIdx }: {
+function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
   isDark: boolean; mounted: boolean; cmdIdx: number;
 }) {
-  const heroBg = isDark ? "#0C1020" : "#E6EEFF";
   return (
     <motion.div
       animate={{ y: [0, -5, 0] }}
@@ -492,7 +491,13 @@ function TerminalPanel({ isDark, mounted, cmdIdx: _cmdIdx }: {
         initial={mounted ? { opacity: 0, x: -40 } : false}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.85, delay: 0.5, ease: "easeOut" }}
-        style={{ position: "relative", width: "100%", height: "100%" }}
+        style={{
+          position: "relative", width: "100%", height: "100%",
+          maskImage: "linear-gradient(to right, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+          maskComposite: "intersect" as React.CSSProperties["maskComposite"],
+          WebkitMaskComposite: "source-in",
+        }}
       >
         {/* Radial purple glow behind robot */}
         <motion.div
@@ -547,25 +552,6 @@ function TerminalPanel({ isDark, mounted, cmdIdx: _cmdIdx }: {
             />
           ))}
         </svg>
-        {/* ── Edge fades — blend robot into hero background ── */}
-        {/* Inner edge (right): fade toward center */}
-        <div style={{
-          position: "absolute", right: 0, top: 0, bottom: 0, width: "52%", zIndex: 6,
-          background: `linear-gradient(to right, transparent 0%, ${heroBg} 100%)`,
-          pointerEvents: "none",
-        }} />
-        {/* Top edge */}
-        <div style={{
-          position: "absolute", left: 0, right: 0, top: 0, height: "22%", zIndex: 6,
-          background: `linear-gradient(to bottom, ${heroBg} 0%, transparent 100%)`,
-          pointerEvents: "none",
-        }} />
-        {/* Bottom edge */}
-        <div style={{
-          position: "absolute", left: 0, right: 0, bottom: 0, height: "22%", zIndex: 6,
-          background: `linear-gradient(to top, ${heroBg} 0%, transparent 100%)`,
-          pointerEvents: "none",
-        }} />
       </motion.div>
     </motion.div>
   );
@@ -573,8 +559,7 @@ function TerminalPanel({ isDark, mounted, cmdIdx: _cmdIdx }: {
 
 // ── RobotPanel (right) ────────────────────────────────────────────────────
 
-function CoursePathPanel({ isDark, mounted }: { isDark: boolean; mounted: boolean }) {
-  const heroBg = isDark ? "#0C1020" : "#E6EEFF";
+function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounted: boolean }) {
   return (
     <motion.div
       animate={{ y: [0, -5, 0] }}
@@ -590,7 +575,13 @@ function CoursePathPanel({ isDark, mounted }: { isDark: boolean; mounted: boolea
         initial={mounted ? { opacity: 0, x: 40 } : false}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.85, delay: 0.65, ease: "easeOut" }}
-        style={{ position: "relative", width: "100%", height: "100%" }}
+        style={{
+          position: "relative", width: "100%", height: "100%",
+          maskImage: "linear-gradient(to left, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to left, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+          maskComposite: "intersect" as React.CSSProperties["maskComposite"],
+          WebkitMaskComposite: "source-in",
+        }}
       >
         {/* Radial purple glow behind robot */}
         <motion.div
@@ -645,25 +636,6 @@ function CoursePathPanel({ isDark, mounted }: { isDark: boolean; mounted: boolea
             />
           ))}
         </svg>
-        {/* ── Edge fades — blend robot into hero background ── */}
-        {/* Inner edge (left): fade toward center */}
-        <div style={{
-          position: "absolute", left: 0, top: 0, bottom: 0, width: "52%", zIndex: 6,
-          background: `linear-gradient(to left, transparent 0%, ${heroBg} 100%)`,
-          pointerEvents: "none",
-        }} />
-        {/* Top edge */}
-        <div style={{
-          position: "absolute", left: 0, right: 0, top: 0, height: "22%", zIndex: 6,
-          background: `linear-gradient(to bottom, ${heroBg} 0%, transparent 100%)`,
-          pointerEvents: "none",
-        }} />
-        {/* Bottom edge */}
-        <div style={{
-          position: "absolute", left: 0, right: 0, bottom: 0, height: "22%", zIndex: 6,
-          background: `linear-gradient(to top, ${heroBg} 0%, transparent 100%)`,
-          pointerEvents: "none",
-        }} />
       </motion.div>
     </motion.div>
   );
