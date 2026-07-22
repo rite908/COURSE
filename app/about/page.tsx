@@ -43,7 +43,7 @@ export default function AboutPage() {
   const isMd = vw >= 768;
   const isLg = vw >= 1024;
   const sp = vw < 640 ? 16 : vw < 768 ? 24 : vw < 1024 ? 40 : 64;
-  const vp = isMd ? 80 : 52;
+  const vp = isMd ? 52 : 36;
 
   const T = {
     bg:      isDark ? "#060912"  : "#F8FAFF",
@@ -75,10 +75,30 @@ export default function AboutPage() {
   });
 
   return (
-    <main style={{ minHeight: "100vh", background: T.bg, paddingTop: 68 }}>
+    <main style={{ minHeight: "100vh", background: T.bg, paddingTop: 68, position: "relative", overflow: "hidden" }}>
+
+      {/* ── Ambient atmosphere ── */}
+      {isDark && (
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+          <motion.div animate={{ opacity: [0.25, 0.42, 0.25] }} transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+            style={{ position: "absolute", top: "-5%", left: "-10%", width: "55%", height: "50%", background: "radial-gradient(ellipse, rgba(37,99,235,0.22) 0%, transparent 70%)", filter: "blur(50px)" }} />
+          <motion.div animate={{ opacity: [0.20, 0.36, 0.20] }} transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            style={{ position: "absolute", top: "20%", right: "-8%", width: "45%", height: "55%", background: "radial-gradient(ellipse, rgba(139,92,246,0.22) 0%, transparent 70%)", filter: "blur(48px)" }} />
+          <motion.div animate={{ opacity: [0.15, 0.28, 0.15] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            style={{ position: "absolute", bottom: "10%", left: "50%", transform: "translateX(-50%)", width: "60%", height: "40%", background: "radial-gradient(ellipse, rgba(14,165,233,0.15) 0%, transparent 70%)", filter: "blur(60px)" }} />
+          <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.10 }}>
+            <defs>
+              <pattern id="about-dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1.5" fill="#3B82F6" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#about-dots)" />
+          </svg>
+        </div>
+      )}
 
       {/* ── Hero ── */}
-      <section style={{ background: T.heroBg, padding: `${vp}px ${sp}px` }}>
+      <section style={{ background: T.heroBg, padding: `${vp}px ${sp}px`, position: "relative", zIndex: 1 }}>
         <div style={{ display: "flex", flexDirection: isLg ? "row" : "column", gap: isLg ? 64 : 40, alignItems: isLg ? "center" : "flex-start" }}>
 
           {/* Left text */}
@@ -111,7 +131,7 @@ export default function AboutPage() {
                 initial={mounted ? { opacity: 0, y: 16 } : false} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.08 }}
                 whileHover={{ y: -4 }}
-                style={{ background: T.card, borderRadius: 18, padding: "24px 20px", border: `1px solid ${T.border}`, textAlign: "center", boxShadow: `0 2px 16px rgba(0,0,0,${isDark ? 0.25 : 0.04})` }}
+                style={{ background: isDark ? `rgba(255,255,255,0.045)` : T.card, borderRadius: 18, padding: "24px 20px", border: `1px solid ${isDark ? s.color + "33" : T.border}`, textAlign: "center", boxShadow: isDark ? `0 4px 24px ${s.color}22, inset 0 1px 0 rgba(255,255,255,0.06)` : `0 2px 16px rgba(0,0,0,0.04)` }}
               >
                 <div style={{ fontSize: "2rem", fontWeight: 900, color: s.color, lineHeight: 1, marginBottom: 6 }}>{s.value}</div>
                 <div style={{ fontSize: "11px", color: T.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.09em" }}>{s.label}</div>

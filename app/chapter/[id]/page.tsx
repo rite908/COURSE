@@ -32,7 +32,7 @@ export default function ChapterPage() {
 
   useEffect(() => {
     const u = getCurrentUser();
-    if (!u) { router.replace("/login"); return; }
+    if (!u) { router.replace(`/login?from=/chapter/${chapterId}`); return; }
     setUser(u);
     const ch = getChapter(chapterId);
     if (!ch) { router.replace("/chapters"); return; }

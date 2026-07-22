@@ -59,7 +59,7 @@ export default function RoadmapPage() {
   const isMd = vw >= 768;
   const isLg = vw >= 1024;
   const sp = vw < 640 ? 16 : vw < 768 ? 24 : vw < 1024 ? 40 : 64;
-  const vp = isMd ? 80 : 52;
+  const vp = isMd ? 52 : 36;
 
   const T = {
     bg:      isDark ? "#060912"  : "#F8FAFF",

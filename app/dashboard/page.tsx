@@ -38,7 +38,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const u = getCurrentUser();
-    if (!u) { router.replace("/login"); return; }
+    if (!u) { router.replace("/login?from=/dashboard"); return; }
     setUser(u);
     setMounted(true);
     const upd = () => setVw(window.innerWidth);

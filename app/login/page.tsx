@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield } from "lucide-react";
 import { setCurrentUser, type UserName } from "@/lib/storage";
@@ -29,8 +29,9 @@ const PROFILES: {
   },
 ];
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isDark } = useTheme();
   const [mounted,   setMounted]   = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -58,11 +59,13 @@ export default function LoginPage() {
     dot:     isDark ? "rgba(96,165,250,0.08)" : "rgba(148,163,254,0.20)",
   };
 
+  const redirectTo = searchParams?.get("from") || "/dashboard";
+
   const handleSelect = async (user: UserName) => {
     setSelecting(user);
     await new Promise((r) => setTimeout(r, 450));
     setCurrentUser(user);
-    router.push("/dashboard");
+    router.push(redirectTo);
   };
 
   return (
@@ -210,5 +213,13 @@ export default function LoginPage() {
         </motion.p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
   );
 }
