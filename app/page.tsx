@@ -68,10 +68,10 @@ const STATS = [
 ];
 
 const FOR_WHOM = [
-  { icon: "🎓", title: "Students",         desc: "CS, IT, ya koi bhi stream — background matters nahi. Zero se shuru karo." },
-  { icon: "💼", title: "Working People",   desc: "9-to-5 job hai? Self-paced format — apni speed pe seekho." },
-  { icon: "🤔", title: "Curious Minds",    desc: "Sirf jaanna chahte ho computers kaise kaam karte hain? Sahi jagah hai." },
-  { icon: "🔄", title: "Career Switchers", desc: "Cybersecurity mein aana chahte ho? Yahan se shuru karo — zero assumptions." },
+  { icon: "🎓", title: "Students",         color: "#2563EB", lightBg: "#EEF3FF", darkBg: "rgba(37,99,235,0.15)",  desc: "CS, IT, ya koi bhi stream — background matters nahi. Zero se shuru karo." },
+  { icon: "💼", title: "Working People",   color: "#7C3AED", lightBg: "#F3EEFF", darkBg: "rgba(124,58,237,0.15)", desc: "9-to-5 job hai? Self-paced format — apni speed pe seekho." },
+  { icon: "🤔", title: "Curious Minds",    color: "#0EA5E9", lightBg: "#F0F9FF", darkBg: "rgba(14,165,233,0.15)", desc: "Sirf jaanna chahte ho computers kaise kaam karte hain? Sahi jagah hai." },
+  { icon: "🔄", title: "Career Switchers", color: "#059669", lightBg: "#ECFDF5", darkBg: "rgba(5,150,105,0.15)",  desc: "Cybersecurity mein aana chahte ho? Yahan se shuru karo — zero assumptions." },
 ];
 
 const FEATURES = [
@@ -608,12 +608,17 @@ export default function LandingPage() {
                   overflow: "hidden",
                 }}
               >
-                {/* Full-width accent line — solid colour + glow in dark mode */}
-                <span style={{
-                  position: "absolute", top: 0, left: 0, right: 0, height: 3,
-                  background: s.color,
-                  boxShadow: isDark ? `0 0 12px ${s.color}CC, 0 0 28px ${s.color}66` : "none",
-                }} />
+                {/* Full-width accent line — animated scaleX in */}
+                <motion.span
+                  initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 + 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    position: "absolute", top: 0, left: 0, right: 0, height: 3,
+                    background: s.color, transformOrigin: "left",
+                    boxShadow: isDark ? `0 0 12px ${s.color}CC, 0 0 28px ${s.color}66` : "none",
+                  }}
+                />
 
                 {/* Subtle top colour wash for depth */}
                 <span style={{
@@ -804,18 +809,29 @@ export default function LandingPage() {
                   alignItems: "center",
                 }}>
                   {i < ROADMAP.length - 1 && isLg && (
-                    <div style={{
-                      position: "absolute", top: 26, left: "55%", width: "90%", height: 3,
-                      background: `linear-gradient(90deg,${step.color},${ROADMAP[i + 1].color})`,
-                      borderRadius: 2, zIndex: 0,
-                    }} />
+                    <motion.div
+                      initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.18 + 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                      style={{
+                        position: "absolute", top: 26, left: "55%", width: "90%", height: 3,
+                        background: `linear-gradient(90deg,${step.color},${ROADMAP[i + 1].color})`,
+                        borderRadius: 2, zIndex: 0, transformOrigin: "left",
+                        boxShadow: `0 0 8px ${step.color}60`,
+                      }}
+                    />
                   )}
                   {i < ROADMAP.length - 1 && !isLg && (
-                    <div style={{
-                      width: 3, height: 28, margin: "0 0 0 24px",
-                      background: `linear-gradient(180deg,${step.color},${ROADMAP[i + 1].color})`,
-                      borderRadius: 2, alignSelf: "flex-start",
-                    }} />
+                    <motion.div
+                      initial={{ scaleY: 0 }} whileInView={{ scaleY: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.15 + 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                      style={{
+                        width: 3, height: 28, margin: "0 0 0 24px",
+                        background: `linear-gradient(180deg,${step.color},${ROADMAP[i + 1].color})`,
+                        borderRadius: 2, alignSelf: "flex-start", transformOrigin: "top",
+                      }}
+                    />
                   )}
                   <motion.div
                     initial={mounted ? { opacity: 0, y: 20 } : false} whileInView={{ opacity: 1, y: 0 }}
@@ -880,16 +896,42 @@ export default function LandingPage() {
                 <motion.div key={card.title}
                   initial={mounted ? { opacity: 0, y: 20 } : false} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }}
-                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                  whileHover={{ y: -8, boxShadow: isDark ? `0 12px 40px ${card.color}25, 0 0 0 1px ${card.color}40` : `0 12px 36px ${card.color}18, 0 0 0 1px ${card.color}30`, transition: { duration: 0.2 } }}
                   style={{
-                    borderRadius: 20, background: T.card,
+                    position: "relative", borderRadius: 20, background: T.card,
                     border: `1px solid ${T.border}`,
                     padding: isMd ? "32px 24px" : "24px 18px",
                     boxShadow: `0 2px 14px rgba(0,0,0,${isDark ? 0.22 : 0.04})`,
-                    textAlign: "center",
+                    textAlign: "center", overflow: "hidden",
                   }}
                 >
-                  <div style={{ fontSize: "2.6rem", marginBottom: 16 }}>{card.icon}</div>
+                  {/* Animated top accent bar */}
+                  <motion.span
+                    initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 + 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      position: "absolute", top: 0, left: 0, right: 0, height: 3,
+                      background: card.color, transformOrigin: "left",
+                      boxShadow: isDark ? `0 0 12px ${card.color}99` : "none",
+                    }}
+                  />
+                  {/* Subtle top colour wash */}
+                  <span style={{
+                    position: "absolute", top: 0, left: 0, right: 0, height: 80,
+                    background: `linear-gradient(180deg,${card.color}12 0%,transparent 100%)`,
+                    pointerEvents: "none",
+                  }} />
+                  {/* Icon bubble with colour */}
+                  <div style={{
+                    width: 64, height: 64, borderRadius: 20, margin: "0 auto 18px",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: isDark ? card.darkBg : card.lightBg,
+                    fontSize: "2rem",
+                    boxShadow: isDark ? `0 0 20px ${card.color}40` : `0 4px 16px ${card.color}20`,
+                    border: `1px solid ${card.color}25`,
+                    position: "relative",
+                  }}>{card.icon}</div>
                   <h3 style={{ fontWeight: 800, fontSize: "15px", color: T.text, marginBottom: 10 }}>{card.title}</h3>
                   <p style={{ color: T.text2, fontSize: "13px", lineHeight: 1.75 }}>{card.desc}</p>
                 </motion.div>
@@ -914,18 +956,41 @@ export default function LandingPage() {
               alignItems: "flex-start", gap: 14, minWidth: isLg ? 200 : "unset",
             }}>
               <div style={{ position: "relative", marginBottom: 4 }}>
+                {/* Pulsing outer glow ring */}
+                <motion.div
+                  animate={{ opacity: [0.35, 0.75, 0.35], scale: [1, 1.08, 1] }}
+                  transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute", inset: -8, borderRadius: 36,
+                    border: "2px solid #2563EB",
+                    boxShadow: "0 0 20px rgba(37,99,235,0.45)",
+                    pointerEvents: "none",
+                  }}
+                />
+                {/* Slow rotating gradient ring */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  style={{
+                    position: "absolute", inset: -4, borderRadius: 32,
+                    background: "conic-gradient(from 0deg, #2563EB, #7C3AED, #0EA5E9, transparent, transparent, #2563EB)",
+                    opacity: 0.5, pointerEvents: "none",
+                  }}
+                />
                 <div style={{
+                  position: "relative",
                   width: 110, height: 110, borderRadius: 28,
                   background: "linear-gradient(135deg,#2563EB 0%,#7C3AED 100%)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   boxShadow: "0 8px 32px rgba(37,99,235,0.38)",
-                  fontSize: "2.8rem", fontWeight: 900, color: "white",
+                  fontSize: "2.8rem", fontWeight: 900, color: "white", zIndex: 1,
                 }}>A</div>
                 <div style={{
                   position: "absolute", bottom: -6, right: -6,
                   width: 26, height: 26, borderRadius: "50%",
                   background: "#059669", border: `3px solid ${T.altBg}`,
                   display: "flex", alignItems: "center", justifyContent: "center",
+                  zIndex: 2,
                 }}>
                   <Star size={10} color="white" fill="white" />
                 </div>
@@ -1026,11 +1091,15 @@ export default function LandingPage() {
                   }}
                 >
                   <span style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${f.color},transparent)` }} />
-                  <div style={{
-                    width: 48, height: 48, borderRadius: 14, marginBottom: 18,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    background: isDark ? f.darkBg : f.lightBg, color: f.color,
-                  }}>{f.icon}</div>
+                  <motion.div
+                    whileHover={{ scale: 1.15, boxShadow: `0 0 28px ${f.color}70` }}
+                    transition={{ duration: 0.22 }}
+                    style={{
+                      width: 48, height: 48, borderRadius: 14, marginBottom: 18,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: isDark ? f.darkBg : f.lightBg, color: f.color,
+                      boxShadow: isDark ? `0 0 12px ${f.color}30` : "none",
+                    }}>{f.icon}</motion.div>
                   <h3 style={{ fontWeight: 700, fontSize: "15px", color: T.text, marginBottom: 8 }}>{f.title}</h3>
                   <p style={{ color: T.text2, fontSize: "13.5px", lineHeight: 1.75 }}>{f.desc}</p>
                 </motion.div>
@@ -1056,6 +1125,42 @@ export default function LandingPage() {
           >
             <div style={{ position: "absolute", top: "-80px", right: "-80px", width: 280, height: 280, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
             <div style={{ position: "absolute", bottom: "-60px", left: "-60px",  width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
+            {/* Floating animated rings */}
+            {[
+              { size: 90,  x: "8%",  y: "15%", delay: 0 },
+              { size: 50,  x: "82%", y: "60%", delay: 0.6 },
+              { size: 130, x: "65%", y: "5%",  delay: 1.1 },
+              { size: 40,  x: "25%", y: "70%", delay: 0.3 },
+              { size: 70,  x: "90%", y: "25%", delay: 0.9 },
+            ].map((ring, i) => (
+              <motion.div key={i}
+                animate={{ y: [0, -14, 0], opacity: [0.12, 0.28, 0.12] }}
+                transition={{ duration: 4 + i, repeat: Infinity, delay: ring.delay, ease: "easeInOut" }}
+                style={{
+                  position: "absolute", left: ring.x, top: ring.y,
+                  width: ring.size, height: ring.size, borderRadius: "50%",
+                  border: "1px solid rgba(255,255,255,0.25)",
+                  pointerEvents: "none",
+                }}
+              />
+            ))}
+            {/* Floating dots */}
+            {[
+              { x: "15%", y: "40%", delay: 0.2 },
+              { x: "55%", y: "75%", delay: 0.7 },
+              { x: "75%", y: "20%", delay: 1.4 },
+              { x: "40%", y: "85%", delay: 0.5 },
+            ].map((dot, i) => (
+              <motion.div key={`dot-${i}`}
+                animate={{ scale: [1, 1.8, 1], opacity: [0.3, 0.7, 0.3] }}
+                transition={{ duration: 2.5 + i * 0.4, repeat: Infinity, delay: dot.delay, ease: "easeInOut" }}
+                style={{
+                  position: "absolute", left: dot.x, top: dot.y,
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: "rgba(255,255,255,0.5)", pointerEvents: "none",
+                }}
+              />
+            ))}
             <div style={{ position: "relative", zIndex: 1 }}>
               <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", margin: "0 auto 24px", display: "block", boxShadow: "0 0 0 3px rgba(255,255,255,0.35), 0 8px 28px rgba(0,0,0,0.3)" }} />
               <h2 style={{
@@ -1093,42 +1198,213 @@ export default function LandingPage() {
       {/* ══════════════════════════
           FOOTER
       ══════════════════════════ */}
-      <footer style={{ background: "transparent", borderTop: `1px solid ${T.border}` }}>
+      <footer style={{ background: "transparent", position: "relative", overflow: "hidden" }}>
+        {/* Animated gradient top border */}
+        <motion.div
+          initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            height: 2, transformOrigin: "left",
+            background: "linear-gradient(90deg,#2563EB,#7C3AED,#0EA5E9,#059669)",
+            boxShadow: "0 0 24px rgba(37,99,235,0.55)",
+          }}
+        />
+
+        {/* Subtle glow blobs */}
+        <div style={{ position: "absolute", left: "-10%", bottom: 0, width: "35%", height: "100%", background: "radial-gradient(ellipse,rgba(37,99,235,0.05) 0%,transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", right: "-10%", bottom: 0, width: "35%", height: "100%", background: "radial-gradient(ellipse,rgba(124,58,237,0.05) 0%,transparent 70%)", pointerEvents: "none" }} />
+
         {W(
-          <div style={{
-            padding: `${isLg ? 36 : 28}px 0`,
-            display: "flex", flexDirection: isLg ? "row" : "column",
-            alignItems: isLg ? "center" : "flex-start",
-            justifyContent: "space-between", gap: isLg ? 0 : 24,
-          }}>
-            {/* Brand */}
-            <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-              <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", boxShadow: "0 0 0 2px rgba(37,99,235,0.35)" }} />
-              <div>
-                <div style={{ fontWeight: 700, fontSize: "15px", color: T.text, lineHeight: 1.3 }}>TWH Academy</div>
-                <div style={{ fontSize: "11px", color: T.muted, lineHeight: 1.3 }}>by Technical White Hat</div>
+          <motion.div
+            initial={mounted ? { opacity: 0, y: 28 } : false}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* ── Main 3-column grid ── */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: isLg ? "2fr 1fr 1fr" : isMd ? "1fr 1fr" : "1fr",
+              gap: isLg ? 64 : isMd ? 40 : 36,
+              padding: `${isLg ? 60 : 44}px 0 ${isLg ? 52 : 40}px`,
+            }}>
+
+              {/* Col 1 — Brand */}
+              <motion.div
+                initial={mounted ? { opacity: 0, y: 16 } : false}
+                whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+                  {/* Pulsing logo */}
+                  <div style={{ position: "relative", flexShrink: 0 }}>
+                    <motion.div
+                      animate={{ boxShadow: ["0 0 0 0 rgba(37,99,235,0.5)","0 0 0 10px rgba(37,99,235,0)","0 0 0 0 rgba(37,99,235,0)"] }}
+                      transition={{ duration: 2.6, repeat: Infinity, ease: "easeOut" }}
+                      style={{ borderRadius: "50%", width: 48, height: 48 }}
+                    >
+                      <img src="/twh-logo.png" alt="TWH Academy" style={{
+                        width: 48, height: 48, borderRadius: "50%", objectFit: "cover",
+                        border: "2px solid rgba(37,99,235,0.4)",
+                        display: "block",
+                      }} />
+                    </motion.div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: "17px", color: T.text, lineHeight: 1.3 }}>TWH Academy</div>
+                    <div style={{ fontSize: "12px", color: T.muted, lineHeight: 1.3 }}>by Technical White Hat</div>
+                  </div>
+                </div>
+
+                <p style={{ color: T.text2, fontSize: "14px", lineHeight: 1.85, maxWidth: 300, marginBottom: 24 }}>
+                  India ka premier ethical hacking course. Zero se Kali Linux tak —{" "}
+                  <strong style={{ color: T.text }}>bilkul free, hamesha ke liye.</strong>
+                </p>
+
+                {/* Trust badges */}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {[
+                    { label: "✓ 100% Free",  color: "#059669", lightBg: "#ECFDF5", darkBg: "rgba(5,150,105,0.15)" },
+                    { label: "✓ No Ads",     color: "#2563EB", lightBg: "#EEF3FF", darkBg: "rgba(37,99,235,0.15)" },
+                    { label: "✓ No Paywall", color: "#7C3AED", lightBg: "#F3EEFF", darkBg: "rgba(124,58,237,0.15)" },
+                  ].map((badge, bi) => (
+                    <motion.span key={badge.label}
+                      initial={mounted ? { opacity: 0, scale: 0.85 } : false}
+                      whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+                      transition={{ delay: 0.25 + bi * 0.07, duration: 0.4 }}
+                      style={{
+                        fontSize: "11px", fontWeight: 700, padding: "4px 12px", borderRadius: 999,
+                        background: isDark ? badge.darkBg : badge.lightBg,
+                        color: badge.color,
+                        border: `1px solid ${badge.color}25`,
+                      }}
+                    >{badge.label}</motion.span>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Col 2 — Explore */}
+              <motion.div
+                initial={mounted ? { opacity: 0, y: 16 } : false}
+                whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+              >
+                <div style={{ fontWeight: 800, fontSize: "11px", color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 22 }}>
+                  Explore
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  {[
+                    { label: "Home",           href: "/",         icon: "🏠" },
+                    { label: "Chapters",        href: "/chapters", icon: "📚" },
+                    { label: "Roadmap",         href: "/roadmap",  icon: "🗺️" },
+                    { label: "About",           href: "/about",    icon: "👤" },
+                    { label: "Contact",         href: "/contact",  icon: "📬" },
+                  ].map(({ label, href, icon }, li) => (
+                    <motion.div key={label}
+                      initial={mounted ? { opacity: 0, x: -12 } : false}
+                      whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                      transition={{ delay: 0.25 + li * 0.06, duration: 0.4 }}
+                    >
+                      <Link href={href}
+                        style={{ color: T.muted, textDecoration: "none", fontSize: "14px", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 9, padding: "7px 0", transition: "color 0.2s, gap 0.2s" }}
+                        onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = T.chipTxt; el.style.gap = "13px"; }}
+                        onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = T.muted; el.style.gap = "9px"; }}
+                      >
+                        <span style={{ fontSize: "13px" }}>{icon}</span>
+                        {label}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Col 3 — Legal + Creator card */}
+              <motion.div
+                initial={mounted ? { opacity: 0, y: 16 } : false}
+                whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
+                <div style={{ fontWeight: 800, fontSize: "11px", color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 22 }}>
+                  Legal
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 32 }}>
+                  {[
+                    { label: "Privacy Policy", href: "/privacy", icon: "🔒" },
+                    { label: "Terms of Use",   href: "/terms",   icon: "📄" },
+                  ].map(({ label, href, icon }, li) => (
+                    <motion.div key={label}
+                      initial={mounted ? { opacity: 0, x: -12 } : false}
+                      whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                      transition={{ delay: 0.35 + li * 0.07, duration: 0.4 }}
+                    >
+                      <Link href={href}
+                        style={{ color: T.muted, textDecoration: "none", fontSize: "14px", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 9, padding: "7px 0", transition: "color 0.2s" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = T.chipTxt; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = T.muted; }}
+                      >
+                        <span style={{ fontSize: "13px" }}>{icon}</span>
+                        {label}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Creator card */}
+                <motion.div
+                  whileHover={{ y: -3, boxShadow: isDark ? "0 8px 32px rgba(37,99,235,0.18)" : "0 8px 28px rgba(37,99,235,0.12)", transition: { duration: 0.2 } }}
+                  style={{
+                    padding: "18px 20px", borderRadius: 18,
+                    background: isDark ? "rgba(37,99,235,0.08)" : "#EEF3FF",
+                    border: `1px solid ${isDark ? "rgba(37,99,235,0.22)" : "#DBEAFE"}`,
+                    boxShadow: `0 2px 12px rgba(37,99,235,${isDark ? 0.1 : 0.06})`,
+                  }}
+                >
+                  <div style={{ fontSize: "10px", fontWeight: 800, color: T.chipTxt, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+                    Created by
+                  </div>
+                  <div style={{ fontWeight: 800, fontSize: "15px", color: T.text, marginBottom: 4 }}>Afsar Ali</div>
+                  <div style={{ fontSize: "12px", color: T.muted, lineHeight: 1.7 }}>
+                    Technical White Hat<br />
+                    <span style={{ color: T.chipTxt, fontWeight: 600 }}>Legend of Indian Cybersecurity</span>
+                  </div>
+                  <a href="https://twh-osint.vercel.app/twh" target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 12, fontSize: "12px", fontWeight: 700, color: T.chipTxt, textDecoration: "none" }}
+                  >
+                    <Globe2 size={12} /> Visit OSINT Platform <ArrowRight size={11} />
+                  </a>
+                </motion.div>
+              </motion.div>
+            </div>
+
+            {/* ── Divider ── */}
+            <div style={{ height: 1, background: T.border }} />
+
+            {/* ── Bottom bar ── */}
+            <div style={{
+              padding: "20px 0",
+              display: "flex", flexDirection: isLg ? "row" : "column",
+              alignItems: isLg ? "center" : "flex-start",
+              justifyContent: "space-between", gap: 12,
+            }}>
+              <span style={{ fontSize: "13px", color: T.muted }}>
+                © 2026 TWH Academy · Built with ❤️ by{" "}
+                <strong style={{ color: T.chipTxt }}>Afsar Ali</strong>
+              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {/* Live pulse dot */}
+                <motion.div
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ width: 7, height: 7, borderRadius: "50%", background: "#059669", flexShrink: 0 }}
+                />
+                <span style={{ fontSize: "12px", color: T.muted, fontWeight: 600 }}>
+                  Free Forever · No Ads · No Bullshit
+                </span>
               </div>
             </div>
-
-            <p style={{ color: T.muted, fontSize: "13.5px", textAlign: isLg ? "center" : "left" }}>
-              Built with ❤️ by{" "}
-              <strong style={{ color: T.chipTxt }}>Afsar Ali</strong> — Technical White Hat
-            </p>
-
-            <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: isLg ? "flex-end" : "flex-start" }}>
-              {[["Privacy","/privacy"],["Terms","/terms"],["Contact","/contact"],["Chapters","/chapters"]].map(([label, href]) => (
-                <Link key={label} href={href}
-                  style={{ color: T.muted, textDecoration: "none", fontSize: "13.5px", fontWeight: 500, transition: "color 0.2s" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = T.chipTxt; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = T.muted; }}
-                >{label}</Link>
-              ))}
-            </div>
-          </div>
+          </motion.div>
         )}
-        <div style={{ borderTop: `1px solid ${T.border}`, padding: "12px 0", textAlign: "center" }}>
-          <span style={{ fontSize: "12px", color: T.muted }}>© 2025 TWH Academy. All rights reserved.</span>
-        </div>
       </footer>
     </main>
   );
