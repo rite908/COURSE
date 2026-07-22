@@ -1974,84 +1974,274 @@ export default function LandingPage() {
       ══════════════════════════ */}
       <section style={{ background: "transparent", padding: `${vp}px 0` }}>
         {W(
-          <motion.div {...inView()}
-            style={{
-              position: "relative", borderRadius: 28, textAlign: "center",
-              padding: isLg ? "80px 14%" : isMd ? "60px 10%" : "48px 28px",
-              background: "linear-gradient(135deg,#1D4ED8 0%,#7C3AED 100%)",
-              boxShadow: "0 24px 80px rgba(37,99,235,0.30)",
-              overflow: "hidden",
-            }}
-          >
-            <div style={{ position: "absolute", top: "-80px", right: "-80px", width: 280, height: 280, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
-            <div style={{ position: "absolute", bottom: "-60px", left: "-60px",  width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
-            {/* Floating animated rings */}
-            {[
-              { size: 90,  x: "8%",  y: "15%", delay: 0 },
-              { size: 50,  x: "82%", y: "60%", delay: 0.6 },
-              { size: 130, x: "65%", y: "5%",  delay: 1.1 },
-              { size: 40,  x: "25%", y: "70%", delay: 0.3 },
-              { size: 70,  x: "90%", y: "25%", delay: 0.9 },
-            ].map((ring, i) => (
-              <motion.div key={i}
-                animate={{ y: [0, -14, 0], opacity: [0.12, 0.28, 0.12] }}
-                transition={{ duration: 4 + i, repeat: Infinity, delay: ring.delay, ease: "easeInOut" }}
+          <div style={{ position: "relative" }}>
+
+            {/* ── Outer animated glow ring ── */}
+            <motion.div
+              animate={{
+                boxShadow: [
+                  "0 0 0 0px rgba(37,99,235,0), 0 32px 100px rgba(37,99,235,0.50)",
+                  "0 0 0 4px rgba(124,58,237,0.35), 0 32px 100px rgba(124,58,237,0.55)",
+                  "0 0 0 4px rgba(14,165,233,0.30), 0 32px 100px rgba(14,165,233,0.50)",
+                  "0 0 0 0px rgba(37,99,235,0), 0 32px 100px rgba(37,99,235,0.50)",
+                ],
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              style={{ borderRadius: 30, position: "relative", zIndex: 1 }}
+            >
+              <motion.div
+                initial={mounted ? { opacity: 0, y: 30, scale: 0.97 } : false}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 style={{
-                  position: "absolute", left: ring.x, top: ring.y,
-                  width: ring.size, height: ring.size, borderRadius: "50%",
-                  border: "1px solid rgba(255,255,255,0.25)",
-                  pointerEvents: "none",
-                }}
-              />
-            ))}
-            {/* Floating dots */}
-            {[
-              { x: "15%", y: "40%", delay: 0.2 },
-              { x: "55%", y: "75%", delay: 0.7 },
-              { x: "75%", y: "20%", delay: 1.4 },
-              { x: "40%", y: "85%", delay: 0.5 },
-            ].map((dot, i) => (
-              <motion.div key={`dot-${i}`}
-                animate={{ scale: [1, 1.8, 1], opacity: [0.3, 0.7, 0.3] }}
-                transition={{ duration: 2.5 + i * 0.4, repeat: Infinity, delay: dot.delay, ease: "easeInOut" }}
-                style={{
-                  position: "absolute", left: dot.x, top: dot.y,
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: "rgba(255,255,255,0.5)", pointerEvents: "none",
-                }}
-              />
-            ))}
-            <div style={{ position: "relative", zIndex: 1 }}>
-              <img src="/twh-logo.png" alt="TWH Academy" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", margin: "0 auto 24px", display: "block", boxShadow: "0 0 0 3px rgba(255,255,255,0.35), 0 8px 28px rgba(0,0,0,0.3)" }} />
-              <h2 style={{
-                fontWeight: 900, color: "white",
-                fontSize: isLg ? "2.6rem" : isMd ? "2rem" : "1.6rem",
-                letterSpacing: "-0.025em", marginBottom: 16,
-              }}>
-                Ready to become a<br />White Hat Hacker?
-              </h2>
-              <p style={{ color: "#BFDBFE", marginBottom: 40, fontSize: isMd ? "17px" : "15px", lineHeight: 1.75, maxWidth: 520, margin: "0 auto 40px" }}>
-                Join TWH Academy. Start free — koi signup ki zaroorat nahi.<br />
-                <strong style={{ color: "white" }}>Afsar Ali</strong> personally har chapter mein guide karta hai.
-              </p>
-              <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={goStart}
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 12,
-                  padding: "16px 48px", borderRadius: 16,
-                  background: "white", color: "#2563EB",
-                  fontWeight: 800, fontSize: "16px",
-                  border: "none", cursor: "pointer",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
+                  position: "relative", borderRadius: 28, textAlign: "center",
+                  padding: isLg ? "80px 14%" : isMd ? "60px 10%" : "48px 28px",
+                  overflow: "hidden",
                 }}
               >
-                {user ? "Go to My Chapters" : "Start Learning — Free Forever"}
-                <ArrowRight size={17} />
-              </motion.button>
-              <p style={{ color: "rgba(191,219,254,0.65)", fontSize: "12px", marginTop: 18 }}>
-                No ads · No paywall · No bullshit
-              </p>
-            </div>
-          </motion.div>
+                {/* ── Animated gradient background ── */}
+                <motion.div
+                  animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                  transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute", inset: 0,
+                    background: "linear-gradient(135deg, #1D4ED8 0%, #4C1D95 30%, #1D4ED8 60%, #0C4A6E 85%, #1D4ED8 100%)",
+                    backgroundSize: "300% 300%",
+                    zIndex: 0,
+                  }}
+                />
+
+                {/* ── Sweep scan line ── */}
+                <motion.div
+                  animate={{ top: ["-4%", "110%"] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "linear", repeatDelay: 3 }}
+                  style={{
+                    position: "absolute", left: 0, right: 0, height: 2, zIndex: 3,
+                    background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 40%, rgba(255,255,255,0.28) 50%, rgba(255,255,255,0.18) 60%, transparent 100%)",
+                    pointerEvents: "none",
+                  }}
+                />
+
+                {/* ── Corner accent circles ── */}
+                <motion.div
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.07, 0.14, 0.07] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ position: "absolute", top: -80, right: -80, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,1)", pointerEvents: "none", zIndex: 1 }}
+                />
+                <motion.div
+                  animate={{ scale: [1.1, 1, 1.1], opacity: [0.05, 0.12, 0.05] }}
+                  transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                  style={{ position: "absolute", bottom: -70, left: -70, width: 240, height: 240, borderRadius: "50%", background: "rgba(255,255,255,1)", pointerEvents: "none", zIndex: 1 }}
+                />
+
+                {/* ── Floating rings ── */}
+                {([
+                  { size: 100, x: "6%",  y: "10%", dur: 5,   delay: 0   },
+                  { size: 55,  x: "80%", y: "58%", dur: 6.5, delay: 0.6 },
+                  { size: 140, x: "62%", y: "3%",  dur: 7,   delay: 1.1 },
+                  { size: 44,  x: "22%", y: "68%", dur: 4.5, delay: 0.3 },
+                  { size: 75,  x: "88%", y: "18%", dur: 5.5, delay: 0.9 },
+                  { size: 32,  x: "48%", y: "80%", dur: 4,   delay: 1.5 },
+                ] as const).map((ring, i) => (
+                  <motion.div key={`ring-${i}`}
+                    animate={{ y: [0, -18, 0], opacity: [0.15, 0.32, 0.15], rotate: [0, 15, 0] }}
+                    transition={{ duration: ring.dur, repeat: Infinity, delay: ring.delay, ease: "easeInOut" }}
+                    style={{
+                      position: "absolute", left: ring.x, top: ring.y,
+                      width: ring.size, height: ring.size, borderRadius: "50%",
+                      border: "1px solid rgba(255,255,255,0.30)",
+                      pointerEvents: "none", zIndex: 1,
+                    }}
+                  />
+                ))}
+
+                {/* ── Rising sparkle particles ── */}
+                {([
+                  { x: "8%",  dur: 3.8, delay: 0 },
+                  { x: "18%", dur: 5.0, delay: 1.2 },
+                  { x: "32%", dur: 4.2, delay: 0.5 },
+                  { x: "47%", dur: 6.0, delay: 2.1 },
+                  { x: "58%", dur: 3.5, delay: 0.8 },
+                  { x: "70%", dur: 4.8, delay: 1.7 },
+                  { x: "82%", dur: 5.5, delay: 0.3 },
+                  { x: "92%", dur: 3.9, delay: 2.5 },
+                ] as const).map((p, i) => (
+                  <motion.div key={`sp-${i}`}
+                    animate={{ y: ["90%", "-10%"], opacity: [0, 0.8, 0] }}
+                    transition={{ duration: p.dur, repeat: Infinity, delay: p.delay, ease: "easeOut" }}
+                    style={{
+                      position: "absolute", left: p.x, bottom: 0,
+                      width: i % 3 === 0 ? 4 : i % 3 === 1 ? 3 : 2,
+                      height: i % 3 === 0 ? 4 : i % 3 === 1 ? 3 : 2,
+                      borderRadius: "50%", background: "rgba(255,255,255,0.85)",
+                      pointerEvents: "none", zIndex: 2,
+                      boxShadow: "0 0 4px rgba(255,255,255,0.9)",
+                    }}
+                  />
+                ))}
+
+                {/* ── Content ── */}
+                <div style={{ position: "relative", zIndex: 4 }}>
+
+                  {/* Logo — float + spin halo + pulse glow */}
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ position: "relative", width: 80, height: 80, margin: "0 auto 28px" }}
+                  >
+                    {/* Pulsing glow behind logo */}
+                    <motion.div
+                      animate={{ scale: [1, 1.6, 1], opacity: [0.4, 0.75, 0.4] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                      style={{
+                        position: "absolute", inset: -14, borderRadius: "50%",
+                        background: "radial-gradient(circle, rgba(255,255,255,0.35), transparent 68%)",
+                        pointerEvents: "none",
+                      }}
+                    />
+                    {/* Spinning conic halo */}
+                    <motion.div
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                      style={{
+                        position: "absolute", inset: -6, borderRadius: "50%",
+                        background: "conic-gradient(from 0deg, transparent 50%, rgba(255,255,255,0.85) 80%, transparent 100%)",
+                        pointerEvents: "none",
+                      }}
+                    />
+                    {/* Inner ring (counter-spin) */}
+                    <motion.div
+                      animate={{ rotate: [0, -360] }}
+                      transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+                      style={{
+                        position: "absolute", inset: -3, borderRadius: "50%",
+                        border: "1.5px dashed rgba(255,255,255,0.45)",
+                        pointerEvents: "none",
+                      }}
+                    />
+                    <img
+                      src="/twh-logo.png" alt="TWH Academy"
+                      style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", display: "block", boxShadow: "0 0 0 3px rgba(255,255,255,0.4), 0 8px 28px rgba(0,0,0,0.35)", position: "relative", zIndex: 1 }}
+                    />
+                  </motion.div>
+
+                  {/* Heading with word-stagger + glow pulse */}
+                  <motion.h2
+                    initial={mounted ? { opacity: 0, y: 20 } : false}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, amount: 0.5 }}
+                    transition={{ delay: 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    animate={{ textShadow: ["0 0 0px rgba(255,255,255,0)", "0 0 40px rgba(255,255,255,0.35)", "0 0 0px rgba(255,255,255,0)"] }}
+                    style={{
+                      fontWeight: 900, color: "white",
+                      fontSize: isLg ? "2.6rem" : isMd ? "2.1rem" : "1.7rem",
+                      letterSpacing: "-0.025em", marginBottom: 16,
+                      transition: "text-shadow 0.3s",
+                    }}
+                  >
+                    Ready to become a<br />
+                    <motion.span
+                      animate={{ opacity: [1, 0.85, 1] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                      style={{
+                        background: "linear-gradient(90deg, #BFDBFE, #ffffff, #DDD6FE, #ffffff, #BFDBFE)",
+                        backgroundSize: "300% auto",
+                        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                        display: "inline-block",
+                      }}
+                    >
+                      <motion.span
+                        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: "linear" }}
+                        style={{
+                          background: "linear-gradient(90deg, #BFDBFE, #ffffff, #DDD6FE, #ffffff, #BFDBFE)",
+                          backgroundSize: "300% auto",
+                          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                          backgroundClip: "text",
+                        }}
+                      >
+                        White Hat Hacker?
+                      </motion.span>
+                    </motion.span>
+                  </motion.h2>
+
+                  <motion.p
+                    initial={mounted ? { opacity: 0, y: 12 } : false}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, amount: 0.5 }}
+                    transition={{ delay: 0.2, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ color: "#BFDBFE", marginBottom: 40, fontSize: isMd ? "17px" : "15px", lineHeight: 1.75, maxWidth: 520, margin: "0 auto 40px" }}
+                  >
+                    Join TWH Academy. Start free — koi signup ki zaroorat nahi.<br />
+                    <motion.strong
+                      animate={{ color: ["#ffffff", "#DDD6FE", "#BFDBFE", "#ffffff"] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      style={{ display: "inline" }}
+                    >
+                      Afsar Ali
+                    </motion.strong>{" "}
+                    personally har chapter mein guide karta hai.
+                  </motion.p>
+
+                  {/* CTA Button — always-on pulse glow */}
+                  <motion.div
+                    initial={mounted ? { opacity: 0, scale: 0.9 } : false}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: false, amount: 0.5 }}
+                    transition={{ delay: 0.3, duration: 0.55, type: "spring", stiffness: 200, damping: 16 }}
+                    style={{ display: "inline-block" }}
+                  >
+                    <motion.button
+                      onClick={goStart}
+                      animate={{ boxShadow: ["0 8px 32px rgba(255,255,255,0.22)", "0 12px 52px rgba(255,255,255,0.55)", "0 8px 32px rgba(255,255,255,0.22)"] }}
+                      transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                      whileHover={{ scale: 1.06, boxShadow: "0 14px 60px rgba(255,255,255,0.75)" }}
+                      whileTap={{ scale: 0.96 }}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 12,
+                        padding: "17px 52px", borderRadius: 16,
+                        background: "white", color: "#2563EB",
+                        fontWeight: 800, fontSize: "16px",
+                        border: "none", cursor: "pointer",
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
+                      {user ? "Go to My Chapters" : "Start Learning — Free Forever"}
+                      <motion.div
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <ArrowRight size={17} />
+                      </motion.div>
+                    </motion.button>
+                  </motion.div>
+
+                  {/* Tagline — staggered dot fade */}
+                  <motion.p
+                    initial={mounted ? { opacity: 0 } : false}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: false, amount: 0.5 }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                    style={{ color: "rgba(191,219,254,0.65)", fontSize: "12px", marginTop: 20, letterSpacing: "0.08em" }}
+                  >
+                    {["No ads", "No paywall", "No bullshit"].map((txt, i) => (
+                      <span key={txt}>
+                        <motion.span
+                          animate={{ opacity: [0.55, 1, 0.55] }}
+                          transition={{ duration: 3, repeat: Infinity, delay: i * 0.9, ease: "easeInOut" }}
+                        >
+                          {txt}
+                        </motion.span>
+                        {i < 2 && <span style={{ opacity: 0.4, margin: "0 8px" }}>·</span>}
+                      </span>
+                    ))}
+                  </motion.p>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
         )}
       </section>
 
