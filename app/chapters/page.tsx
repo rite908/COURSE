@@ -2,263 +2,380 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight, Lock, CheckCircle, Clock, BookOpen, HelpCircle, BarChart2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Shield, Cpu, Wifi, Terminal, Code2,
+  BookOpen, HelpCircle, Clock, ChevronDown,
+  CheckCircle, Play, Lock,
+} from "lucide-react";
 import { CHAPTERS } from "@/lib/chapters";
-import { getCurrentUser, getChapterStats, type UserName } from "@/lib/storage";
+import { getCurrentUser, getChapterStats, getUserProgress, type UserName } from "@/lib/storage";
 import { useTheme } from "@/lib/theme";
 
-const VISUALS: Record<string, {
-  accent: string; darkBg: string; lightBg: string; tag: string;
-  difficulty: string; diffColor: string; diffDarkBg: string; diffLightBg: string;
-  hours: string; illustration: React.ReactNode;
-}> = {
-  "1": {
-    accent: "#2563EB", darkBg: "rgba(37,99,235,0.15)",  lightBg: "#EEF3FF",
-    tag: "Startup",    difficulty: "Beginner", diffColor: "#059669", diffDarkBg: "rgba(5,150,105,0.15)", diffLightBg: "#ECFDF5",
-    hours: "2–3h",
-    illustration: (
-      <svg width="72" height="72" viewBox="0 0 80 80" fill="none">
-        <circle cx="40" cy="40" r="32" stroke="#2563EB" strokeWidth="1.5" strokeDasharray="6 4" opacity="0.3"/>
-        <circle cx="40" cy="40" r="22" fill="#EEF3FF" stroke="#2563EB" strokeWidth="1.5" opacity="0.5"/>
-        <path d="M40 28 L44 36 L52 37 L46 43 L48 51 L40 47 L32 51 L34 43 L28 37 L36 36 Z" fill="#2563EB" opacity="0.8"/>
-        <circle cx="40" cy="16" r="3" fill="#2563EB" opacity="0.5"/><circle cx="64" cy="40" r="3" fill="#2563EB" opacity="0.5"/>
-      </svg>
-    ),
-  },
-  "2": {
-    accent: "#0EA5E9", darkBg: "rgba(14,165,233,0.15)", lightBg: "#F0F9FF",
-    tag: "Computer",   difficulty: "Beginner", diffColor: "#059669", diffDarkBg: "rgba(5,150,105,0.15)", diffLightBg: "#ECFDF5",
-    hours: "3–4h",
-    illustration: (
-      <svg width="72" height="72" viewBox="0 0 80 80" fill="none">
-        <rect x="12" y="22" width="56" height="38" rx="4" fill="#F0F9FF" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.7"/>
-        <rect x="12" y="22" width="56" height="10" rx="4" fill="#E0F2FE" stroke="#0EA5E9" strokeWidth="1.5" opacity="0.5"/>
-        <rect x="20" y="30" width="8" height="6" rx="1" fill="#0EA5E9" opacity="0.5"/>
-        <rect x="36" y="30" width="8" height="6" rx="1" fill="#0EA5E9" opacity="0.5"/>
-        <rect x="20" y="42" width="18" height="10" rx="2" fill="#0EA5E9" opacity="0.3"/>
-        <path d="M40 60 L40 68" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"/>
-      </svg>
-    ),
-  },
-  "3": {
-    accent: "#7C3AED", darkBg: "rgba(124,58,237,0.15)", lightBg: "#F3EEFF",
-    tag: "Networking", difficulty: "Intermediate", diffColor: "#D97706", diffDarkBg: "rgba(217,119,6,0.15)", diffLightBg: "#FFFBEB",
-    hours: "4–5h",
-    illustration: (
-      <svg width="72" height="72" viewBox="0 0 80 80" fill="none">
-        <circle cx="40" cy="40" r="5" fill="#7C3AED" opacity="0.9"/>
-        {([[20,20],[60,20],[20,60],[60,60],[40,14]] as [number,number][]).map(([cx,cy],i) => (
-          <g key={i}><circle cx={cx} cy={cy} r="4" fill="#7C3AED" opacity={0.4+i*0.1}/><line x1="40" y1="40" x2={cx} y2={cy} stroke="#7C3AED" strokeWidth="1" opacity="0.25"/></g>
-        ))}
-        <circle cx="40" cy="40" r="16" stroke="#7C3AED" strokeWidth="1" strokeDasharray="3 3" opacity="0.3"/>
-      </svg>
-    ),
-  },
-  "4": {
-    accent: "#059669", darkBg: "rgba(5,150,105,0.15)",  lightBg: "#ECFDF5",
-    tag: "Linux CLI",  difficulty: "Intermediate", diffColor: "#D97706", diffDarkBg: "rgba(217,119,6,0.15)", diffLightBg: "#FFFBEB",
-    hours: "4–5h",
-    illustration: (
-      <svg width="72" height="72" viewBox="0 0 80 80" fill="none">
-        <rect x="10" y="16" width="60" height="48" rx="5" fill="#ECFDF5" stroke="#059669" strokeWidth="1.5" opacity="0.7"/>
-        <rect x="10" y="16" width="60" height="12" rx="5" fill="#D1FAE5" stroke="#059669" strokeWidth="1.5" opacity="0.5"/>
-        <circle cx="22" cy="22" r="3" fill="#EF4444" opacity="0.7"/>
-        <circle cx="32" cy="22" r="3" fill="#FBBF24" opacity="0.7"/>
-        <circle cx="42" cy="22" r="3" fill="#10B981" opacity="0.7"/>
-        <text x="18" y="40" fontFamily="monospace" fontSize="9" fill="#059669" opacity="0.9">$ sudo ls -la</text>
-        <text x="18" y="52" fontFamily="monospace" fontSize="8" fill="#059669" opacity="0.6">drwxr-xr-x  root</text>
-      </svg>
-    ),
-  },
-  "5": {
-    accent: "#DC2626", darkBg: "rgba(220,38,38,0.15)",  lightBg: "#FEF2F2",
-    tag: "Kali Linux", difficulty: "Advanced", diffColor: "#DC2626", diffDarkBg: "rgba(220,38,38,0.15)", diffLightBg: "#FEF2F2",
-    hours: "5–6h",
-    illustration: (
-      <svg width="72" height="72" viewBox="0 0 80 80" fill="none">
-        <circle cx="40" cy="40" r="28" stroke="#DC2626" strokeWidth="1" opacity="0.15"/>
-        <circle cx="40" cy="40" r="4"  fill="#DC2626" opacity="0.9"/>
-        <path d="M40 40 L40 14" stroke="#DC2626" strokeWidth="2" strokeLinecap="round" opacity="0.8">
-          <animateTransform attributeName="transform" type="rotate" from="0 40 40" to="360 40 40" dur="3s" repeatCount="indefinite"/>
-        </path>
-        <circle cx="28" cy="24" r="3" fill="#DC2626" opacity="0.5"/>
-        <circle cx="55" cy="35" r="2.5" fill="#DC2626" opacity="0.7"/>
-      </svg>
-    ),
-  },
+// ── Chapter visual config ─────────────────────────────────────────────────
+
+const VISUALS = {
+  "1": { accent: "#2563EB", bg: "rgba(37,99,235,0.14)",  Icon: Shield,   difficulty: "Beginner", diffColor: "#059669", hours: "2h 15m", mcqs: 90  },
+  "2": { accent: "#0EA5E9", bg: "rgba(14,165,233,0.14)", Icon: Cpu,      difficulty: "Easy",     diffColor: "#059669", hours: "3h 45m", mcqs: 150 },
+  "3": { accent: "#7C3AED", bg: "rgba(124,58,237,0.14)", Icon: Wifi,     difficulty: "Easy",     diffColor: "#059669", hours: "3h 30m", mcqs: 150 },
+  "4": { accent: "#059669", bg: "rgba(5,150,105,0.14)",  Icon: Terminal, difficulty: "Medium",   diffColor: "#D97706", hours: "3h 30m", mcqs: 45  },
+  "5": { accent: "#DC2626", bg: "rgba(220,38,38,0.14)",  Icon: Code2,    difficulty: "Hard",     diffColor: "#DC2626", hours: "4h 30m", mcqs: 180 },
+} as const;
+
+const TOPIC_DURATIONS: Record<string, number[]> = {
+  "1": [15, 20, 18, 22, 25, 20],
+  "2": [25, 30, 28, 35, 32, 30],
+  "3": [25, 30, 35, 28, 32, 30],
+  "4": [20, 25, 22, 28, 25, 30],
+  "5": [30, 35, 40, 38, 42, 40],
 };
+
+// ── Small components ──────────────────────────────────────────────────────
+
+function ProgressRing({ percent, accent, isDark }: { percent: number; accent: string; isDark: boolean }) {
+  const size = 64, r = 26, circ = 2 * Math.PI * r;
+  const offset = circ - (percent / 100) * circ;
+  const trackColor = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
+  const zeroColor  = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)";
+  return (
+    <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+        <circle cx={32} cy={32} r={r} fill="none" stroke={trackColor} strokeWidth={4} />
+        <circle
+          cx={32} cy={32} r={r} fill="none"
+          stroke={accent} strokeWidth={4} strokeLinecap="round"
+          strokeDasharray={circ}
+          strokeDashoffset={offset}
+          style={{ transition: "stroke-dashoffset 0.9s ease" }}
+        />
+      </svg>
+      <span style={{
+        position: "absolute", inset: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: "13px", fontWeight: 700,
+        color: percent > 0 ? accent : zeroColor,
+      }}>
+        {percent}%
+      </span>
+    </div>
+  );
+}
+
+function DifficultyBadge({ label, color }: { label: string; color: string }) {
+  return (
+    <span style={{
+      fontSize: "11px", fontWeight: 600, padding: "2px 10px", borderRadius: 999,
+      color, background: color + "18", border: `1px solid ${color}35`,
+    }}>
+      {label}
+    </span>
+  );
+}
+
+function HexIcon({ accent, bg, Icon }: { accent: string; bg: string; Icon: React.ElementType }) {
+  return (
+    <div style={{
+      width: 56, height: 56, flexShrink: 0,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      background: bg,
+      clipPath: "polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%)",
+    }}>
+      <Icon size={22} color={accent} strokeWidth={1.8} />
+    </div>
+  );
+}
+
+function TopicRow({
+  topicId, accent, mins, status, isDark,
+}: {
+  topicId: string; accent: string; mins: number; status: "done" | "current" | "locked"; isDark: boolean;
+}) {
+  const lockedColor = isDark ? "#475569" : "#9CA3AF";
+  const doneColor   = isDark ? "#94A3B8"  : "#6B7280";
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "9px 14px", borderRadius: 8,
+      background: status === "current" ? accent + "12" : "transparent",
+      border: `1px solid ${status === "current" ? accent + "28" : "transparent"}`,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {status === "done"    && <CheckCircle size={14} color="#10B981" />}
+        {status === "current" && <Play        size={14} color={accent}  />}
+        {status === "locked"  && <Lock        size={14} color={lockedColor} />}
+        <span style={{
+          fontSize: "13px",
+          color: status === "locked" ? lockedColor : status === "current" ? accent : doneColor,
+          fontWeight: status === "current" ? 600 : 400,
+        }}>
+          Topic {topicId}
+        </span>
+      </div>
+      <span style={{ fontSize: "12px", color: lockedColor }}>{mins} min</span>
+    </div>
+  );
+}
+
+// ── ChapterCard ───────────────────────────────────────────────────────────
+
+type TopicStatus = "done" | "current" | "locked";
+
+function ChapterCard({
+  ch, vis, stats, topicStatuses, isExpanded, onToggle, isDark,
+}: {
+  ch: typeof CHAPTERS[0];
+  vis: typeof VISUALS[keyof typeof VISUALS];
+  stats: { completed: number; unlocked: number; total: number; percent: number };
+  topicStatuses: TopicStatus[];
+  isExpanded: boolean;
+  onToggle: () => void;
+  isDark: boolean;
+}) {
+  const { Icon, accent, bg, difficulty, diffColor, hours, mcqs } = vis;
+  const isStarted = stats.percent > 0;
+  const durations = TOPIC_DURATIONS[ch.id] ?? Array(ch.totalTopics).fill(20);
+  const cardBg     = isDark ? "#0D1117" : "#FFFFFF";
+  const cardBorder = isDark ? "#1E2433" : "#E5E7EB";
+  const metaColor  = isDark ? "#64748B" : "#9CA3AF";
+  const titleColor = isDark ? "#F1F5F9" : "#111827";
+  const descColor  = isDark ? "#64748B" : "#6B7280";
+  const btnHoverBg = isDark ? "rgba(255,255,255,0.07)" : "#F3F4F6";
+  const chevronCol = isDark ? "#64748B" : "#9CA3AF";
+
+  return (
+    <motion.div
+      layout
+      whileHover={{ y: -4, boxShadow: `0 8px 32px ${accent}22` }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      style={{
+        background: cardBg,
+        border: `1px solid ${isExpanded ? accent + "40" : cardBorder}`,
+        borderRadius: 16, overflow: "hidden",
+        transition: "border-color 0.3s",
+      }}
+    >
+      {/* Accent top stripe */}
+      <div style={{ height: 2, background: `linear-gradient(90deg,${accent},${accent}44)` }} />
+
+      {/* Card body */}
+      <div style={{ padding: "22px 24px 20px", display: "flex", alignItems: "center", gap: 20 }}>
+        {/* Hex icon */}
+        <HexIcon accent={accent} bg={bg} Icon={Icon} />
+
+        {/* Text content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5, flexWrap: "wrap" }}>
+            <span style={{ fontSize: "11px", fontWeight: 700, color: accent, letterSpacing: "0.06em" }}>
+              CH {String(ch.number).padStart(2, "0")}
+            </span>
+            <DifficultyBadge label={difficulty} color={diffColor} />
+          </div>
+
+          <h2 style={{ fontWeight: 800, fontSize: "16px", color: titleColor, marginBottom: 5, letterSpacing: "-0.01em" }}>
+            {ch.title}
+          </h2>
+          <p style={{ fontSize: "13px", color: descColor, lineHeight: 1.6, marginBottom: 13 }}>
+            {ch.description}
+          </p>
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+            {([
+              [BookOpen,    `${ch.totalTopics} Topics`],
+              [HelpCircle,  `${mcqs} MCQs`],
+              [Clock,       hours],
+            ] as [React.ElementType, string][]).map(([MI, text]) => (
+              <span key={text} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "12px", color: metaColor }}>
+                <MI size={11} />{text}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: progress + button + chevron */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, flexShrink: 0 }}>
+          <ProgressRing percent={stats.percent} accent={accent} isDark={isDark} />
+
+          <Link href={`/chapter/${ch.id}`} style={{ textDecoration: "none" }}>
+            <motion.button
+              whileHover={{ boxShadow: isStarted ? `0 0 18px ${accent}55` : undefined }}
+              style={{
+                padding: "9px 16px", borderRadius: 10, border: "none", cursor: "pointer",
+                fontSize: "13px", fontWeight: 600, whiteSpace: "nowrap",
+                background: isStarted
+                  ? "linear-gradient(135deg,#2563EB,#7C3AED)"
+                  : btnHoverBg,
+                color: isStarted ? "#FFFFFF" : titleColor,
+              }}
+            >
+              {isStarted ? "Continue Learning →" : "Start Learning"}
+            </motion.button>
+          </Link>
+
+          <button
+            onClick={onToggle}
+            aria-label="Toggle topics"
+            style={{
+              background: "none", border: "none", cursor: "pointer", padding: 4,
+              color: chevronCol, display: "flex", alignItems: "center",
+              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.3s ease",
+            }}
+          >
+            <ChevronDown size={20} />
+          </button>
+        </div>
+      </div>
+
+      {/* Expandable topics */}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            key="topics"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <div style={{
+              borderTop: `1px solid ${accent}20`,
+              padding: "14px 24px 20px",
+              display: "flex", flexDirection: "column", gap: 3,
+            }}>
+              {topicStatuses.map((status, i) => (
+                <TopicRow
+                  key={i}
+                  topicId={`${ch.id}.${i + 1}`}
+                  accent={accent}
+                  mins={durations[i] ?? 20}
+                  status={status}
+                  isDark={isDark}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────
 
 export default function ChaptersPage() {
   const { isDark } = useTheme();
-  const [user,    setUser]    = useState<UserName | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const [vw,      setVw]      = useState(1280);
+  const [user,     setUser]     = useState<UserName | null>(null);
+  const [mounted,  setMounted]  = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
     setUser(getCurrentUser());
     setMounted(true);
-    const u = () => setVw(window.innerWidth);
-    u(); window.addEventListener("resize", u, { passive: true });
-    return () => window.removeEventListener("resize", u);
   }, []);
 
-  const isMd = vw >= 768;
-  const isLg = vw >= 1024;
-  const sp = vw < 640 ? 16 : vw < 768 ? 24 : vw < 1024 ? 40 : 64;
-  const vp = isMd ? 80 : 52;
+  const bg     = isDark ? "#060912" : "#F8FAFF";
+  const heroBg = isDark ? "linear-gradient(180deg,#0A0E1A,#060912)" : "linear-gradient(180deg,#F5F8FF,#FFFFFF)";
+  const textPrimary = isDark ? "#F1F5F9" : "#111827";
+  const textMuted   = isDark ? "#64748B"  : "#9CA3AF";
+  const chipBg  = isDark ? "rgba(37,99,235,0.15)" : "#EFF6FF";
+  const chipBdr = isDark ? "rgba(37,99,235,0.35)" : "#DBEAFE";
+  const chipTxt = isDark ? "#60A5FA" : "#2563EB";
+  const dotBorder = isDark ? "#2D3748" : "#E2E8F0";
+  const dotEmpty  = isDark ? "#1E2433" : "#CBD5E1";
 
-  const T = {
-    bg:      isDark ? "#060912"  : "#F8FAFF",
-    bg2:     isDark ? "#0D1117"  : "#FFFFFF",
-    text:    isDark ? "#F1F5F9"  : "#111827",
-    text2:   isDark ? "#94A3B8"  : "#6B7280",
-    muted:   isDark ? "#64748B"  : "#9CA3AF",
-    border:  isDark ? "#1E2433"  : "#E5E7EB",
-    card:    isDark ? "#0D1117"  : "#FFFFFF",
-    chipBg:  isDark ? "rgba(37,99,235,0.15)" : "#EFF6FF",
-    chipBdr: isDark ? "rgba(37,99,235,0.35)" : "#DBEAFE",
-    chipTxt: isDark ? "#60A5FA"  : "#2563EB",
-    heroBg:  isDark ? "linear-gradient(180deg,#0A0E1A,#060912)" : "linear-gradient(180deg,#F5F8FF,#FFFFFF)",
-  };
+  // Pre-compute per-chapter data
+  const chapterData = CHAPTERS.map((ch) => {
+    const vis = VISUALS[ch.id as keyof typeof VISUALS];
+    const stats = mounted && user
+      ? getChapterStats(user, ch.id, ch.totalTopics)
+      : { completed: 0, unlocked: 0, total: ch.totalTopics, percent: 0 };
+
+    const topicStatuses: TopicStatus[] = Array.from({ length: ch.totalTopics }, (_, i) => {
+      if (!mounted || !user) return "locked";
+      const topicId = `${ch.id}.${i + 1}`;
+      const progress = getUserProgress(user);
+      const tp = progress.topicProgress[`${ch.id}:${topicId}`];
+      if (tp?.passed)   return "done";
+      if (tp?.unlocked) return "current";
+      return "locked";
+    });
+
+    return { ch, vis, stats, topicStatuses };
+  });
 
   return (
-    <main style={{ minHeight: "100vh", background: T.bg, paddingTop: 68 }}>
+    <main style={{ minHeight: "100vh", background: bg, paddingTop: 68 }}>
 
       {/* Hero */}
-      <div style={{ background: T.heroBg, padding: `${vp}px ${sp}px ${vp * 0.7}px` }}>
+      <div style={{ background: heroBg, padding: "64px 24px 52px", textAlign: "center" }}>
         <motion.div
-          initial={mounted ? { opacity: 0, y: -16 } : false}
+          initial={mounted ? { opacity: 0, y: -14 } : false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ textAlign: "center" }}
+          transition={{ duration: 0.45 }}
         >
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "5px 14px", borderRadius: 999, background: T.chipBg, border: `1px solid ${T.chipBdr}`, marginBottom: 18 }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 7,
+            padding: "5px 14px", borderRadius: 999,
+            background: chipBg, border: `1px solid ${chipBdr}`, marginBottom: 18,
+          }}>
             <BookOpen size={12} color="#3B82F6" />
-            <span style={{ fontSize: "11px", fontWeight: 700, color: T.chipTxt, textTransform: "uppercase", letterSpacing: "0.09em" }}>Choose Your Path</span>
+            <span style={{ fontSize: "11px", fontWeight: 700, color: chipTxt, textTransform: "uppercase", letterSpacing: "0.09em" }}>
+              Course Content
+            </span>
           </div>
-          <h1 style={{ fontWeight: 900, color: T.text, fontSize: isLg ? "2.8rem" : isMd ? "2.3rem" : "1.9rem", letterSpacing: "-0.03em", marginBottom: 14 }}>
-            All <span style={{ background: "linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Chapters</span>
+
+          <h1 style={{ fontWeight: 900, color: textPrimary, fontSize: "2.5rem", letterSpacing: "-0.03em", marginBottom: 12 }}>
+            5 Chapters · 41 Topics ·{" "}
+            <span style={{ background: "linear-gradient(130deg,#2563EB,#7C3AED)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              615+ MCQs
+            </span>
           </h1>
-          <p style={{ color: T.muted, fontSize: "15px", maxWidth: 440, margin: "0 auto" }}>
-            Structured path from zero to ethical hacking expert. Each chapter unlocks the next.
+          <p style={{ color: textMuted, fontSize: "15px", maxWidth: 500, margin: "0 auto" }}>
+            Ek structured path jo tumhe zero se ethical hacker banata hai — computers ke andar se lekar Kali Linux tak.
           </p>
         </motion.div>
       </div>
 
-      {/* Chapter grid */}
-      <div style={{ padding: `0 ${sp}px ${vp}px` }}>
-        <div style={{ display: "grid", gridTemplateColumns: isLg ? "repeat(2,1fr)" : "1fr", gap: 16 }}>
-          {CHAPTERS.map((ch, i) => {
-            const vis = VISUALS[ch.id];
-            const stats = mounted && user
-              ? getChapterStats(user, ch.id, ch.totalTopics)
-              : { completed: 0, unlocked: 0, total: ch.totalTopics, percent: 0 };
-            const isLocked    = mounted && user ? stats.unlocked === 0 : false;
-            const isCompleted = mounted && user ? stats.completed === ch.totalTopics : false;
+      {/* Chapter list */}
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "40px 24px 80px", position: "relative" }}>
 
-            return (
-              <motion.div key={ch.id}
-                initial={mounted ? { opacity: 0, y: 24 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08, duration: 0.45 }}
-              >
-                <Link href={isLocked ? "#" : `/chapter/${ch.id}`} style={{ textDecoration: "none" }}>
-                  <motion.div
-                    whileHover={!isLocked ? { y: -6, boxShadow: `0 16px 48px ${vis.accent}20` } : {}}
-                    transition={{ type: "spring", stiffness: 280, damping: 28 }}
-                    style={{
-                      position: "relative", background: T.card, borderRadius: 20,
-                      border: `1px solid ${isCompleted ? "#10B981" + "50" : T.border}`,
-                      overflow: "hidden",
-                      boxShadow: `0 2px 16px rgba(0,0,0,${isDark ? 0.25 : 0.05})`,
-                      opacity: isLocked ? 0.55 : 1,
-                      cursor: isLocked ? "not-allowed" : "pointer",
-                      transition: "border-color 0.25s",
-                    }}
-                  >
-                    {/* Accent top bar */}
-                    <div style={{ height: 3, background: isCompleted ? "linear-gradient(90deg,#10B981,#34D399)" : `linear-gradient(90deg,${vis.accent},${vis.accent}66)` }} />
+        {/* Timeline line */}
+        <div style={{
+          position: "absolute", left: 47, top: 52, bottom: 90, width: 1,
+          background: isDark ? "rgba(37,99,235,0.18)" : "rgba(37,99,235,0.12)",
+          boxShadow: "0 0 6px rgba(37,99,235,0.25)",
+        }} />
 
-                    <div style={{ padding: isMd ? "24px 28px" : "20px 20px" }}>
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: isMd ? 20 : 16 }}>
-                        {/* Illustration */}
-                        <div style={{
-                          flexShrink: 0, width: 76, height: 76, borderRadius: 18,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          background: isDark ? vis.darkBg : vis.lightBg,
-                        }}>
-                          {isLocked ? <Lock size={26} color={T.muted} /> : vis.illustration}
-                        </div>
+        {chapterData.map(({ ch, vis, stats, topicStatuses }, i) => (
+          <div key={ch.id} style={{ position: "relative", paddingLeft: 62, marginBottom: 18 }}>
 
-                        {/* Content */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                            <span style={{
-                              fontSize: "11px", fontWeight: 700, padding: "2px 11px", borderRadius: 999,
-                              color: vis.accent, background: isDark ? vis.darkBg : vis.lightBg,
-                            }}>
-                              CH {String(ch.number).padStart(2,"0")} · {vis.tag}
-                            </span>
-                            {isCompleted && (
-                              <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "11px", fontWeight: 700, color: "#059669", background: isDark ? "rgba(5,150,105,0.15)" : "#ECFDF5", padding: "2px 11px", borderRadius: 999 }}>
-                                <CheckCircle size={10} />Complete
-                              </span>
-                            )}
-                            {isLocked && (
-                              <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "11px", fontWeight: 700, color: T.muted, background: isDark ? "rgba(255,255,255,0.06)" : "#F1F5F9", padding: "2px 11px", borderRadius: 999 }}>
-                                <Lock size={10} />Locked
-                              </span>
-                            )}
-                          </div>
+            {/* Timeline dot */}
+            <div style={{
+              position: "absolute", left: 41, top: 34,
+              width: 13, height: 13, borderRadius: "50%", zIndex: 1,
+              background: stats.percent === 100 ? "#10B981" : stats.percent > 0 ? vis.accent : dotEmpty,
+              border: `2px solid ${stats.percent > 0 ? vis.accent : dotBorder}`,
+              boxShadow: stats.percent > 0 ? `0 0 10px ${vis.accent}60` : "none",
+              transition: "background 0.3s, box-shadow 0.3s",
+            }} />
 
-                          <h2 style={{ fontWeight: 800, color: T.text, fontSize: isMd ? "17px" : "15px", marginBottom: 6, letterSpacing: "-0.01em" }}>{ch.title}</h2>
-                          <p style={{ color: T.text2, fontSize: "13.5px", lineHeight: 1.65, marginBottom: 14 }}>{ch.description}</p>
-
-                          {/* Meta row */}
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: mounted && user && !isLocked ? 14 : 0 }}>
-                            {[
-                              { icon: <BookOpen size={11} color={T.muted} />,   text: `${ch.totalTopics} Topics`            },
-                              { icon: <HelpCircle size={11} color={T.muted} />, text: `~${ch.totalTopics * 15} MCQs`         },
-                              { icon: <Clock size={11} color={T.muted} />,      text: vis.hours                              },
-                              { icon: <BarChart2 size={11} color={vis.diffColor}/>, text: vis.difficulty, color: vis.diffColor },
-                            ].map(({ icon, text, color }) => (
-                              <span key={text} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "12px", color: color || T.muted }}>
-                                {icon}{text}
-                              </span>
-                            ))}
-                          </div>
-
-                          {/* Progress */}
-                          {mounted && user && !isLocked && (
-                            <div>
-                              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                                <span style={{ fontSize: "11.5px", color: T.muted }}>{stats.completed}/{ch.totalTopics} topics</span>
-                                <span style={{ fontSize: "11.5px", fontWeight: 700, color: isCompleted ? "#059669" : vis.accent }}>{stats.percent}%</span>
-                              </div>
-                              <div style={{ height: 5, background: isDark ? "rgba(255,255,255,0.08)" : "#F1F5F9", borderRadius: 99, overflow: "hidden" }}>
-                                <motion.div
-                                  initial={{ width: 0 }} animate={{ width: `${stats.percent}%` }}
-                                  transition={{ duration: 1, delay: 0.3 + i * 0.08, ease: "easeOut" }}
-                                  style={{ height: "100%", borderRadius: 99, background: isCompleted ? "#10B981" : vis.accent }}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Arrow */}
-                        {!isLocked && (
-                          <ArrowRight size={16} color={T.muted} style={{ flexShrink: 0, alignSelf: "center" }} />
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
+            <motion.div
+              initial={mounted ? { opacity: 0, x: -16 } : false}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.07, duration: 0.38 }}
+            >
+              <ChapterCard
+                ch={ch}
+                vis={vis}
+                stats={stats}
+                topicStatuses={topicStatuses}
+                isExpanded={expanded === ch.id}
+                onToggle={() => setExpanded(prev => prev === ch.id ? null : ch.id)}
+                isDark={isDark}
+              />
+            </motion.div>
+          </div>
+        ))}
       </div>
     </main>
   );

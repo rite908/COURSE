@@ -1,0 +1,293 @@
+You are a senior UI/UX designer and Next.js frontend engineer.
+
+Your task is to redesign ONLY the "Course Chapters" section.
+
+IMPORTANT:
+Do NOT redesign the navbar.
+Do NOT redesign the hero section.
+Do NOT redesign the statistics cards.
+Do NOT redesign colors.
+Do NOT redesign typography.
+Do NOT redesign spacing outside the chapters section.
+
+Keep the exact same visual language already used throughout the website.
+
+The goal is to make the chapter cards more premium, interactive and cleaner without changing the overall identity.
+
+==================================
+LAYOUT
+==================================
+
+Keep one chapter per row.
+
+Each card should have:
+
+LEFT
+
+• Large glowing hexagon icon
+• Chapter number
+• Chapter title
+• Difficulty badge
+• Small description
+
+BOTTOM
+
+• Topics count
+• MCQs count
+• Estimated duration
+
+CENTER
+
+Leave breathing space.
+
+RIGHT
+
+Replace the empty space with:
+
+Circular progress indicator
+
+Example:
+
+65%
+
+and
+
+Primary Button
+
+Continue Learning
+
+or
+
+Start Learning
+
+Far right:
+
+Chevron Down icon
+
+to expand topics.
+
+==================================
+TIMELINE
+==================================
+
+Add a very thin glowing vertical timeline on the left.
+
+Each chapter connects using glowing circular nodes.
+
+Timeline should be subtle.
+
+Do NOT make it look like a game.
+
+==================================
+EXPANDABLE SECTION
+==================================
+
+When clicking a chapter,
+
+expand smoothly.
+
+Inside expansion show:
+
+Topics
+
+✓ Hacker Kya Hai
+
+✓ Types of Hackers
+
+▶ Current Lesson
+
+🔒 Locked Lesson
+
+Every topic should display duration.
+
+Example
+
+12 min
+
+18 min
+
+25 min
+
+Collapse smoothly.
+
+==================================
+BUTTONS
+==================================
+
+Continue Learning
+
+Primary Gradient
+
+Blue → Purple
+
+Start Learning
+
+Solid dark button
+
+Hover
+
+Glow slightly.
+
+==================================
+HOVER EFFECTS
+==================================
+
+Only subtle animations.
+
+• border glow
+
+• lift card 4px
+
+• icon glow
+
+• arrow rotate
+
+• smooth transition
+
+300ms
+
+NO crazy animations.
+
+==================================
+ICONS
+==================================
+
+Use Lucide React icons.
+
+Shield
+
+CPU
+
+Wifi
+
+Terminal
+
+Code
+
+==================================
+STYLE
+==================================
+
+Dark premium
+
+Inspired by:
+
+Vercel
+
+Linear
+
+Raycast
+
+Clerk
+
+Notion
+
+GitHub Dark
+
+==================================
+DO NOT USE
+==================================
+
+No glassmorphism
+
+No RPG UI
+
+No futuristic dashboard
+
+No holograms
+
+No neon overload
+
+No cyberpunk effects
+
+No huge shadows
+
+No oversized cards
+
+No gradients everywhere
+
+No gaming UI
+
+==================================
+TECH STACK
+==================================
+
+Next.js App Router
+
+Tailwind CSS
+
+Framer Motion
+
+Lucide React
+
+Responsive
+
+Accessible
+
+Reusable components
+
+==================================
+CREATE COMPONENTS
+==================================
+
+CourseSection
+
+CourseCard
+
+ProgressRing
+
+TopicList
+
+Timeline
+
+DifficultyBadge
+
+ContinueButton
+
+==================================
+COLORS
+==================================
+
+Keep existing colors exactly.
+
+Blue
+
+Purple
+
+Green
+
+Red
+
+Background
+
+Typography
+
+must remain identical.
+
+==================================
+SPACING
+==================================
+
+Large clean spacing.
+
+Nothing should feel cramped.
+
+==================================
+FINAL GOAL
+==================================
+
+The user should immediately feel:
+
+"This is the same website, but much more premium."
+
+Do NOT redesign the entire page.
+
+Improve only the chapters section.
+
+Do not remove existing content.
+
+Only enhance the UI.
+
+Keep the implementation simple and clean so the codebase remains maintainable.
+
+Generate production-ready code only.
