@@ -69,7 +69,7 @@
 @keyframes radarSweep  { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
 @keyframes footerGridDrift { from { background-position: 0 0 } to { background-position: 40px 40px } }
 @keyframes gradientSlide { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
-@keyframes floatUp { 0% { transform: translateY(0) opacity(1) } 100% { transform: translateY(-60px); opacity: 0 } }
+@keyframes floatUp { 0% { transform: translateY(0); opacity: 1 } 100% { transform: translateY(-60px); opacity: 0 } }
 @keyframes creatorScan { 0% { top: -40% } 100% { top: 140% } }
 @keyframes badgeGlow { 0%,100% { box-shadow: none } 50% { box-shadow: 0 0 10px currentColor } }
 @keyframes orbitSpin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }

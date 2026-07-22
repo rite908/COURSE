@@ -484,7 +484,7 @@ export default function LandingPage() {
                 {/* Headline */}
                 <motion.h1 {...fade(0.07)} style={{
                   fontWeight: 900, lineHeight: 1.1, letterSpacing: "-0.03em",
-                  marginBottom: 20, margin: 0, marginBottom: 20,
+                  margin: 0, marginBottom: 20,
                   fontSize: isLg ? "clamp(2.9rem,3.2vw,4rem)" : isMd ? "2.6rem" : "2rem",
                 }}>
                   <span style={{ color: T.text, display: "block", whiteSpace: "nowrap" }}>MCH —</span>
@@ -722,7 +722,7 @@ export default function LandingPage() {
             >
               {/* Shimmer sweep on hover */}
               <motion.div
-                variants={{ hover: { x: ["−110%", "210%"], transition: { duration: 0.55, ease: "easeInOut" } } }}
+                variants={{ hover: { x: ["-110%", "210%"], transition: { duration: 0.55, ease: "easeInOut" } } }}
                 initial={{ x: "-110%" }}
                 whileHover={{ x: "210%", transition: { duration: 0.55, ease: "easeInOut" } }}
                 style={{
@@ -1526,6 +1526,7 @@ export default function LandingPage() {
                         padding:"14px 16px",
                         display:"flex", alignItems:"center", gap:12,
                         boxShadow: isDark ? `0 2px 12px rgba(0,0,0,0.25)` : `0 2px 12px rgba(0,0,0,0.05)`,
+                        position:"relative",
                       }}>
                         {/* Left color bar */}
                         <div style={{
@@ -1655,11 +1656,11 @@ export default function LandingPage() {
             }}>
               {FOR_WHOM.map((card, i) => (
                 <motion.div key={card.title}
-                  initial={mounted ? { opacity: 0, y: 40, scale: 0.93 } : false}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  initial={mounted ? { opacity: 0, scale: 0.93 } : false}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ delay: i * 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  // Continuous independent float per card
+                  // Continuous independent float per card — y kept out of whileInView to avoid conflict
                   animate={{ y: [0, i % 2 === 0 ? -6 : 6, 0] }}
                   whileHover="hover"
                   variants={{
@@ -1682,7 +1683,7 @@ export default function LandingPage() {
                 >
                   {/* Shimmer sweep on hover */}
                   <motion.div
-                    variants={{ hover: { x: ["−110%", "210%"], transition: { duration: 0.6, ease: "easeInOut" } } }}
+                    variants={{ hover: { x: ["-110%", "210%"], transition: { duration: 0.6, ease: "easeInOut" } } }}
                     whileHover={{ x: "210%", transition: { duration: 0.6, ease: "easeInOut" } }}
                     initial={{ x: "-110%" }}
                     style={{
