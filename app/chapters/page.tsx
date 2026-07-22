@@ -482,9 +482,9 @@ function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
       transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
       aria-hidden="true"
       style={{
-        position: "absolute", left: -260, top: 0,
+        position: "absolute", left: -120, top: 0,
         zIndex: 1, pointerEvents: "none", userSelect: "none",
-        width: 580, height: "100%",
+        width: 740, height: "100%",
       }}
     >
       <motion.div
@@ -566,9 +566,9 @@ function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounte
       transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
       aria-hidden="true"
       style={{
-        position: "absolute", right: -260, top: 0,
+        position: "absolute", right: -120, top: 0,
         zIndex: 1, pointerEvents: "none", userSelect: "none",
-        width: 580, height: "100%",
+        width: 740, height: "100%",
       }}
     >
       <motion.div
