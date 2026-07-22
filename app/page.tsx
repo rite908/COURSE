@@ -1456,8 +1456,76 @@ export default function LandingPage() {
       {/* ══════════════════════════
           ABOUT AFSAR
       ══════════════════════════ */}
-      <section style={{ background: "transparent", padding: `${vp}px 0` }}>
+      <section style={{ position: "relative", padding: `${vp}px 0`, overflow: "hidden" }}>
+
+        {/* ── Animated background orbs ── */}
+        <motion.div
+          animate={{ x: [0, 40, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.15, 0.95, 1] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position: "absolute", top: "-10%", left: "-5%",
+            width: 420, height: 420, borderRadius: "50%",
+            background: isDark
+              ? "radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%)"
+              : "radial-gradient(circle, rgba(37,99,235,0.09) 0%, transparent 70%)",
+            pointerEvents: "none", zIndex: 0,
+          }}
+        />
+        <motion.div
+          animate={{ x: [0, -50, 30, 0], y: [0, 40, -20, 0], scale: [1, 0.9, 1.12, 1] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          style={{
+            position: "absolute", bottom: "-15%", right: "-8%",
+            width: 500, height: 500, borderRadius: "50%",
+            background: isDark
+              ? "radial-gradient(circle, rgba(124,58,237,0.16) 0%, transparent 70%)"
+              : "radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)",
+            pointerEvents: "none", zIndex: 0,
+          }}
+        />
+        <motion.div
+          animate={{ x: [0, 25, -35, 0], y: [0, -20, 35, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 7 }}
+          style={{
+            position: "absolute", top: "40%", right: "20%",
+            width: 260, height: 260, borderRadius: "50%",
+            background: isDark
+              ? "radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)"
+              : "radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 70%)",
+            pointerEvents: "none", zIndex: 0,
+          }}
+        />
+
+        {/* ── Subtle dot grid overlay ── */}
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
+          backgroundImage: `radial-gradient(circle, ${isDark ? "rgba(255,255,255,0.04)" : "rgba(37,99,235,0.06)"} 1px, transparent 1px)`,
+          backgroundSize: "28px 28px",
+          maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)",
+          WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)",
+        }} />
+
         {W(
+          <motion.div
+            initial={mounted ? { opacity: 0, y: 32 } : false}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: "relative", zIndex: 1,
+              borderRadius: 28,
+              background: isDark
+                ? "rgba(13,17,23,0.72)"
+                : "rgba(255,255,255,0.82)",
+              border: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(37,99,235,0.12)"}`,
+              boxShadow: isDark
+                ? "0 8px 64px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)"
+                : "0 8px 48px rgba(37,99,235,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)",
+              padding: isLg ? "52px 56px" : isMd ? "40px 36px" : "32px 24px",
+            }}
+          >
           <div style={{
             display: "flex", flexDirection: isLg ? "row" : "column",
             gap: isLg ? 72 : 40, alignItems: isLg ? "center" : "flex-start",
@@ -1642,6 +1710,7 @@ export default function LandingPage() {
               </motion.div>
             </div>
           </div>
+          </motion.div>
         )}
       </section>
 
