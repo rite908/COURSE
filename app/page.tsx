@@ -2249,70 +2249,128 @@ export default function LandingPage() {
           FOOTER
       ══════════════════════════ */}
       <footer style={{ background: "transparent", position: "relative", overflow: "hidden" }}>
-        {/* Animated gradient top border */}
+
+        {/* ── Animated cyber grid background ── */}
+        <div className="footer-cyber-grid" style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          opacity: isDark ? 0.055 : 0.035,
+        }} />
+
+        {/* ── Animated gradient top border ── */}
         <motion.div
-          initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            height: 2, transformOrigin: "left",
-            background: "linear-gradient(90deg,#2563EB,#7C3AED,#0EA5E9,#059669)",
-            boxShadow: "0 0 24px rgba(37,99,235,0.55)",
-          }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+          style={{ height: 2, transformOrigin: "left" }}
+        >
+          <div className="footer-gradient-line" style={{ height: "100%", width: "100%" }} />
+        </motion.div>
+
+        {/* ── Animated glow blobs ── */}
+        <motion.div
+          animate={{ scale: [1, 1.18, 1], opacity: [0.07, 0.13, 0.07] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: "absolute", left: "-8%", bottom: "5%", width: "38%", height: "90%", background: "radial-gradient(ellipse,rgba(37,99,235,0.18) 0%,transparent 70%)", pointerEvents: "none" }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.22, 1], opacity: [0.05, 0.1, 0.05] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
+          style={{ position: "absolute", right: "-8%", top: "10%", width: "38%", height: "90%", background: "radial-gradient(ellipse,rgba(124,58,237,0.15) 0%,transparent 70%)", pointerEvents: "none" }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.04, 0.08, 0.04] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          style={{ position: "absolute", left: "40%", top: "30%", width: "25%", height: "60%", background: "radial-gradient(ellipse,rgba(14,165,233,0.1) 0%,transparent 70%)", pointerEvents: "none" }}
         />
 
-        {/* Subtle glow blobs */}
-        <div style={{ position: "absolute", left: "-10%", bottom: 0, width: "35%", height: "100%", background: "radial-gradient(ellipse,rgba(37,99,235,0.05) 0%,transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", right: "-10%", bottom: 0, width: "35%", height: "100%", background: "radial-gradient(ellipse,rgba(124,58,237,0.05) 0%,transparent 70%)", pointerEvents: "none" }} />
+        {/* ── Floating particles ── */}
+        {mounted && [
+          { left: "12%", delay: 0,   size: 3, color: "#2563EB", dur: 5 },
+          { left: "28%", delay: 1.5, size: 2, color: "#7C3AED", dur: 6.5 },
+          { left: "55%", delay: 0.8, size: 2, color: "#0EA5E9", dur: 7 },
+          { left: "72%", delay: 2.2, size: 3, color: "#059669", dur: 5.5 },
+          { left: "88%", delay: 1,   size: 2, color: "#2563EB", dur: 8 },
+        ].map((p, i) => (
+          <motion.div key={i}
+            animate={{ y: [0, -55, 0], opacity: [0, 0.7, 0] }}
+            transition={{ duration: p.dur, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
+            style={{
+              position: "absolute", bottom: "15%", left: p.left,
+              width: p.size, height: p.size, borderRadius: "50%",
+              background: p.color, pointerEvents: "none",
+              boxShadow: `0 0 6px ${p.color}`,
+            }}
+          />
+        ))}
 
         {W(
           <motion.div
             initial={mounted ? { opacity: 0, y: 28 } : false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* ── Main 3-column grid ── */}
             <div style={{
               display: "grid",
               gridTemplateColumns: isLg ? "2fr 1fr 1fr" : isMd ? "1fr 1fr" : "1fr",
               gap: isLg ? 64 : isMd ? 40 : 36,
-              padding: `${isLg ? 60 : 44}px 0 ${isLg ? 52 : 40}px`,
+              padding: `${isLg ? 64 : 44}px 0 ${isLg ? 56 : 40}px`,
             }}>
 
-              {/* Col 1 — Brand */}
+              {/* ── Col 1 — Brand ── */}
               <motion.div
-                initial={mounted ? { opacity: 0, y: 16 } : false}
+                initial={mounted ? { opacity: 0, y: 20 } : false}
                 whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ delay: 0.1, duration: 0.5 }}
+                transition={{ delay: 0.08, duration: 0.55 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-                  {/* Pulsing logo */}
-                  <div style={{ position: "relative", flexShrink: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22 }}>
+                  {/* Logo with rotating orbit rings */}
+                  <div style={{ position: "relative", flexShrink: 0, width: 56, height: 56 }}>
+                    {/* Outer dashed orbit ring */}
+                    <div className="footer-orbit-ring-outer" style={{ inset: -10 }} />
+                    {/* Inner solid orbit ring */}
+                    <div className="footer-orbit-ring" style={{ inset: -4 }} />
+                    {/* Pulsing glow + logo */}
                     <motion.div
-                      animate={{ boxShadow: ["0 0 0 0 rgba(37,99,235,0.5)","0 0 0 10px rgba(37,99,235,0)","0 0 0 0 rgba(37,99,235,0)"] }}
-                      transition={{ duration: 2.6, repeat: Infinity, ease: "easeOut" }}
-                      style={{ borderRadius: "50%", width: 48, height: 48 }}
+                      animate={{ boxShadow: ["0 0 0 0 rgba(37,99,235,0.55)","0 0 0 12px rgba(37,99,235,0)","0 0 0 0 rgba(37,99,235,0)"] }}
+                      transition={{ duration: 2.8, repeat: Infinity, ease: "easeOut" }}
+                      style={{ borderRadius: "50%", width: 56, height: 56 }}
                     >
                       <img src="/twh-logo.png" alt="TWH Academy" style={{
-                        width: 48, height: 48, borderRadius: "50%", objectFit: "cover",
-                        border: "2px solid rgba(37,99,235,0.4)",
-                        display: "block",
+                        width: 56, height: 56, borderRadius: "50%", objectFit: "cover",
+                        border: "2px solid rgba(37,99,235,0.45)", display: "block",
                       }} />
                     </motion.div>
                   </div>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: "17px", color: T.text, lineHeight: 1.3 }}>TWH Academy</div>
-                    <div style={{ fontSize: "12px", color: T.muted, lineHeight: 1.3 }}>by Technical White Hat</div>
+                    <motion.div
+                      initial={mounted ? { opacity: 0, x: -10 } : false}
+                      whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                      transition={{ delay: 0.18, duration: 0.45 }}
+                      style={{ fontWeight: 800, fontSize: "18px", color: T.text, lineHeight: 1.25 }}
+                    >TWH Academy</motion.div>
+                    <motion.div
+                      initial={mounted ? { opacity: 0, x: -10 } : false}
+                      whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                      transition={{ delay: 0.26, duration: 0.45 }}
+                      style={{ fontSize: "12px", color: T.muted, lineHeight: 1.4, marginTop: 2 }}
+                    >by Technical White Hat</motion.div>
                   </div>
                 </div>
 
-                <p style={{ color: T.text2, fontSize: "14px", lineHeight: 1.85, maxWidth: 300, marginBottom: 24 }}>
+                <motion.p
+                  initial={mounted ? { opacity: 0, y: 10 } : false}
+                  whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                  style={{ color: T.text2, fontSize: "14px", lineHeight: 1.9, maxWidth: 300, marginBottom: 26 }}
+                >
                   India ka premier ethical hacking course. Zero se Kali Linux tak —{" "}
                   <strong style={{ color: T.text }}>bilkul free, hamesha ke liye.</strong>
-                </p>
+                </motion.p>
 
-                {/* Trust badges */}
+                {/* Trust badges with shimmer hover + staggered pop */}
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {[
                     { label: "✓ 100% Free",  color: "#059669", lightBg: "#ECFDF5", darkBg: "rgba(5,150,105,0.15)" },
@@ -2320,137 +2378,228 @@ export default function LandingPage() {
                     { label: "✓ No Paywall", color: "#7C3AED", lightBg: "#F3EEFF", darkBg: "rgba(124,58,237,0.15)" },
                   ].map((badge, bi) => (
                     <motion.span key={badge.label}
-                      initial={mounted ? { opacity: 0, scale: 0.85 } : false}
-                      whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
-                      transition={{ delay: 0.25 + bi * 0.07, duration: 0.4 }}
+                      initial={mounted ? { opacity: 0, scale: 0.7, y: 8 } : false}
+                      whileInView={{ opacity: 1, scale: 1, y: 0 }} viewport={{ once: true }}
+                      transition={{ delay: 0.3 + bi * 0.1, duration: 0.45, type: "spring", stiffness: 260, damping: 18 }}
+                      whileHover={{ scale: 1.08, boxShadow: `0 0 14px ${badge.color}55`, transition: { duration: 0.18 } }}
                       style={{
-                        fontSize: "11px", fontWeight: 700, padding: "4px 12px", borderRadius: 999,
+                        fontSize: "11px", fontWeight: 700, padding: "5px 13px", borderRadius: 999,
                         background: isDark ? badge.darkBg : badge.lightBg,
                         color: badge.color,
-                        border: `1px solid ${badge.color}25`,
+                        border: `1px solid ${badge.color}30`,
+                        cursor: "default",
                       }}
                     >{badge.label}</motion.span>
                   ))}
                 </div>
               </motion.div>
 
-              {/* Col 2 — Explore */}
+              {/* ── Col 2 — Explore ── */}
               <motion.div
-                initial={mounted ? { opacity: 0, y: 16 } : false}
+                initial={mounted ? { opacity: 0, y: 20 } : false}
                 whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ delay: 0.2, duration: 0.5 }}
+                transition={{ delay: 0.18, duration: 0.55 }}
               >
-                <div style={{ fontWeight: 800, fontSize: "11px", color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 22 }}>
-                  Explore
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <motion.div
+                  initial={mounted ? { opacity: 0, x: -8 } : false}
+                  whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                  transition={{ delay: 0.22, duration: 0.4 }}
+                  style={{ fontWeight: 800, fontSize: "11px", color: T.muted, textTransform: "uppercase", letterSpacing: "0.13em", marginBottom: 22 }}
+                >Explore</motion.div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   {[
-                    { label: "Home",           href: "/",         icon: "🏠" },
-                    { label: "Chapters",        href: "/chapters", icon: "📚" },
-                    { label: "Roadmap",         href: "/roadmap",  icon: "🗺️" },
-                    { label: "About",           href: "/about",    icon: "👤" },
-                    { label: "Contact",         href: "/contact",  icon: "📬" },
+                    { label: "Home",     href: "/",         icon: "🏠" },
+                    { label: "Chapters", href: "/chapters", icon: "📚" },
+                    { label: "Roadmap",  href: "/roadmap",  icon: "🗺️" },
+                    { label: "About",    href: "/about",    icon: "👤" },
+                    { label: "Contact",  href: "/contact",  icon: "📬" },
                   ].map(({ label, href, icon }, li) => (
                     <motion.div key={label}
-                      initial={mounted ? { opacity: 0, x: -12 } : false}
+                      initial={mounted ? { opacity: 0, x: -14 } : false}
                       whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-                      transition={{ delay: 0.25 + li * 0.06, duration: 0.4 }}
+                      transition={{ delay: 0.28 + li * 0.07, duration: 0.42 }}
                     >
-                      <Link href={href}
-                        style={{ color: T.muted, textDecoration: "none", fontSize: "14px", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 9, padding: "7px 0", transition: "color 0.2s, gap 0.2s" }}
-                        onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = T.chipTxt; el.style.gap = "13px"; }}
-                        onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = T.muted; el.style.gap = "9px"; }}
-                      >
-                        <span style={{ fontSize: "13px" }}>{icon}</span>
-                        {label}
+                      <Link href={href} style={{ textDecoration: "none", display: "block" }}>
+                        <motion.div
+                          whileHover={{ x: 5, transition: { duration: 0.18 } }}
+                          style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 9, padding: "8px 0", color: T.muted, fontSize: "14px", fontWeight: 500 }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = T.chipTxt; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = T.muted; }}
+                        >
+                          <motion.span
+                            whileHover={{ scale: 1.25, rotate: 5 }}
+                            transition={{ duration: 0.18 }}
+                            style={{ fontSize: "13px", display: "inline-block" }}
+                          >{icon}</motion.span>
+                          {label}
+                          {/* Animated underline */}
+                          <motion.div
+                            initial={{ scaleX: 0 }}
+                            whileHover={{ scaleX: 1 }}
+                            style={{
+                              position: "absolute", bottom: 4, left: 22, right: 0, height: 1,
+                              background: T.chipTxt, transformOrigin: "left", borderRadius: 1,
+                            }}
+                          />
+                        </motion.div>
                       </Link>
                     </motion.div>
                   ))}
                 </div>
               </motion.div>
 
-              {/* Col 3 — Legal + Creator card */}
+              {/* ── Col 3 — Legal + Creator card ── */}
               <motion.div
-                initial={mounted ? { opacity: 0, y: 16 } : false}
+                initial={mounted ? { opacity: 0, y: 20 } : false}
                 whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ delay: 0.3, duration: 0.5 }}
+                transition={{ delay: 0.28, duration: 0.55 }}
               >
-                <div style={{ fontWeight: 800, fontSize: "11px", color: T.muted, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 22 }}>
-                  Legal
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 32 }}>
+                <motion.div
+                  initial={mounted ? { opacity: 0, x: -8 } : false}
+                  whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                  transition={{ delay: 0.32, duration: 0.4 }}
+                  style={{ fontWeight: 800, fontSize: "11px", color: T.muted, textTransform: "uppercase", letterSpacing: "0.13em", marginBottom: 22 }}
+                >Legal</motion.div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 34 }}>
                   {[
                     { label: "Privacy Policy", href: "/privacy", icon: "🔒" },
                     { label: "Terms of Use",   href: "/terms",   icon: "📄" },
                   ].map(({ label, href, icon }, li) => (
                     <motion.div key={label}
-                      initial={mounted ? { opacity: 0, x: -12 } : false}
+                      initial={mounted ? { opacity: 0, x: -14 } : false}
                       whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-                      transition={{ delay: 0.35 + li * 0.07, duration: 0.4 }}
+                      transition={{ delay: 0.38 + li * 0.08, duration: 0.42 }}
                     >
-                      <Link href={href}
-                        style={{ color: T.muted, textDecoration: "none", fontSize: "14px", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 9, padding: "7px 0", transition: "color 0.2s" }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = T.chipTxt; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = T.muted; }}
-                      >
-                        <span style={{ fontSize: "13px" }}>{icon}</span>
-                        {label}
+                      <Link href={href} style={{ textDecoration: "none", display: "block" }}>
+                        <motion.div
+                          whileHover={{ x: 5, transition: { duration: 0.18 } }}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 9, padding: "8px 0", color: T.muted, fontSize: "14px", fontWeight: 500 }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = T.chipTxt; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = T.muted; }}
+                        >
+                          <span style={{ fontSize: "13px" }}>{icon}</span>
+                          {label}
+                        </motion.div>
                       </Link>
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Creator card */}
+                {/* ── Creator card with scan line ── */}
                 <motion.div
-                  whileHover={{ y: -3, boxShadow: isDark ? "0 8px 32px rgba(37,99,235,0.18)" : "0 8px 28px rgba(37,99,235,0.12)", transition: { duration: 0.2 } }}
+                  initial={mounted ? { opacity: 0, y: 16, scale: 0.97 } : false}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true }}
+                  transition={{ delay: 0.45, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ y: -4, boxShadow: isDark ? "0 10px 40px rgba(37,99,235,0.22), 0 0 0 1px rgba(37,99,235,0.35)" : "0 10px 36px rgba(37,99,235,0.16), 0 0 0 1px rgba(37,99,235,0.25)", transition: { duration: 0.22 } }}
                   style={{
-                    padding: "18px 20px", borderRadius: 18,
-                    background: isDark ? "rgba(37,99,235,0.08)" : "#EEF3FF",
-                    border: `1px solid ${isDark ? "rgba(37,99,235,0.22)" : "#DBEAFE"}`,
-                    boxShadow: `0 2px 12px rgba(37,99,235,${isDark ? 0.1 : 0.06})`,
+                    position: "relative", overflow: "hidden",
+                    padding: "20px 22px", borderRadius: 20,
+                    background: isDark ? "rgba(37,99,235,0.09)" : "#EEF3FF",
+                    border: `1px solid ${isDark ? "rgba(37,99,235,0.25)" : "#DBEAFE"}`,
+                    boxShadow: `0 2px 14px rgba(37,99,235,${isDark ? 0.12 : 0.07})`,
                   }}
                 >
-                  <div style={{ fontSize: "10px", fontWeight: 800, color: T.chipTxt, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
-                    Created by
+                  {/* Scan line sweeping through card */}
+                  <div className="footer-creator-scan" />
+
+                  {/* Corner accent */}
+                  <div style={{
+                    position: "absolute", top: 0, right: 0, width: 40, height: 40,
+                    background: `linear-gradient(225deg, ${isDark ? "rgba(37,99,235,0.2)" : "rgba(37,99,235,0.1)"} 0%, transparent 60%)`,
+                    borderRadius: "0 20px 0 0",
+                  }} />
+
+                  <motion.div
+                    animate={{ opacity: [0.6, 1, 0.6] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ fontSize: "9px", fontWeight: 800, color: T.chipTxt, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 10 }}
+                  >● Created by</motion.div>
+
+                  <motion.div
+                    initial={mounted ? { opacity: 0, x: -8 } : false}
+                    whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                    transition={{ delay: 0.55, duration: 0.4 }}
+                    style={{ fontWeight: 800, fontSize: "16px", color: T.text, marginBottom: 5 }}
+                  >Afsar Ali</motion.div>
+
+                  <div style={{ fontSize: "12px", color: T.muted, lineHeight: 1.8 }}>
+                    Technical White Hat
                   </div>
-                  <div style={{ fontWeight: 800, fontSize: "15px", color: T.text, marginBottom: 4 }}>Afsar Ali</div>
-                  <div style={{ fontSize: "12px", color: T.muted, lineHeight: 1.7 }}>
-                    Technical White Hat<br />
-                    <span style={{ color: T.chipTxt, fontWeight: 600 }}>Legend of Indian Cybersecurity</span>
-                  </div>
-                  <a href="https://twh-osint.vercel.app/twh" target="_blank" rel="noopener noreferrer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 12, fontSize: "12px", fontWeight: 700, color: T.chipTxt, textDecoration: "none" }}
+                  <motion.div
+                    animate={{ opacity: [0.8, 1, 0.8], textShadow: [`0 0 0px ${T.chipTxt}`, `0 0 8px ${T.chipTxt}55`, `0 0 0px ${T.chipTxt}`] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    style={{ fontSize: "12px", color: T.chipTxt, fontWeight: 700, marginTop: 2 }}
+                  >Legend of Indian Cybersecurity</motion.div>
+
+                  <motion.a
+                    href="https://twh-osint.vercel.app/twh" target="_blank" rel="noopener noreferrer"
+                    whileHover={{ gap: 10, transition: { duration: 0.15 } }}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 14, fontSize: "12px", fontWeight: 700, color: T.chipTxt, textDecoration: "none" }}
                   >
                     <Globe2 size={12} /> Visit OSINT Platform <ArrowRight size={11} />
-                  </a>
+                  </motion.a>
                 </motion.div>
               </motion.div>
             </div>
 
-            {/* ── Divider ── */}
-            <div style={{ height: 1, background: T.border }} />
+            {/* ── Animated divider ── */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              style={{ height: 1, background: `linear-gradient(90deg, transparent, ${T.border}, ${T.border}, transparent)`, transformOrigin: "left" }}
+            />
 
             {/* ── Bottom bar ── */}
             <div style={{
-              padding: "20px 0",
+              padding: "22px 0",
               display: "flex", flexDirection: isLg ? "row" : "column",
               alignItems: isLg ? "center" : "flex-start",
               justifyContent: "space-between", gap: 12,
             }}>
-              <span style={{ fontSize: "13px", color: T.muted }}>
+              <motion.span
+                initial={mounted ? { opacity: 0 } : false}
+                whileInView={{ opacity: 1 }} viewport={{ once: true }}
+                transition={{ delay: 0.1, duration: 0.6 }}
+                style={{ fontSize: "13px", color: T.muted }}
+              >
                 © 2026 TWH Academy · Built with ❤️ by{" "}
-                <strong style={{ color: T.chipTxt }}>Afsar Ali</strong>
-              </span>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                {/* Live pulse dot */}
-                <motion.div
-                  animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                  style={{ width: 7, height: 7, borderRadius: "50%", background: "#059669", flexShrink: 0 }}
-                />
-                <span style={{ fontSize: "12px", color: T.muted, fontWeight: 600 }}>
-                  Free Forever · No Ads · No Bullshit
-                </span>
+                <motion.strong
+                  animate={{ color: [T.chipTxt, "#7C3AED", T.chipTxt] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ color: T.chipTxt }}
+                >Afsar Ali</motion.strong>
+              </motion.span>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                {/* Triple-ring live pulse dot */}
+                <div style={{ position: "relative", width: 10, height: 10, flexShrink: 0 }}>
+                  <motion.div
+                    animate={{ scale: [1, 2.2, 1], opacity: [0.6, 0, 0.6] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                    style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#059669" }}
+                  />
+                  <motion.div
+                    animate={{ scale: [1, 1.7, 1], opacity: [0.8, 0, 0.8] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
+                    style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#059669" }}
+                  />
+                  <div style={{ position: "absolute", inset: 2, borderRadius: "50%", background: "#059669" }} />
+                </div>
+
+                {/* Word-by-word staggered reveal */}
+                <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "12px", fontWeight: 600, color: T.muted }}>
+                  {["Free Forever", "·", "No Ads", "·", "No Bullshit"].map((word, wi) => (
+                    <motion.span key={word + wi}
+                      initial={mounted ? { opacity: 0, y: 6 } : false}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.15 + wi * 0.12, duration: 0.38 }}
+                      style={{ color: wi === 4 ? T.chipTxt : T.muted }}
+                    >{word}</motion.span>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>

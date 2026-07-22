@@ -67,6 +67,57 @@
 @keyframes successBurst { 0% { transform:scale(1) } 50% { transform:scale(1.15) } 100% { transform:scale(1) } }
 @keyframes typeReveal  { from { width:0 } to { width:100% } }
 @keyframes radarSweep  { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
+@keyframes footerGridDrift { from { background-position: 0 0 } to { background-position: 40px 40px } }
+@keyframes gradientSlide { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
+@keyframes floatUp { 0% { transform: translateY(0) opacity(1) } 100% { transform: translateY(-60px); opacity: 0 } }
+@keyframes creatorScan { 0% { top: -40% } 100% { top: 140% } }
+@keyframes badgeGlow { 0%,100% { box-shadow: none } 50% { box-shadow: 0 0 10px currentColor } }
+@keyframes orbitSpin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+@keyframes orbitSpinReverse { from { transform: rotate(0deg) } to { transform: rotate(-360deg) } }
+
+.footer-cyber-grid {
+  background-image:
+    radial-gradient(circle, rgba(37,99,235,0.25) 1px, transparent 1px),
+    radial-gradient(circle, rgba(124,58,237,0.15) 1px, transparent 1px);
+  background-size: 36px 36px, 72px 72px;
+  background-position: 0 0, 18px 18px;
+  animation: footerGridDrift 8s linear infinite;
+}
+
+.footer-gradient-line {
+  background: linear-gradient(90deg, #2563EB, #7C3AED, #0EA5E9, #059669, #2563EB);
+  background-size: 300% 100%;
+  animation: gradientSlide 4s linear infinite;
+  box-shadow: 0 0 20px rgba(37,99,235,0.6), 0 0 40px rgba(124,58,237,0.3);
+}
+
+.footer-creator-scan {
+  position: absolute;
+  left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(180deg, transparent 0%, rgba(37,99,235,0.07) 50%, transparent 100%);
+  animation: creatorScan 3s ease-in-out infinite;
+  animation-delay: 1.5s;
+  pointer-events: none;
+}
+
+.footer-orbit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-top-color: #2563EB;
+  border-right-color: rgba(37,99,235,0.35);
+  border-bottom-color: transparent;
+  border-left-color: rgba(37,99,235,0.15);
+  animation: orbitSpin 6s linear infinite;
+}
+
+.footer-orbit-ring-outer {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(124,58,237,0.35);
+  animation: orbitSpinReverse 10s linear infinite;
+}
 
 /* ══════════════════════════════════════════════
    THEME TOKENS — light (default) + dark
