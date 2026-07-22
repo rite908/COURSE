@@ -493,8 +493,8 @@ function TerminalPanel({ isDark: _isDark, mounted, cmdIdx: _cmdIdx }: {
         transition={{ duration: 0.85, delay: 0.5, ease: "easeOut" }}
         style={{
           position: "relative", width: "100%", height: "100%",
-          maskImage: "linear-gradient(to right, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+          maskImage: "linear-gradient(to right, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 12%, black 100%)",
+          WebkitMaskImage: "linear-gradient(to right, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 12%, black 100%)",
           maskComposite: "intersect" as React.CSSProperties["maskComposite"],
           WebkitMaskComposite: "source-in",
         }}
@@ -577,8 +577,8 @@ function CoursePathPanel({ isDark: _isDark, mounted }: { isDark: boolean; mounte
         transition={{ duration: 0.85, delay: 0.65, ease: "easeOut" }}
         style={{
           position: "relative", width: "100%", height: "100%",
-          maskImage: "linear-gradient(to left, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to left, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+          maskImage: "linear-gradient(to left, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 12%, black 100%)",
+          WebkitMaskImage: "linear-gradient(to left, black 0%, black 50%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 12%, black 100%)",
           maskComposite: "intersect" as React.CSSProperties["maskComposite"],
           WebkitMaskComposite: "source-in",
         }}
@@ -701,7 +701,7 @@ export default function ChaptersPage() {
       style={{ minHeight: "100vh", background: pageBg, paddingTop: 68 }}
     >
       {/* ── Hero ── */}
-      <div style={{ position: "relative", background: heroBg, padding: "72px 24px 60px", textAlign: "center", overflow: "hidden" }}>
+      <div style={{ position: "relative", background: heroBg, padding: "72px 24px 80px", textAlign: "center", overflow: "hidden", minHeight: 580 }}>
 
         {/* Animated dot grid */}
         <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", opacity: isDark ? 0.18 : 0.22 }}>
@@ -869,6 +869,13 @@ export default function ChaptersPage() {
             </div>
           </motion.div>
         </motion.div>
+
+        {/* Bottom blend — fades hero into page background */}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          height: 100, zIndex: 3, pointerEvents: "none",
+          background: `linear-gradient(to bottom, transparent 0%, ${pageBg} 100%)`,
+        }} />
       </div>
 
       {/* ── Section header ── */}
